@@ -6,7 +6,7 @@ images/
 **.ts
 tslint.json
 tsconfig.json
-Dockerfile.Siemens
+Dockerfile.*
 Dockerfile
 CONTRIBUTING
 build.sh
