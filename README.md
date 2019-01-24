@@ -1,6 +1,6 @@
 # node-red-contrib-mindconnect
 
-## NodeRed Agent for the MindConnect API
+## Node-RED Agent for the MindConnect API
 
 ![node-red-contrib-mindconnect](images/nodered.png)
 
@@ -23,7 +23,7 @@ npm install @mindconnect/node-red-contrib-mindconnect
 - install to the userDir directory if you have custom userDir
 - make sure that your nodejs version is relatively current
 
-## How to use the NodeRed node
+## How to use the Node-RED node
 
 ### Step 1: Create (at least) one asset, agent, configuration and mappings
 
