@@ -1,0 +1,2 @@
+FROM nodered/node-red-docker:rpi-v8
+COPY tmp/qemu-arm-static /usr/bin/qemu-arm-static

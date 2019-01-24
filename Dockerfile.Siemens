@@ -1,0 +1,6 @@
+ENV http_proxy="http://194.145.60.1:9400"
+ENV https_proxy="$http_proxy"
+ENV no_proxy="127.0.0.1, localhost, .siemens.de, .siemens.net, .siemens.com, .siemens.io"
+ENV HTTP_PROXY="$http_proxy"
+ENV HTTPS_PROXY="$http_proxy"
+ENV NO_PROXY="$no_proxy" 

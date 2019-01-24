@@ -1,0 +1,333 @@
+<!-- // Copyright Siemens AG, 2017-->
+<link href="/mindsphere.css" rel="stylesheet">
+</link>
+
+<script type="text/x-red" data-template-name="mindconnect">
+    <div id="_msbar">
+        <span  style="line-height:36px">
+            &nbsp;&nbsp;MindConnect Node-RED Agent 
+        </span> <span style="color:#aaaaaa">v3.2.0</span>
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+
+    <div class="form-row">
+        <label for=""><i class="fa fa-lock"></i> Profile</span></label>
+        <select id="input-config-type-select">
+            <option value="SHARED_SECRET">SHARED_SECRET</option>
+            <option value="RSA_3072">RSA_3072</option>
+        </select>
+    </div>
+
+    <div class="form-row node-text-editor-row">
+            <label for=""><i class="fa fa-repeat"></i> Retries</span></label>
+            <input id="node-input-retry" class="ui-spinner-input" value="1" style="width:50px"/>
+        </div>
+
+    <div class="form-row node-text-editor-row">
+        <p><i class="fa fa-id-card"></i> Agent Configuration</p>
+        <textarea style="height: 150px; min-height:150px; width:100%; overflow-y:scroll" class="node-text-editor" id="node-input-agentconfig"
+            placeholder="Copy Authentication JSON from MindSphere (use mindconnectlib agent type)"></textarea>
+    </div>
+
+    <div class="form-row node-text-editor-row hidden" id="private-key">
+        <p><i class="fa fa-key"></i> RSA 3072 Private Key</p>
+        <textarea style="height: 150px; min-height:150px; width:100%; overflow-y:scroll" class="node-text-editor" id="node-input-privatekey"
+            placeholder="Generate a key with: openssl genrsa -out private.key 3072"></textarea>
+    </div>
+    
+    <div class="form-row node-text-editor-row">
+        <label for="node-input-validate"><i class="fa fa-cog"></i> Settings</label>
+        <label for="node-input-validate" style="width:70%">
+        <input type="checkbox" id="node-input-validate" style="display:inline-block; width:22px; vertical-align:baseline;">Validate datapoints before sending.</label>
+    </div>
+
+    <div class="form-row node-text-editor-row">
+        <label for="node-input-validateevent"></label>
+        <label for="node-input-validateevent" style="width:70%">
+        <input type="checkbox" id="node-input-validateevent" style="display:inline-block; width:22px; vertical-align:baseline;">Validate event before sending.</label>
+    </div>
+    
+    <div class="form-row node-text-editor-row">
+        <label for="node-input-chunk"></label>
+        <label for="node-input-chunk" style="width:70%">
+        <input type="checkbox" id="node-input-chunk" style="display:inline-block; width:22px; vertical-align:baseline;">Upload file in chunks.(This feature is experimental!)</label>
+    </div>
+
+
+    <div class="form-tips"><b>Tip:</b> 
+        In the MindSphere V3 you can use MindSphere UI to configure the model and the mappings for the node. 
+       
+        <br/><br/>
+
+        Switching the validation of the events or datapoints off gives you a very minor speed-up on the client but it disables all semantic validation and error messages. 
+        The recommended setting is to leave the validation on.
+
+    </div>
+
+</script>
+
+<script type="text/x-red" data-help-name="mindconnect">
+    <p><b>Node connecting the flow to mindsphere.</b><br/>
+    This node can send data points (single or in bulk), events or upload a file to mindsphere.
+    </p>
+  
+    <p><b>Data Points:</b><br/>
+        In order to send datapoints to mindsphere you have to pass the following message in the msg.payload (e.g. from a function node)
+        </p>
+    <pre>
+const values = [
+    { 
+        "dataPointId": "100000000", 
+        "qualityCode": "1", 
+        "value": "42"
+    },
+    { 
+        "dataPointId": "100000001", 
+        "qualityCode": "1", 
+        "value": "False"
+    }
+];
+
+msg._time = new Date();
+msg.payload = values;  
+return msg;
+
+    </pre>
+
+    <p><b>Data Points (bulk):</b><br/>
+        In order to send datapoints in a bulk to mindsphere you have to pass the following message in the msg.payload (e.g. from a function node)
+        </p>
+    <pre>
+const values = [
+    {
+        "timestamp":"2018-11-09T02:17:17.171Z",
+        "values":[
+            {"dataPointId":"100000000","qualityCode":"1","value":"42"}
+            {"dataPointId":"100000001","qualityCode":"1","value":"42"}
+        ]
+    },
+    {
+        "timestamp":"2018-11-08T02:17:17.171Z",
+        "values":[
+            {"dataPointId":"100000000","qualityCode":"1","value":"42"}
+            {"dataPointId":"100000001","qualityCode":"1","value":"42"}
+        ]
+    }
+]
+
+msg.payload = values;  
+return msg;
+    </pre>
+    <p><b>Events:</b><br/>
+        Send an event to mindsphere by passing the event message in the payload. You can send events to all assets you have access to in your tenant. Pass the
+        assetid in the entity id property.
+        </p>
+    <pre>
+msg.payload = {
+    "entityId": "1234567890abcdef1234567890abcdef", // use assetid if you want to send event somewhere else :)
+    "sourceType": "Agent",
+    "sourceId": "application",
+    "source": "MindConnect Agent",
+    "severity": 20, // 0-99 : 20:error, 30:warning, 40: information
+    "description": "Event sent at " + new Date().toISOString(),
+    "timestamp": new Date().toISOString(), // you have to set the timestamp here 
+    "additionalProperty" : ""
+};
+
+return msg;
+    </pre>
+
+
+    <p><b>File Upload:</b><br/>
+        You have to pass the object with file information in the message: 
+        </p>
+    <pre>
+msg.payload = {
+    entityId: "1234567890abcdef1234567890abcdef", //optional
+    fileName : "package.json",
+    fileType : "application/json", //optional
+    description: "testfile"
+} 
+
+return msg;
+    </pre>
+
+
+
+
+    <p>You can force the onboarding or the retrival of the agent configuration by setting
+        the following parameters on the message. (This should be used for debugging only!)
+    </p>
+    <pre>
+msg._forceOnBoard= true;
+msg._forceGetConfig = true;          
+    </pre>
+
+    <p>
+        More Documentation:
+        <ul>
+            <li><a href="https://developer.mindsphere.io" target="_new">MindSphere Developer Documentation</a></li>
+        </ul>
+    </p>
+
+</script>
+<script type="text/javascript" src="/ajv.min.js" />
+
+<script type="text/javascript">
+
+    const configurationSchema = {
+        "type": "object",
+        "required": ["content"],
+        "properties": {
+            "content": {
+            "type": "object",
+            "required": ["baseUrl", "iat", "clientCredentialProfile", "clientId", "tenant"],
+            "properties": {
+                "baseUrl": {
+                "type": "string"
+                },
+                "iat": {
+                "type": "string"
+                },
+                "clientCredentialProfile": {
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+                },
+                "clientId": {
+                "type": "string"
+                },
+                "tenant": {
+                "type": "string"
+                }
+            }
+            },
+            "expiration": {
+            "type": "string"
+            }
+        }
+    };
+
+   
+
+    function configValidator() {
+        const schemaValidator = new Ajv({ $data: true, allErrors: true });
+        return schemaValidator.compile(configurationSchema);
+    }
+
+    
+
+    RED.nodes.registerType('mindconnect', {
+        category: 'mindsphere',
+        color: '#41aaaa',
+        defaults: {
+            name: {
+                value: ""
+            },
+            configtype: {
+                value: ""
+            },
+            agentconfig: {
+                value: "",
+                required: true,
+                validate: (v) => { 
+                    try {
+                    const validator=configValidator(); 
+                    const result= validator(JSON.parse(v)); 
+                    return result;
+
+                    } catch (err) {
+                        console.log(err);
+                    }
+                    return false;
+                }
+            },
+            privatekey: {
+                value: "",
+                validate: (v) => { 
+                    try {
+                        const mode = $("#input-config-type-select").val(); 
+                        if (!mode || mode === "SHARED_SECRET") {
+                            return true;
+                        }
+                        
+                        v = v.trim();
+                        if (!v.endsWith("\n")) 
+                            v+= "\n";
+
+                        if (!v.startsWith("-----BEGIN RSA PRIVATE KEY-----")) {
+                            return false;
+                        }
+
+                        if (!v.endsWith("-----END RSA PRIVATE KEY-----\n")) {
+                            return false;
+                        }
+                        return true;
+                    } catch (err) {
+                        console.log(err);
+                    }
+                    return false;
+                }
+            },
+            model: {
+                value: ""
+            },
+            validate: {
+                value: true
+            },
+            validateevent: {
+                value: true
+            },
+            chunk: {
+                value: false
+            },
+            retry : {
+                value:3,
+                validate: RED.validators.number()
+            }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "white-globe.png",
+        label: function () {
+            return this.name || "MindConnect Node-RED Agent";
+        },
+     
+        oneditprepare: function () {
+
+            const c=this.retry;
+            $("#node-input-retry").val(c);
+            $("#node-input-retry").spinner({
+                max:10,
+                min:1
+            });
+
+            $("#input-config-type-select").change(function () {
+                let value = $("#input-config-type-select").val();
+                if (value === "SHARED_SECRET") {
+                    $("#private-key").hide();
+                } else {
+                    $("#private-key").show();
+                }
+            });
+
+            console.log(this.configtype);
+
+            if (this.configtype === "RSA_3072") {
+                $("#input-config-type-select").val("RSA_3072");
+                $("#private-key").show();
+            } else {
+                $("#input-config-type-select").val("SHARED_SECRET");
+                $("#private-key").hide();
+            }
+        },
+        oneditsave: function () {
+            this.configtype = $("#input-config-type-select").val();
+        }
+    });
+</script>

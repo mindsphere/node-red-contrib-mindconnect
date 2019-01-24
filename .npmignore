@@ -1,0 +1,15 @@
+.mc
+.vscode
+**.tgz
+agentconfig.json
+images/
+**.ts
+tslint.json
+tsconfig.json
+Dockerfile.Siemens
+Dockerfile
+CONTRIBUTING
+build.sh
+.gitlab-ci.yml
+.dockerignore
+mdsp_meta.yml

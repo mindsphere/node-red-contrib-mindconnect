@@ -1,0 +1,12 @@
+
+LABEL vendor="Siemens AG"
+LABEL maintainer="@sn0wcat"
+
+COPY *.tgz ./
+RUN npm --version
+RUN npm install node-red-contrib-s7
+RUN npm install node-red-contrib-opcua
+RUN npm install @mindconnect/mindconnect-nodejs
+RUN npm install
+RUN npm install `ls mindconnect-node-red-contrib*.tgz`
+
