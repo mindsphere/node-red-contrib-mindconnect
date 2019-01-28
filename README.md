@@ -7,6 +7,9 @@
 This node enables the Node-RED users to upload timeseries, files and events to MindSphere.
 This project has started as a community effort at Siemens AG and is now available for general use.
 
+[![Build Status](https://jenkins.mindconnect.rocks/buildStatus/icon?job=node-red-contrib-mindconnect/master)](https://jenkins.mindconnect.rocks/blue/organizations/jenkins/node-red-contrib-mindconnect/activity/) [![The MIT License](https://img.shields.io/badge/license-MIT-009999.svg?style=flat)](./LICENSE.md)
+[![npm](https://img.shields.io/npm/v/@mindconnect/node-red-contrib-mindconnect/latest.svg?style=flat)](https://www.npmjs.com/package/@mindconnect/node-red-contrib-mindconnect) ![downloads](https://img.shields.io/npm/dw/@mindconnect/node-red-contrib-mindconnect.svg?colorB=009999)
+
 The node is written in typescript/javascript without any native dependencies so it should work beside x86 also on other platforms (e.g. on  raspberry pi, IoT2000 etc, you just have to have Node-RED installed).
 
 ## Installing the node
