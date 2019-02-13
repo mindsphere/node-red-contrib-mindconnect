@@ -1,5 +1,5 @@
 FROM nodered/node-red-docker:rpi-v8
-COPY qemu-arm-static /usr/bin
+COPY Docker/ARM/qemu-arm-static /usr/bin
 
 # build and package 
 RUN mkdir /tmp/install

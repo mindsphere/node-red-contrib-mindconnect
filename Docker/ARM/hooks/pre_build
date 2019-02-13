@@ -1,2 +1,4 @@
 #!/bin/bash
+pwd 
+ls -la
 docker run --rm --privileged multiarch/qemu-user-static:register --reset
