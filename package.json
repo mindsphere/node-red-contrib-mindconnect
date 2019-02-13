@@ -10,13 +10,7 @@
     "ts:build": "tsc",
     "ts:watch": "tsc -w",
     "node:watch": "nodemon -e js,html  --watch src node_modules/node-red/red.js --userDir ../devnodes ",
-    "doc": "typedoc -out docs --excludePrivate --readme ./README.md --target es6 --name node-red-contrib-mindconnect --exclude \"**/*+(test-agent|index|.spec|.e2e).ts\" && cp -R images docs/images/ && cp CHANGELOG.md docs/CHANGELOG.md",
-    "x86": "rm -f Dockerfile && cat Dockerfile.X86 >> Dockerfile && cat Dockerfile.Content  >> Dockerfile",
-    "x86.coia": "rm -f Dockerfile && cat Dockerfile.X86 >> Dockerfile && cat Dockerfile.Content  >> Dockerfile && cat Dockerfile.Siemens >> Dockerfile",
-    "x86.fiddler": "rm -f Dockerfile && cat Dockerfile.X86 >> Dockerfile && cat Dockerfile.Content  >> Dockerfile && cat Dockerfile.Fiddler >> Dockerfile",
-    "arm": "rm -f Dockerfile && cat Dockerfile.ARM >> Dockerfile && cat Dockerfile.Content  >> Dockerfile",
-    "arm.coia": "rm -f Dockerfile && cat Dockerfile.ARM >> Dockerfile && cat Dockerfile.Content  >> Dockerfile && cat Dockerfile.Siemens >> Dockerfile",
-    "arm.fiddler": "rm -f Dockerfile && cat Dockerfile.ARM >> Dockerfile && cat Dockerfile.Content  >> Dockerfile && cat Dockerfile.Fiddler >> Dockerfile"
+    "doc": "typedoc -out docs --excludePrivate --readme ./README.md --target es6 --name node-red-contrib-mindconnect --exclude \"**/*+(test-agent|index|.spec|.e2e).ts\" && cp -R images docs/images/ && cp CHANGELOG.md docs/CHANGELOG.md"
   },
   "repository": {
     "type": "git",
