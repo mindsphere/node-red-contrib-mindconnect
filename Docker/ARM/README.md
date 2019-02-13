@@ -1,1 +1,1 @@
-# node-red-contrib-mmindconnect
+# node-red-contrib-mindconnect
