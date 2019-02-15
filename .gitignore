@@ -61,6 +61,6 @@ bower_components
 *.bak
 
 agentconfig.json
-Dockerfile
+
 
 tmp
