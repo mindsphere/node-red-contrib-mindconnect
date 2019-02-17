@@ -1,12 +1,8 @@
 // Copyright Siemens AG, 2017
-// Copyright Siemens AG, 2017
-import { BaseEvent, DataSourceConfiguration, IMindConnectConfiguration, MindConnectAgent, TimeStampedDataPoint } from '@mindconnect/mindconnect-nodejs';
+
+import { BaseEvent, MindConnectAgent, TimeStampedDataPoint } from '@mindconnect/mindconnect-nodejs';
 import * as ajv from "ajv";
 import * as path from "path";
-interface IConfig {
-    agentconfig: IMindConnectConfiguration;
-    model: DataSourceConfiguration;
-}
 
 interface IFileInfo {
     entityId: string,
@@ -15,11 +11,7 @@ interface IFileInfo {
     description?: string
 }
 
-
-
-
 export = function (RED: any): void {
-
 
     const eventSchema = {
         "type": "object",
@@ -108,7 +100,6 @@ export = function (RED: any): void {
         return schemaValidator.compile(eventSchema);
     }
 
-
     const fileInfoSchema = {
         "$id": "http://example.com/example.json",
         "type": "object",
@@ -148,7 +139,6 @@ export = function (RED: any): void {
         const schemaValidator = new ajv({ $data: true, allErrors: true });
         return schemaValidator.compile(fileInfoSchema);
     }
-
 
     const bulkUploadSchema = {
         "type": "array",
@@ -277,8 +267,6 @@ export = function (RED: any): void {
                         return;
                     }
 
-                    console.log(agent.IsOnBoarded());
-
                     if (!agent.IsOnBoarded() || (msg._forceOnBoard && msg._forceOnBoard === true)) {
                         node.status({ fill: "grey", shape: "dot", text: `onboarding` });
                         await retry(config.retry, () => agent.OnBoard(), "OnBoard");
@@ -290,9 +278,15 @@ export = function (RED: any): void {
                     }
 
                     let timestamp = msg._time ? msg._time : new Date();
+
+                    if (!(timestamp instanceof Date)) {
+                        throw new Error(`The time stamp in msg._time must be a javascript Date() and not ${timestamp.toString()}.`);
+                    }
+
                     node.status({ fill: "grey", shape: "dot", text: `posting data` });
-                    if (!msg.payload)
+                    if (!msg.payload) {
                         throw new Error("you have to have a payload in your msg.payload to post the data!");
+                    }
 
                     const eventValidator = eventSchemaValidator();
                     const fileValidator = fileInfoValidator();
@@ -340,12 +334,24 @@ export = function (RED: any): void {
                         msg._mindsphereStatus = result ? "OK" : "Error";
                         node.send(msg);
                     } else {
-                        const errors = eventValidator.errors;
-                        const fileErrors = fileValidator.errors;
-                        const bulkErrrors = bulkValidator.errors;
-                        const timeSeriesErrors = tsValidator.errors;
+                        const eventErrors = eventValidator.errors || [];
+                        const fileErrors = fileValidator.errors || [];
+                        const bulkErrors = bulkValidator.errors || [];
+                        const timeSeriesErrors = tsValidator.errors || [];
 
-                        throw Error(`The payload was not recognized as an event, file or datapoints. See node help for proper msg.payload formats.\n\nEvent validation ${JSON.stringify(errors)}, File Validation: ${JSON.stringify(fileErrors)}, BulkUpload: ${JSON.stringify(bulkErrrors)}, TimeSeries: ${JSON.stringify(timeSeriesErrors)}`)
+                        let errorString = "the payload was not recognized as an event, file or datapoints. See node help for proper msg.payload.formats";
+                        console.log(eventErrors, fileErrors, bulkErrors, timeSeriesErrors);
+
+                        errorString += "\nEvent Errors:\n";
+                        errorString += JSON.stringify(eventErrors, null, 2);
+                        errorString += "\nFile Errors:\n";
+                        errorString += JSON.stringify(fileErrors, null, 2);
+                        errorString += "\nBulk Errors:\n";
+                        errorString += JSON.stringify(bulkErrors, null, 2);
+                        errorString += "\nTimeSeries Errors:\n";
+                        errorString += JSON.stringify(timeSeriesErrors, null, 2);
+
+                        throw new Error(errorString);
                     }
 
                 } catch (error) {

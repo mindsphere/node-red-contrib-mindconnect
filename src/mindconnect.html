@@ -28,7 +28,7 @@
         </div>
 
     <div class="form-row node-text-editor-row">
-        <p><i class="fa fa-id-card"></i> Agent Configuration</p>
+        <p><span id="noLinkSpan"><i class="fa fa-id-card"></i> Agent Configuration</span><span id="linkSpan"><a id="configLink" target="_new" title="Agent Configuration in the MindSphere"><i class="fa fa-external-link"></i> Agent Configuration</a></span></p>
         <textarea style="height: 150px; min-height:150px; width:100%; overflow-y:scroll" class="node-text-editor" id="node-input-agentconfig"
             placeholder="Copy Authentication JSON from MindSphere (use mindconnectlib agent type)"></textarea>
     </div>
@@ -299,6 +299,16 @@ msg._forceGetConfig = true;
         },
      
         oneditprepare: function () {
+
+            $("#noLinkSpan").hide();
+            try {
+                const agentConfig = JSON.parse(this.agentconfig);
+                const target =agentConfig.content.baseUrl.replace("southgate", `${agentConfig.content.tenant}-assetmanager`) + `/entity/${agentConfig.content.clientId}/plugin/uipluginassetmanagermclib`;
+                $("#configLink").attr("href", target);
+            } catch (err) {
+                $("#linkSpan").hide();
+                $("#noLinkSpan").show();
+            }
 
             const c=this.retry;
             $("#node-input-retry").val(c);
