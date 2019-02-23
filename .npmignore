@@ -15,3 +15,4 @@ build.sh
 mdsp_meta.yml
 Jenkinsfile
 Docker
+.github
