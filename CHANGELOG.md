@@ -1,5 +1,18 @@
 # Changelog
 
+## 3.3.0 (Vienna Panthers) - February 2019
+
+### New Features 3.3.0
+
+- Updated to version 3.3.0. of mindconnect library
+- added container build process on hub.docker.com
+- direct link to configuration settings in MindSphere from Node-RED UI
+- improved error handling
+
+### Bugfix 3.3.0
+
+- fixed the issue #3 Failed to load mindconnect node when modifying the URL root path #3
+
 ## 3.2.0 (Vienna Lynx) - January 2019
 
 ### New Features 3.2.0
