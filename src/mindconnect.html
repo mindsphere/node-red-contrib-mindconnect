@@ -30,7 +30,7 @@
     <div class="form-row node-text-editor-row">
         <p><span id="noLinkSpan"><i class="fa fa-id-card"></i> Agent Configuration</span><span id="linkSpan"><a id="configLink" target="_new" title="Agent Configuration in the MindSphere"><i class="fa fa-external-link"></i> Agent Configuration</a></span></p>
         <textarea style="height: 150px; min-height:150px; width:100%; overflow-y:scroll" class="node-text-editor" id="node-input-agentconfig"
-            placeholder="Copy Authentication JSON from MindSphere (use mindconnectlib agent type)"></textarea>
+            placeholder="Copy Authentication JSON from MindSphere (use MindConnectLib [core.mclib] asset type)"></textarea>
     </div>
 
     <div class="form-row node-text-editor-row hidden" id="private-key">
@@ -53,30 +53,39 @@
     
     <div class="form-row node-text-editor-row">
         <label for="node-input-chunk"></label>
-        <label for="node-input-chunk" style="width:70%">
-        <input type="checkbox" id="node-input-chunk" style="display:inline-block; width:22px; vertical-align:baseline;">Upload file in chunks.(This feature is experimental!)</label>
+        <label for="node-input-chunk" style="width:70%" title="this feature is experimental!"">
+        <input type="checkbox" id="node-input-chunk" style="display:inline-block; width:22px; vertical-align:baseline;">Upload file in chunks. (experimental) <i class="fa fa-exclamation-circle"></i></label> 
+    </div>
+
+    <div class="form-row node-text-editor-row">
+        <label for="node-input-disablekeepalive"></label>
+        <label for="node-input-disablekeepalive" style="width:70%"  data-toggle="tooltip" data-placement="top" title="The node will rotate the keys regularly even when there is no data sent unless disabled.">
+        <input type="checkbox" id="node-input-disablekeepalive" style="display:inline-block; width:22px; vertical-align:baseline;">Disable keep alive. </label>
     </div>
 
 
-    <div class="form-tips"><b>Tip:</b> 
+    <div class="form-tips"><i class="fa fa-info-circle"></i> <b>Tip:</b> 
         In the MindSphere V3 you can use MindSphere UI to configure the model and the mappings for the node. 
-       
-        <br/><br/>
-
+        <br/></br/>
+        <i class="fa fa-info-circle"></i> <b>Validation settings:</b>
         Switching the validation of the events or datapoints off gives you a very minor speed-up on the client but it disables all semantic validation and error messages. 
         The recommended setting is to leave the validation on.
+        <br/><br/>
+        <i class="fa fa-info-circle"></i> <b>Keep alive:</b>
+        The node will check/renew the communication token every hour even when there is no data sent.
+        The recommended setting is to leave the keep alive enabled.
 
     </div>
 
 </script>
 
 <script type="text/x-red" data-help-name="mindconnect">
-    <p><b>Node connecting the flow to mindsphere.</b><br/>
-    This node can send data points (single or in bulk), events or upload a file to mindsphere.
+    <p><b>Node connecting the flow to MindSphere.</b><br/>
+    This node can send data points (single or in bulk), events or upload a file to MindSphere.
     </p>
   
     <p><b>Data Points:</b><br/>
-        In order to send datapoints to mindsphere you have to pass the following message in the msg.payload (e.g. from a function node)
+        In order to send datapoints to MindSphere you have to pass the following message in the msg.payload (e.g. from a function node)
         </p>
     <pre>
 const values = [
@@ -99,7 +108,7 @@ return msg;
     </pre>
 
     <p><b>Data Points (bulk):</b><br/>
-        In order to send datapoints in a bulk to mindsphere you have to pass the following message in the msg.payload (e.g. from a function node)
+        In order to send datapoints in a bulk to MindSphere you have to pass the following message in the msg.payload (e.g. from a function node)
         </p>
     <pre>
 const values = [
@@ -123,7 +132,7 @@ msg.payload = values;
 return msg;
     </pre>
     <p><b>Events:</b><br/>
-        Send an event to mindsphere by passing the event message in the payload. You can send events to all assets you have access to in your tenant. Pass the
+        Send an event to MindSphere by passing the event message in the payload. You can send events to all assets you have access to in your tenant. Pass the
         assetid in the entity id property.
         </p>
     <pre>
@@ -284,6 +293,9 @@ msg._forceGetConfig = true;
                 value: true
             },
             chunk: {
+                value: false
+            },
+            disablekeepalive: {
                 value: false
             },
             retry : {
