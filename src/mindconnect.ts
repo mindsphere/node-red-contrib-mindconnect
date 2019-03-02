@@ -230,6 +230,41 @@ export = function (RED: any): void {
             let agent = new MindConnectAgent(agentConfig);
             node.agent = agent;
 
+            let startlogmessage = "";
+            if (config.validate)
+                startlogmessage += "validates timeseries ";
+            if (config.validateevent)
+                startlogmessage += "validates events ";
+            if (config.chunk)
+                startlogmessage += "chunked upload ";
+            if (config.disablekeepalive)
+                startlogmessage += "disabled keep-alive ";
+            else
+                startlogmessage += "keep-alive rotation: every hour ";
+
+            node.log(`settings: ${startlogmessage}`);
+
+            node.interval_id = setInterval(async () => {
+
+                if (!config.disablekeepalive) {
+                    let timestamp = new Date();
+
+                    try {
+                        let agent = <MindConnectAgent>node.agent;
+                        await retry(config.retry, () => agent.RenewToken(), "RenewToken");
+                        node.status({ fill: "green", shape: "dot", text: `Last keep alive key rotation at ${timestamp}` });
+                        node.log(`Last keep alive key rotation at ${timestamp}`);
+                    } catch (error) {
+                        node.error(error);
+                        node.status({ fill: "red", shape: "ring", text: `Error occured during keep alive ${error} on ${timestamp}` });
+                    }
+
+                } else {
+                    node.log("Keep alive for this agent is disabled");
+                }
+            }, 3600000);
+
+
             if (agent.GetProfile() === "RSA_3072") {
 
                 config.privatekey = config.privatekey.trim();
@@ -254,11 +289,13 @@ export = function (RED: any): void {
             node.status({ fill: "red", shape: "ring", text: `Error occured ${error}` });
         }
 
-
         this.on("input", msg => {
             (async () => {
 
                 try {
+
+
+
                     const agent = <MindConnectAgent>node.agent;
                     node.status({});
 
@@ -301,7 +338,7 @@ export = function (RED: any): void {
                             event.entityId = agent.ClientId();
                         }
                         const result = await retry(config.retry, () => agent.PostEvent(event, timestamp, config.validateevent), "PostEvent");
-                        node.log(result);
+                        node.log(`Posted last event at ${timestamp}`);
                         node.status({ fill: "green", shape: "dot", text: `Posted last event at ${timestamp}` });
                         msg._mindsphereStatus = result ? "OK" : "Error";
                         node.send(msg);
@@ -311,7 +348,7 @@ export = function (RED: any): void {
                         node.status({ fill: "grey", shape: "dot", text: `recieved fileInfo ${fileInfo.fileName}` });
 
                         const result = await retry(config.retry, () => agent.Upload(fileInfo.fileName, fileInfo.fileType, fileInfo.description, config.chunk, fileInfo.entityId), "FileUpload");
-                        node.log(result);
+                        node.log(`Uploaded file at ${timestamp}`);
                         node.status({ fill: "green", shape: "dot", text: `Uploaded file at ${timestamp}` });
                         msg._mindsphereStatus = result ? "OK" : "Error";
                         node.send(msg);
@@ -320,8 +357,8 @@ export = function (RED: any): void {
 
                         node.status({ fill: "grey", shape: "dot", text: `recieved ${msg.payload.length} data points for bulk upload ` });
                         const result = await retry(config.retry, () => agent.BulkPostData(<TimeStampedDataPoint[]>msg.payload, config.validate), "BulkPost");
-                        node.log(result);
-                        node.status({ fill: "green", shape: "dot", text: `Posted last message at ${timestamp}` });
+                        node.log(`Posted last bulk message at ${timestamp}`);
+                        node.status({ fill: "green", shape: "dot", text: `Posted last bulk message at ${timestamp}` });
                         msg._mindsphereStatus = result ? "OK" : "Error";
                         node.send(msg);
 
@@ -329,7 +366,7 @@ export = function (RED: any): void {
 
                         node.status({ fill: "grey", shape: "dot", text: `recieved data points` });
                         const result = await retry(config.retry, () => agent.PostData(msg.payload, timestamp, config.validate), "PostData");
-                        node.log(result);
+                        node.log(`Posted last message at ${timestamp}`);
                         node.status({ fill: "green", shape: "dot", text: `Posted last message at ${timestamp}` });
                         msg._mindsphereStatus = result ? "OK" : "Error";
                         node.send(msg);
