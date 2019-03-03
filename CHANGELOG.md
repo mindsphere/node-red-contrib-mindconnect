@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.4.0 (Vienna Caracals) - March 2019
+
+## New Features 3.4.0
+
+- auto keep-alive: the node will renew the token every hour even when there is no data sent.
+- moved schema-validation to mindconnect-schema.ts, improved code and documentation
+
 ## 3.3.0 (Vienna Panthers) - February 2019
 
 ### New Features 3.3.0
@@ -21,14 +28,12 @@
 - MIT License
 - use flows.json as default
 
-
 ## 3.0.2 (Vienna Wildcats) - November 2018
 
 ### New Features 3.0.2
 
 - Updated to version 3.0.2. of mindconnect library
 - Improved documentation
-
 
 ## 3.0.1 (Vienna Wildcats) - November 2018
 

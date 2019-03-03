@@ -11,7 +11,7 @@ This project has started as a community effort at Siemens AG and is now availabl
 [![npm](https://img.shields.io/npm/v/@mindconnect/node-red-contrib-mindconnect/latest.svg?style=flat)](https://www.npmjs.com/package/@mindconnect/node-red-contrib-mindconnect) ![downloads](https://img.shields.io/npm/dw/@mindconnect/node-red-contrib-mindconnect.svg?colorB=009999)
 [![Known Vulnerabilities](https://snyk.io/test/github/mindsphere/node-red-contrib-mindconnect/badge.svg?targetFile=package.json)](https://snyk.io/test/github/mindsphere/node-red-contrib-mindconnect?targetFile=package.json)
 
-The node is written in typescript/javascript without any native dependencies so it should work beside x86 also on other platforms (e.g. on  raspberry pi, IoT2000 etc, you just have to have Node-RED installed).
+The node is written in typescript/javascript without any native dependencies so it should work beside x86 also on other platforms (e.g. on raspberry pi, IoT2000 etc, you just have to have Node-RED installed).
 
 ## Installing the node
 
@@ -31,13 +31,13 @@ npm install @mindconnect/node-red-contrib-mindconnect
 
 ### Step 1: Create (at least) one asset, agent, configuration and mappings
 
-1. Create an asset in Asset Manager for your data
-2. Create an agent of the type mindconnectlib and store the agent.
-3. Create a new data configuration
+- Create an asset in Asset Manager for your data
+- Create an agent of the type MindConnectLib [core.mclib] and store the agent.
+- Create a new data configuration
 
 ![configuration](images/dataconfig.png)
 
-4. Create mappings to your asset.
+- Create mappings to your asset.
 
 ![mappings](images/datamappings.png)
 
@@ -45,8 +45,8 @@ npm install @mindconnect/node-red-contrib-mindconnect
 
 You can choose between:
 
-- **RSA_3072**          public/private key pair (3072bit) for enhanced security which requires more computing power on the devices and
-- **SHARED_SECRET**     shared key (256bit) for lightweight devices.
+- **RSA_3072** public/private key pair (3072bit) for enhanced security which requires more computing power on the devices and
+- **SHARED_SECRET** shared key (256bit) for lightweight devices.
 
 If you want to use RSA_3072 you will have to create a 3072bit key for your device, eg. with openssl:
 
@@ -56,7 +56,7 @@ openssl genrsa -out private.key 3072
 
 There is no additional configuration required for SHARED_SECRET security profile.
 
-### Step 3 Copy the agent configuration (and if necessary the private key to the node)
+### Step 3: Copy the agent configuration (and if necessary the private key to the node)
 
 ![implementation](images/mindconnectagent-flow.png)
 
@@ -68,10 +68,10 @@ The node requires json objects as input in following format (e.g. from a functio
 
 ```javascript
 const values = [
-            { "dataPointId": "1000000000", "qualityCode": "1", "value": "42" },
-            { "dataPointId": "1000000001", "qualityCode": "1", "value": "33.7" },
-            { "dataPointId": "1000000003", "qualityCode": "1", "value": "45.76" }
-        ];
+    { dataPointId: "1000000000", qualityCode: "1", value: "42" },
+    { dataPointId: "1000000001", qualityCode: "1", value: "33.7" },
+    { dataPointId: "1000000003", qualityCode: "1", value: "45.76" }
+];
 
 msg._time = new Date();
 msg.payload = values;
@@ -85,22 +85,21 @@ The node will validate if the data is valid for your agent configuration. his fe
 The node requires json objects as input in following format (e.g. from a function node if you want to use bulk upload)
 
 ```javascript
-
 const values = [
     {
         timestamp: "2018-11-09T07:46:36.699Z",
         values: [
-            { "dataPointId": "1000000000", "qualityCode": "1", "value": "42" },
-            { "dataPointId": "1000000001", "qualityCode": "1", "value": "33.7" },
-            { "dataPointId": "1000000003", "qualityCode": "1", "value": "45.76" }
+            { dataPointId: "1000000000", qualityCode: "1", value: "42" },
+            { dataPointId: "1000000001", qualityCode: "1", value: "33.7" },
+            { dataPointId: "1000000003", qualityCode: "1", value: "45.76" }
         ]
     },
     {
         timestamp: "2018-11-08T07:46:36.699Z",
         values: [
-            { "dataPointId": "1000000000", "qualityCode": "1", "value": "12" },
-            { "dataPointId": "1000000001", "qualityCode": "1", "value": "13.7" },
-            { "dataPointId": "1000000003", "qualityCode": "1", "value": "15.76" }
+            { dataPointId: "1000000000", qualityCode: "1", value: "12" },
+            { dataPointId: "1000000001", qualityCode: "1", value: "13.7" },
+            { dataPointId: "1000000003", qualityCode: "1", value: "15.76" }
         ]
     }
 ];
@@ -115,16 +114,16 @@ The node requires json objects as input in following format (e.g. from a functio
 
 ```javascript
 msg.payload = {
-                "entityId": "d72262e71ea0470eb9f880176b888938", // optional, use assetid if you want to send event somewhere else :)
-                "sourceType": "Agent",
-                "sourceId": "application",
-                "source": "Meowz",
-                "severity": 30, // 0-99 : 20:error, 30:warning, 40: information
-                "description": "Event sent at " + new Date().toISOString(),
-                "timestamp": new Date().toISOString(),
-                "additionalproperty1" : "123",
-                "additionalproperty2" : "456"
-            };
+    entityId: "d72262e71ea0470eb9f880176b888938", // optional, use assetid if you want to send event somewhere else :)
+    sourceType: "Agent",
+    sourceId: "application",
+    source: "Meowz",
+    severity: 30, // 0-99 : 20:error, 30:warning, 40: information
+    description: "Event sent at " + new Date().toISOString(),
+    timestamp: new Date().toISOString(),
+    additionalproperty1: "123",
+    additionalproperty2: "456"
+};
 return msg;
 ```
 
@@ -138,10 +137,10 @@ The node requires json objects as input in following format (e.g. from a functio
 ```javascript
 msg.payload = {
     entityId: "d72262e71ea0470eb9f880176b888938", //optional (per default files are uploaded to the agent)
-    fileName : "package.json",
-    fileType : "application/json", //optional, it is automatically determined if there is no fileType specified
+    fileName: "package.json",
+    fileType: "application/json", //optional, it is automatically determined if there is no fileType specified
     description: "testfile"
-}
+};
 return msg;
 ```
 
@@ -149,11 +148,11 @@ If the experimental chunking feature is on, the files which are bigger then 8MB 
 
 #### Error handling in the flows
 
-The node can be configured to retry all mindsphere operations (1-10 times, with delay of time * 300ms before the next try)
+The node can be configured to retry all mindsphere operations (1-10 times, with delay of time \* 300ms before the next try)
 If you need more complex flows, the node also returns the
 
 ```javascript
-msg._mindsphereStatus
+msg._mindsphereStatus;
 ```
 
 property which can be used to create more complex flows. (e.g. in the flow below, the unrecoverable errors are written in error.log file)
