@@ -1,206 +1,22 @@
 // Copyright Siemens AG, 2017
 
-import { BaseEvent, MindConnectAgent, TimeStampedDataPoint } from '@mindconnect/mindconnect-nodejs';
-import * as ajv from "ajv";
+import { BaseEvent, MindConnectAgent, TimeStampedDataPoint } from "@mindconnect/mindconnect-nodejs";
 import * as path from "path";
+import {
+    bulkUploadValidator,
+    eventSchemaValidator,
+    fileInfoValidator,
+    timeSeriesValidator
+} from "./mindconnect-schema";
 
 interface IFileInfo {
-    entityId: string,
-    fileName: string,
-    fileType: string,
-    description?: string
+    entityId: string;
+    fileName: string;
+    fileType: string;
+    description?: string;
 }
 
-export = function (RED: any): void {
-
-    const eventSchema = {
-        "type": "object",
-        "properties": {
-            "entityId": {
-                "$id": "/properties/entityId",
-                "type": "string",
-                "title": "The Entityid Schema ",
-                "default": "",
-                "examples": [
-                    "`12"
-                ],
-                "minLength": 32,
-                "maxLength": 32,
-                "pattern": "^[A-Fa-f0-9]*$"
-            },
-            "timestamp": {
-                "$id": "/properties/timestamp",
-                "type": "string",
-                "format": "date-time",
-                "title": "The Timestamp Schema ",
-                "default": "",
-                "examples": [
-                    "2018-06-16T18:38:07.293Z"
-                ]
-            },
-            "sourceType": {
-                "$id": "/properties/sourceType",
-                "type": "string",
-                "title": "The Sourcetype Schema ",
-                "default": "",
-                "examples": [
-                    "Event"
-                ]
-            },
-            "sourceId": {
-                "$id": "/properties/sourceId",
-                "type": "string",
-                "title": "The Sourceid Schema ",
-                "default": "",
-                "examples": [
-                    "application"
-                ]
-            },
-            "source": {
-                "$id": "/properties/source",
-                "type": "string",
-                "title": "The Source Schema ",
-                "default": "",
-                "examples": [
-                    "Meowz"
-                ]
-            },
-            "severity": {
-                "$id": "/properties/severity",
-                "type": "integer",
-                "title": "The Severity Schema ",
-                "default": 0,
-                "examples": [
-                    20
-                ]
-            },
-            "description": {
-                "$id": "/properties/description",
-                "type": "string",
-                "title": "The Description Schema ",
-                "default": "",
-                "examples": [
-                    ""
-                ]
-            }
-        },
-        "required": [
-            "timestamp",
-            "severity",
-            "description",
-            "source",
-            "sourceId",
-            "sourceType"
-        ]
-    };
-
-
-    function eventSchemaValidator(): ajv.ValidateFunction {
-        const schemaValidator = new ajv({ $data: true, allErrors: true });
-        return schemaValidator.compile(eventSchema);
-    }
-
-    const fileInfoSchema = {
-        "$id": "http://example.com/example.json",
-        "type": "object",
-        "properties": {
-            "entityId": {
-                "$id": "/properties/entityId",
-                "type": "string",
-                "title": "The Entityid Schema ",
-                "default": "",
-                "minLength": 32,
-                "maxLength": 32,
-                "pattern": "^[A-Fa-f0-9]*$"
-            },
-            "fileName": {
-                "$id": "/properties/sourceType",
-                "type": "string",
-                "title": "The Sourcetype Schema ",
-                "default": ""
-            },
-            "description": {
-                "$id": "/properties/description",
-                "type": "string",
-                "title": "The Description Schema ",
-                "default": "",
-                "examples": [
-                    ""
-                ]
-            }
-        },
-        "required": [
-            "fileName",
-            "description"
-        ]
-    };
-
-    function fileInfoValidator(): ajv.ValidateFunction {
-        const schemaValidator = new ajv({ $data: true, allErrors: true });
-        return schemaValidator.compile(fileInfoSchema);
-    }
-
-    const bulkUploadSchema = {
-        "type": "array",
-        "items": {
-            "type": "object",
-            "required": ["timestamp", "values"],
-            "properties": {
-                "timestamp": {
-                    "type": "string"
-                },
-                "values": {
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "required": [],
-                        "properties": {
-                            "dataPointId": {
-                                "type": "string"
-                            },
-                            "qualityCode": {
-                                "type": "string"
-                            },
-                            "value": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    };
-
-    function bulkUploadValidator(): ajv.ValidateFunction {
-        const schemaValidator = new ajv({ $data: true, allErrors: true });
-        return schemaValidator.compile(bulkUploadSchema);
-    }
-
-    const timeSeriesSchema = {
-        "type": "array",
-        "items": {
-            "type": "object",
-            "required": ["dataPointId", "qualityCode", "value"],
-            "properties": {
-                "dataPointId": {
-                    "type": "string"
-                },
-                "qualityCode": {
-                    "type": "string"
-                },
-                "value": {
-                    "type": "string"
-                }
-            }
-        }
-    };
-
-    function timeSeriesValidator(): ajv.ValidateFunction {
-        const schemaValidator = new ajv({ $data: true, allErrors: true });
-        return schemaValidator.compile(timeSeriesSchema);
-    }
-
-
+export = function(RED: any): void {
     function nodeRedMindConnectAgent(config: any) {
         RED.nodes.createNode(this, config);
         let node = this;
@@ -224,49 +40,48 @@ export = function (RED: any): void {
             throw error;
         };
 
-
         try {
             let agentConfig = JSON.parse(config.agentconfig);
             let agent = new MindConnectAgent(agentConfig);
             node.agent = agent;
 
             let startlogmessage = "";
-            if (config.validate)
-                startlogmessage += "validates timeseries ";
-            if (config.validateevent)
-                startlogmessage += "validates events ";
-            if (config.chunk)
-                startlogmessage += "chunked upload ";
-            if (config.disablekeepalive)
-                startlogmessage += "disabled keep-alive ";
-            else
-                startlogmessage += "keep-alive rotation: every hour ";
+            if (config.validate) startlogmessage += "validates timeseries ";
+            if (config.validateevent) startlogmessage += "validates events ";
+            if (config.chunk) startlogmessage += "chunked upload ";
+            if (config.disablekeepalive) startlogmessage += "disabled keep-alive ";
+            else startlogmessage += "keep-alive rotation: every hour ";
 
             node.log(`settings: ${startlogmessage}`);
 
+            const HOUR = 3600000;
             node.interval_id = setInterval(async () => {
-
                 if (!config.disablekeepalive) {
                     let timestamp = new Date();
 
                     try {
                         let agent = <MindConnectAgent>node.agent;
                         await retry(config.retry, () => agent.RenewToken(), "RenewToken");
-                        node.status({ fill: "green", shape: "dot", text: `Last keep alive key rotation at ${timestamp}` });
+                        node.status({
+                            fill: "green",
+                            shape: "dot",
+                            text: `Last keep alive key rotation at ${timestamp}`
+                        });
                         node.log(`Last keep alive key rotation at ${timestamp}`);
                     } catch (error) {
                         node.error(error);
-                        node.status({ fill: "red", shape: "ring", text: `Error occured during keep alive ${error} on ${timestamp}` });
+                        node.status({
+                            fill: "red",
+                            shape: "ring",
+                            text: `Error occured during keep alive ${error} on ${timestamp}`
+                        });
                     }
-
                 } else {
                     node.log("Keep alive for this agent is disabled");
                 }
-            }, 3600000);
-
+            }, HOUR);
 
             if (agent.GetProfile() === "RSA_3072") {
-
                 config.privatekey = config.privatekey.trim();
 
                 if (!config.privatekey.toString().startsWith("-----BEGIN RSA PRIVATE KEY-----")) {
@@ -283,7 +98,6 @@ export = function (RED: any): void {
 
                 node.agent.SetupAgentCertificate(config.privatekey.toString());
             }
-
         } catch (error) {
             node.error(error);
             node.status({ fill: "red", shape: "ring", text: `Error occured ${error}` });
@@ -291,16 +105,15 @@ export = function (RED: any): void {
 
         this.on("input", msg => {
             (async () => {
-
                 try {
-
-
-
                     const agent = <MindConnectAgent>node.agent;
                     node.status({});
 
                     if (!node.agent) {
-                        node.error(`Error creating mindconnect agent occured. Is  ${process.cwd()} directory writable? Have you setup the certificate?`, msg);
+                        node.error(
+                            `Error creating mindconnect agent occured. Is  ${process.cwd()} directory writable? Have you setup the certificate?`,
+                            msg
+                        );
                         return;
                     }
 
@@ -311,13 +124,19 @@ export = function (RED: any): void {
 
                     if (!agent.HasDataSourceConfiguration() || (msg._forceGetConfig && msg._forceGetConfig === true)) {
                         node.status({ fill: "grey", shape: "dot", text: `getting configuration` });
-                        node.model = await retry(config.retry, () => agent.GetDataSourceConfiguration(), "GetConfiguration");
+                        node.model = await retry(
+                            config.retry,
+                            () => agent.GetDataSourceConfiguration(),
+                            "GetConfiguration"
+                        );
                     }
 
                     let timestamp = msg._time ? msg._time : new Date();
 
                     if (!(timestamp instanceof Date)) {
-                        throw new Error(`The time stamp in msg._time must be a javascript Date() and not ${timestamp.toString()}.`);
+                        throw new Error(
+                            `The time stamp in msg._time must be a javascript Date() and not ${timestamp.toString()}.`
+                        );
                     }
 
                     node.status({ fill: "grey", shape: "dot", text: `posting data` });
@@ -331,41 +150,62 @@ export = function (RED: any): void {
                     const tsValidator = timeSeriesValidator();
 
                     if (await eventValidator(msg.payload)) {
-
                         node.status({ fill: "grey", shape: "dot", text: `recieved event` });
                         const event = <BaseEvent>msg.payload;
                         if (!event.entityId) {
                             event.entityId = agent.ClientId();
                         }
-                        const result = await retry(config.retry, () => agent.PostEvent(event, timestamp, config.validateevent), "PostEvent");
+                        const result = await retry(
+                            config.retry,
+                            () => agent.PostEvent(event, timestamp, config.validateevent),
+                            "PostEvent"
+                        );
                         node.log(`Posted last event at ${timestamp}`);
                         node.status({ fill: "green", shape: "dot", text: `Posted last event at ${timestamp}` });
                         msg._mindsphereStatus = result ? "OK" : "Error";
                         node.send(msg);
                     } else if (await fileValidator(msg.payload)) {
-
                         const fileInfo = <IFileInfo>msg.payload;
                         node.status({ fill: "grey", shape: "dot", text: `recieved fileInfo ${fileInfo.fileName}` });
 
-                        const result = await retry(config.retry, () => agent.Upload(fileInfo.fileName, fileInfo.fileType, fileInfo.description, config.chunk, fileInfo.entityId), "FileUpload");
+                        const result = await retry(
+                            config.retry,
+                            () =>
+                                agent.Upload(
+                                    fileInfo.fileName,
+                                    fileInfo.fileType,
+                                    fileInfo.description,
+                                    config.chunk,
+                                    fileInfo.entityId
+                                ),
+                            "FileUpload"
+                        );
                         node.log(`Uploaded file at ${timestamp}`);
                         node.status({ fill: "green", shape: "dot", text: `Uploaded file at ${timestamp}` });
                         msg._mindsphereStatus = result ? "OK" : "Error";
                         node.send(msg);
-
                     } else if (await bulkValidator(msg.payload)) {
-
-                        node.status({ fill: "grey", shape: "dot", text: `recieved ${msg.payload.length} data points for bulk upload ` });
-                        const result = await retry(config.retry, () => agent.BulkPostData(<TimeStampedDataPoint[]>msg.payload, config.validate), "BulkPost");
+                        node.status({
+                            fill: "grey",
+                            shape: "dot",
+                            text: `recieved ${msg.payload.length} data points for bulk upload `
+                        });
+                        const result = await retry(
+                            config.retry,
+                            () => agent.BulkPostData(<TimeStampedDataPoint[]>msg.payload, config.validate),
+                            "BulkPost"
+                        );
                         node.log(`Posted last bulk message at ${timestamp}`);
                         node.status({ fill: "green", shape: "dot", text: `Posted last bulk message at ${timestamp}` });
                         msg._mindsphereStatus = result ? "OK" : "Error";
                         node.send(msg);
-
                     } else if (await tsValidator(msg.payload)) {
-
                         node.status({ fill: "grey", shape: "dot", text: `recieved data points` });
-                        const result = await retry(config.retry, () => agent.PostData(msg.payload, timestamp, config.validate), "PostData");
+                        const result = await retry(
+                            config.retry,
+                            () => agent.PostData(msg.payload, timestamp, config.validate),
+                            "PostData"
+                        );
                         node.log(`Posted last message at ${timestamp}`);
                         node.status({ fill: "green", shape: "dot", text: `Posted last message at ${timestamp}` });
                         msg._mindsphereStatus = result ? "OK" : "Error";
@@ -376,7 +216,8 @@ export = function (RED: any): void {
                         const bulkErrors = bulkValidator.errors || [];
                         const timeSeriesErrors = tsValidator.errors || [];
 
-                        let errorString = "the payload was not recognized as an event, file or datapoints. See node help for proper msg.payload.formats";
+                        let errorString =
+                            "the payload was not recognized as an event, file or datapoints. See node help for proper msg.payload.formats";
                         console.log(eventErrors, fileErrors, bulkErrors, timeSeriesErrors);
 
                         errorString += "\nEvent Errors:\n";
@@ -390,7 +231,6 @@ export = function (RED: any): void {
 
                         throw new Error(errorString);
                     }
-
                 } catch (error) {
                     node.error(error);
                     msg._mindsphereStatus = "Error";
@@ -404,14 +244,13 @@ export = function (RED: any): void {
 
     RED.nodes.registerType("mindconnect", nodeRedMindConnectAgent);
 
-    RED.httpAdmin.get('/ajv.min.js', function (req, res) {
+    RED.httpAdmin.get("/ajv.min.js", function(req, res) {
         const filename = require.resolve("ajv/dist/ajv.min.js");
         res.sendFile(filename);
     });
 
-    RED.httpAdmin.get('/mindsphere.css', function (req, res) {
-        const filename = path.join(__dirname, 'mindsphere.css');
+    RED.httpAdmin.get("/mindsphere.css", function(req, res) {
+        const filename = path.join(__dirname, "mindsphere.css");
         res.sendFile(filename);
     });
 };
-

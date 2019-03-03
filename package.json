@@ -9,6 +9,7 @@
     "start-dev": "cross-env NODE_TLS_REJECT_UNAUTHORIZED=0  concurrently --raw \"npm run node:watch\"  \"npm run ts:watch \" ",
     "ts:build": "tsc",
     "ts:watch": "tsc -w",
+    "ts:lint": "tslint",
     "node:watch": "nodemon -e js,html  --watch src node_modules/node-red/red.js --userDir ../devnodes ",
     "doc": "typedoc -out docs --excludePrivate --readme ./README.md --target es6 --name node-red-contrib-mindconnect --exclude \"**/*+(test-agent|index|.spec|.e2e).ts\" && cp -R images docs/images/ && cp CHANGELOG.md docs/CHANGELOG.md"
   },
@@ -30,8 +31,10 @@
     "cross-env": "^5.2.0",
     "node-red": "^0.19.5",
     "nodemon": "^1.18.10",
+    "tslint": "^5.13.1",
     "typedoc": "^0.14.2",
-    "typescript": "^3.3.3"
+    "typescript": "^3.3.3",
+    "typescript-tslint-plugin": "^0.3.1"
   },
   "node-red": {
     "nodes": {

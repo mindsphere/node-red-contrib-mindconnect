@@ -16,3 +16,6 @@ mdsp_meta.yml
 Jenkinsfile
 Docker
 .github
+.prettierrc.yaml
+.prettierignore
+

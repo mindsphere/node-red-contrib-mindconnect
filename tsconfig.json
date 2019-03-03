@@ -1,5 +1,13 @@
 {
     "compilerOptions": {
+        "plugins": [{
+            "name": "typescript-tslint-plugin",
+            "alwaysShowRuleFailuresAsWarnings": false,
+            "ignoreDefinitionFiles": true,
+            "configFile": "./tslint.json",
+            "suppressWhileTypeErrorsPresent": false,
+            "mockTypeScriptVersion": false
+        }],
         "target": "es2015",
         "module": "commonjs",
         "lib": [
