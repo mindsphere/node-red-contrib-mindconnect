@@ -11,6 +11,7 @@ stages {
         sh '''
         pwd
         mkdir .mc
+        cp -a /.mc/. .mc/
         '''
       }
     }
