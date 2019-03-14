@@ -41,4 +41,12 @@ stages {
   environment {
     CI = 'true'
   }
+   post {
+    always {
+      sh '''
+          cp -rf .mc/*.json /.mc/
+          '''
+      junit '**/*.xml'
+
+    }
 }
