@@ -12,6 +12,7 @@ stages {
         pwd
         mkdir .mc
         cp -a /.mc/. .mc/
+        cp .mc/1bfab1f65e9b4fb4a8c6af30a7e2ed1f.json agentconfig.json
         '''
       }
     }
