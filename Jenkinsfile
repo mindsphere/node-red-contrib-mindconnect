@@ -5,8 +5,15 @@ pipeline {
       args '-v /home/sn0wcat/mc:/.mc -v /home/sn0wcat/jenkins_artefacts/node-red-contrib-mindconnect:/publish'
     }
   }
-  
-  stages {
+stages {
+      stage('Prepare') {
+      steps {
+        sh '''
+        pwd
+        '''
+      }
+    }
+
     stage('Build') {
       steps {
         sh 'npm install'
