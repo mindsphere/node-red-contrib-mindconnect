@@ -2,7 +2,7 @@ pipeline {
   agent {
     docker {
       image 'node'
-      args '-v /home/sn0wcat/mc:/.mc -v /home/sn0wcat/jenkins_artefacts/node-red-contrib-mindconnect:/publish'
+      args '-v /home/sn0wcat/noderedmc:/.mc -v /home/sn0wcat/jenkins_artefacts/node-red-contrib-mindconnect:/publish'
     }
   }
 stages {
@@ -10,6 +10,7 @@ stages {
       steps {
         sh '''
         pwd
+        mkdir .mc
         '''
       }
     }
@@ -21,7 +22,7 @@ stages {
     }
     stage('Test') {
       steps {
-        sh 'npm test'
+        sh 'npm run test-jenkins'
       }
     }
     stage('Package') {

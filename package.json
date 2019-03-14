@@ -14,7 +14,8 @@
         "node:watch": "nodemon -e js,html  --watch src node_modules/node-red/red.js --userDir ../devnodes ",
         "test:watch": "mocha --watch test/ --growl --reporter=spec --inspect --timeout=0",
         "doc": "typedoc -out docs --excludePrivate --readme ./README.md --target es6 --name node-red-contrib-mindconnect --exclude \"**/*+(test-agent|index|.spec|.e2e).ts\" && cp -R images docs/images/ && cp CHANGELOG.md docs/CHANGELOG.md",
-        "test": "npm run ts:build && mocha --colors --reporter spec "
+        "test": "npm run ts:build && mocha --colors --reporter spec ",
+        "test-jenkins": "npm run ts:build && cross-env JUNIT_REPORT_PATH=./report.xml mocha --colors --reporter mocha-jenkins-reporter "
     },
     "repository": {
         "type": "git",
