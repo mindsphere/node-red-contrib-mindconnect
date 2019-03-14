@@ -49,4 +49,5 @@ stages {
       junit '**/*.xml'
 
     }
+   }
 }
