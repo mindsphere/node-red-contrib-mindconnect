@@ -1,3 +1,5 @@
+// Copyright Siemens AG, 2019
+
 import ajv = require("ajv");
 
 export const eventSchema = {
@@ -158,4 +160,11 @@ export function bulkUploadValidator(): ajv.ValidateFunction {
 export function timeSeriesValidator(): ajv.ValidateFunction {
     const schemaValidator = new ajv({ $data: true, allErrors: true });
     return schemaValidator.compile(timeSeriesSchema);
+}
+
+export interface IFileInfo {
+    entityId: string;
+    fileName: string;
+    fileType: string;
+    description?: string;
 }

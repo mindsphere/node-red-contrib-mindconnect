@@ -6,19 +6,22 @@ import {
     bulkUploadValidator,
     eventSchemaValidator,
     fileInfoValidator,
+    IFileInfo,
     timeSeriesValidator
 } from "./mindconnect-schema";
-
-interface IFileInfo {
-    entityId: string;
-    fileName: string;
-    fileType: string;
-    description?: string;
-}
 
 export = function(RED: any): void {
     function nodeRedMindConnectAgent(config: any) {
         RED.nodes.createNode(this, config);
+        this.configtype = config.configtype;
+        this.agentconfig = config.agentconfig;
+        this.privatekey = config.privatekey;
+        this.model = config.model;
+        this.validate = config.validate;
+        this.validateevent = config.validateevent;
+        this.chunk = config.chunk;
+        this.disablekeepalive = config.disablekeepalive;
+        this.retry = config.retry;
         let node = this;
 
         const sleep = (ms: any) => new Promise(resolve => setTimeout(resolve, ms));
@@ -41,27 +44,27 @@ export = function(RED: any): void {
         };
 
         try {
-            let agentConfig = JSON.parse(config.agentconfig);
+            let agentConfig = JSON.parse(node.agentconfig);
             let agent = new MindConnectAgent(agentConfig);
             node.agent = agent;
 
             let startlogmessage = "";
-            if (config.validate) startlogmessage += "validates timeseries ";
-            if (config.validateevent) startlogmessage += "validates events ";
-            if (config.chunk) startlogmessage += "chunked upload ";
-            if (config.disablekeepalive) startlogmessage += "disabled keep-alive ";
-            else startlogmessage += "keep-alive rotation: every hour ";
+            if (node.validate) startlogmessage += "validates timeseries ";
+            if (node.validateevent) startlogmessage += "validates events ";
+            if (node.chunk) startlogmessage += "chunked upload ";
+            if (node.disablekeepalive) startlogmessage += "disabled keep-alive";
+            else startlogmessage += "keep-alive rotation: every hour";
 
-            node.log(`settings: ${startlogmessage}`);
+            node.log(`settings: ${startlogmessage} retries: ${node.retry}`);
 
             const HOUR = 3600000;
             node.interval_id = setInterval(async () => {
-                if (!config.disablekeepalive) {
+                if (!node.disablekeepalive) {
                     let timestamp = new Date();
 
                     try {
                         let agent = <MindConnectAgent>node.agent;
-                        await retry(config.retry, () => agent.RenewToken(), "RenewToken");
+                        await retry(node.retry, () => agent.RenewToken(), "RenewToken");
                         node.status({
                             fill: "green",
                             shape: "dot",
@@ -82,21 +85,21 @@ export = function(RED: any): void {
             }, HOUR);
 
             if (agent.GetProfile() === "RSA_3072") {
-                config.privatekey = config.privatekey.trim();
+                node.privatekey = node.privatekey.trim();
 
-                if (!config.privatekey.toString().startsWith("-----BEGIN RSA PRIVATE KEY-----")) {
+                if (!node.privatekey.toString().startsWith("-----BEGIN RSA PRIVATE KEY-----")) {
                     throw new Error("Invalid certificate it has to start with : -----BEGIN RSA PRIVATE KEY-----");
                 }
 
-                if (!config.privatekey.endsWith("\n")) {
-                    config.privatekey += "\n";
+                if (!node.privatekey.endsWith("\n")) {
+                    node.privatekey += "\n";
                 }
 
-                if (!config.privatekey.toString().endsWith("-----END RSA PRIVATE KEY-----\n")) {
+                if (!node.privatekey.toString().endsWith("-----END RSA PRIVATE KEY-----\n")) {
                     throw new Error("Invalid certificate it has to end with : -----END RSA PRIVATE KEY-----\n");
                 }
 
-                node.agent.SetupAgentCertificate(config.privatekey.toString());
+                node.agent.SetupAgentCertificate(node.privatekey.toString());
             }
         } catch (error) {
             node.error(error);
@@ -119,13 +122,13 @@ export = function(RED: any): void {
 
                     if (!agent.IsOnBoarded() || (msg._forceOnBoard && msg._forceOnBoard === true)) {
                         node.status({ fill: "grey", shape: "dot", text: `onboarding` });
-                        await retry(config.retry, () => agent.OnBoard(), "OnBoard");
+                        await retry(node.retry, () => agent.OnBoard(), "OnBoard");
                     }
 
                     if (!agent.HasDataSourceConfiguration() || (msg._forceGetConfig && msg._forceGetConfig === true)) {
                         node.status({ fill: "grey", shape: "dot", text: `getting configuration` });
                         node.model = await retry(
-                            config.retry,
+                            node.retry,
                             () => agent.GetDataSourceConfiguration(),
                             "GetConfiguration"
                         );
@@ -156,8 +159,8 @@ export = function(RED: any): void {
                             event.entityId = agent.ClientId();
                         }
                         const result = await retry(
-                            config.retry,
-                            () => agent.PostEvent(event, timestamp, config.validateevent),
+                            node.retry,
+                            () => agent.PostEvent(event, timestamp, node.validateevent),
                             "PostEvent"
                         );
                         node.log(`Posted last event at ${timestamp}`);
@@ -169,13 +172,13 @@ export = function(RED: any): void {
                         node.status({ fill: "grey", shape: "dot", text: `recieved fileInfo ${fileInfo.fileName}` });
 
                         const result = await retry(
-                            config.retry,
+                            node.retry,
                             () =>
                                 agent.Upload(
                                     fileInfo.fileName,
                                     fileInfo.fileType,
                                     fileInfo.description,
-                                    config.chunk,
+                                    node.chunk,
                                     fileInfo.entityId
                                 ),
                             "FileUpload"
@@ -191,8 +194,8 @@ export = function(RED: any): void {
                             text: `recieved ${msg.payload.length} data points for bulk upload `
                         });
                         const result = await retry(
-                            config.retry,
-                            () => agent.BulkPostData(<TimeStampedDataPoint[]>msg.payload, config.validate),
+                            node.retry,
+                            () => agent.BulkPostData(<TimeStampedDataPoint[]>msg.payload, node.validate),
                             "BulkPost"
                         );
                         node.log(`Posted last bulk message at ${timestamp}`);
@@ -202,8 +205,8 @@ export = function(RED: any): void {
                     } else if (await tsValidator(msg.payload)) {
                         node.status({ fill: "grey", shape: "dot", text: `recieved data points` });
                         const result = await retry(
-                            config.retry,
-                            () => agent.PostData(msg.payload, timestamp, config.validate),
+                            node.retry,
+                            () => agent.PostData(msg.payload, timestamp, node.validate),
                             "PostData"
                         );
                         node.log(`Posted last message at ${timestamp}`);

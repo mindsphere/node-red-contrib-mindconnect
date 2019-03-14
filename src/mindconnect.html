@@ -65,7 +65,7 @@
 
 
     <div class="form-tips"><i class="fa fa-info-circle"></i> <b>Tip:</b> 
-        In the MindSphere V3 you can use MindSphere UI to configure the model and the mappings for the node. 
+        Use MindSphere UI to configure the agent configuration and the mappings for the node. 
         <br/></br/>
         <i class="fa fa-info-circle"></i> <b>Validation settings:</b>
         Switching the validation of the events or datapoints off gives you a very minor speed-up on the client but it disables all semantic validation and error messages. 
@@ -222,14 +222,10 @@ msg._forceGetConfig = true;
         }
     };
 
-   
-
     function configValidator() {
         const schemaValidator = new Ajv({ $data: true, allErrors: true });
         return schemaValidator.compile(configurationSchema);
     }
-
-    
 
     RED.nodes.registerType('mindconnect', {
         category: 'mindsphere',
