@@ -59,8 +59,7 @@ bower_components
 *.zip
 .npmrc
 *.bak
-
 agentconfig.json
-
-
 tmp
+#ignore jenkins reports
+report.xml

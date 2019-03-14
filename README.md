@@ -10,6 +10,8 @@ This project has started as a community effort at Siemens AG and is now availabl
 [![Build Status](https://jenkins.mindconnect.rocks/buildStatus/icon?job=node-red-contrib-mindconnect/master)](https://jenkins.mindconnect.rocks/blue/organizations/jenkins/node-red-contrib-mindconnect/activity/) [![The MIT License](https://img.shields.io/badge/license-MIT-009999.svg?style=flat)](./LICENSE.md)
 [![npm](https://img.shields.io/npm/v/@mindconnect/node-red-contrib-mindconnect/latest.svg?style=flat)](https://www.npmjs.com/package/@mindconnect/node-red-contrib-mindconnect) ![downloads](https://img.shields.io/npm/dw/@mindconnect/node-red-contrib-mindconnect.svg?colorB=009999)
 [![Known Vulnerabilities](https://snyk.io/test/github/mindsphere/node-red-contrib-mindconnect/badge.svg?targetFile=package.json)](https://snyk.io/test/github/mindsphere/node-red-contrib-mindconnect?targetFile=package.json)
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/mindsphere/node-red-contrib-mindconnect.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/mindsphere/node-red-contrib-mindconnect/alerts/)
+[![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/mindsphere/node-red-contrib-mindconnect.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/mindsphere/node-red-contrib-mindconnect/context:javascript)
 
 The node is written in typescript/javascript without any native dependencies so it should work beside x86 also on other platforms (e.g. on raspberry pi, IoT2000 etc, you just have to have Node-RED installed).
 
