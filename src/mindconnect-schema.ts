@@ -1,6 +1,7 @@
 // Copyright Siemens AG, 2019
 
 import ajv = require("ajv");
+import { IMindConnectConfiguration } from "@mindconnect/mindconnect-nodejs";
 
 export const eventSchema = {
     type: "object",
@@ -142,6 +143,144 @@ export const timeSeriesSchema = {
     }
 };
 
+export const remoteConfigurationSchema = {
+    definitions: {},
+    $schema: "http://json-schema.org/draft-07/schema#",
+    $id: "http://example.com/root.json",
+    type: "object",
+    title: "The Root Schema",
+    required: ["name"],
+    properties: {
+        name: {
+            $id: "#/properties/name",
+            type: "string",
+            title: "The Name Schema",
+            default: "",
+            examples: ["Hello"],
+            pattern: "^(.*)$"
+        },
+        agentconfig: {
+            $id: "#/properties/agentconfig",
+            type: "object",
+            title: "The Agentconfig Schema",
+            default: null,
+            required: ["content", "expiration"],
+            properties: {
+                content: {
+                    $id: "#/properties/agentconfig/properties/content",
+                    type: "object",
+                    title: "The Content Schema",
+                    required: ["baseUrl", "iat", "clientCredentialProfile", "clientId", "tenant"],
+                    properties: {
+                        baseUrl: {
+                            $id: "#/properties/agentconfig/properties/content/properties/baseUrl",
+                            type: "string",
+                            title: "The Baseurl Schema",
+                            default: "",
+                            examples: ["https://southgate.eu1.mindsphere.io"],
+                            pattern: "^(.*)$"
+                        },
+                        iat: {
+                            $id: "#/properties/agentconfig/properties/content/properties/iat",
+                            type: "string",
+                            title: "The Iat Schema",
+                            default: "",
+                            examples: ["eyJra.....g"],
+                            pattern: "^(.*)$"
+                        },
+                        clientCredentialProfile: {
+                            $id: "#/properties/agentconfig/properties/content/properties/clientCredentialProfile",
+                            type: "array",
+                            title: "The Clientcredentialprofile Schema",
+                            items: {
+                                $id:
+                                    "#/properties/agentconfig/properties/content/properties/clientCredentialProfile/items",
+                                type: "string",
+                                title: "The Items Schema",
+                                default: "",
+                                examples: ["RSA_3072"],
+                                pattern: "^(.*)$"
+                            }
+                        },
+                        clientId: {
+                            $id: "#/properties/agentconfig/properties/content/properties/clientId",
+                            type: "string",
+                            title: "The Clientid Schema",
+                            default: "",
+                            examples: ["1dfbc6d8b23547f386af04ea6754ffa7"],
+                            pattern: "^(.*)$"
+                        },
+                        tenant: {
+                            $id: "#/properties/agentconfig/properties/content/properties/tenant",
+                            type: "string",
+                            title: "The Tenant Schema",
+                            default: "",
+                            examples: ["castidev"],
+                            pattern: "^(.*)$"
+                        }
+                    }
+                },
+                expiration: {
+                    $id: "#/properties/agentconfig/properties/expiration",
+                    type: "string",
+                    title: "The Expiration Schema",
+                    default: "",
+                    examples: ["2018-11-15T17:31:35.000Z"],
+                    pattern: "^(.*)$"
+                }
+            }
+        },
+        privatekey: {
+            $id: "#/properties/privatekey",
+            type: "string",
+            title: "The Privatekey Schema",
+            default: "",
+            examples: ["Blubb"],
+            pattern: "^(.*)$"
+        },
+        validate: {
+            $id: "#/properties/validate",
+            type: "boolean",
+            title: "The Validate Schema",
+            default: false,
+            examples: [true]
+        },
+        validteevent: {
+            $id: "#/properties/validteevent",
+            type: "boolean",
+            title: "The Validteevent Schema",
+            default: false,
+            examples: [false]
+        },
+        chunk: {
+            $id: "#/properties/chunk",
+            type: "boolean",
+            title: "The Chunk Schema",
+            default: false,
+            examples: [true]
+        },
+        disablekeepalive: {
+            $id: "#/properties/disablekeepalive",
+            type: "boolean",
+            title: "The Disablekeepalive Schema",
+            default: false,
+            examples: [true]
+        },
+        retry: {
+            $id: "#/properties/retry",
+            type: "integer",
+            title: "The Retry Schema",
+            default: 0,
+            examples: [3]
+        }
+    }
+};
+
+export function remoteConfigurationValidator(): ajv.ValidateFunction {
+    const schemaValidator = new ajv({ $data: true, allErrors: true });
+    return schemaValidator.compile(remoteConfigurationSchema);
+}
+
 export function eventSchemaValidator(): ajv.ValidateFunction {
     const schemaValidator = new ajv({ $data: true, allErrors: true });
     return schemaValidator.compile(eventSchema);
@@ -167,4 +306,15 @@ export interface IFileInfo {
     fileName: string;
     fileType: string;
     description?: string;
+}
+
+export interface IConfigurationInfo {
+    name: string;
+    agentConfiguration?: IMindConnectConfiguration;
+    rsaPrivateKey?: string;
+    validate: boolean;
+    validateevent: boolean;
+    chunk: boolean;
+    disablekeepalive: boolean;
+    retry: 3;
 }
