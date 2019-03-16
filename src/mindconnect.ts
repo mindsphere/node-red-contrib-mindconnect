@@ -1,27 +1,22 @@
 // Copyright Siemens AG, 2017
 
-import { BaseEvent, MindConnectAgent, TimeStampedDataPoint } from "@mindconnect/mindconnect-nodejs";
+import * as mindconnectNodejs from "@mindconnect/mindconnect-nodejs";
 import * as path from "path";
 import {
     bulkUploadValidator,
     eventSchemaValidator,
     fileInfoValidator,
+    IConfigurationInfo,
     IFileInfo,
+    remoteConfigurationValidator,
     timeSeriesValidator
 } from "./mindconnect-schema";
+import { configureAgent, copyConfiguration } from "./mindconnect-utils";
 
 export = function(RED: any): void {
     function nodeRedMindConnectAgent(config: any) {
         RED.nodes.createNode(this, config);
-        this.configtype = config.configtype;
-        this.agentconfig = config.agentconfig;
-        this.privatekey = config.privatekey;
-        this.model = config.model;
-        this.validate = config.validate;
-        this.validateevent = config.validateevent;
-        this.chunk = config.chunk;
-        this.disablekeepalive = config.disablekeepalive;
-        this.retry = config.retry;
+        copyConfiguration(this, config);
         let node = this;
 
         const sleep = (ms: any) => new Promise(resolve => setTimeout(resolve, ms));
@@ -43,74 +38,24 @@ export = function(RED: any): void {
             throw error;
         };
 
-        try {
-            let agentConfig = JSON.parse(node.agentconfig);
-            let agent = new MindConnectAgent(agentConfig);
-            node.agent = agent;
-
-            let startlogmessage = "";
-            if (node.validate) startlogmessage += "validates timeseries ";
-            if (node.validateevent) startlogmessage += "validates events ";
-            if (node.chunk) startlogmessage += "chunked upload ";
-            if (node.disablekeepalive) startlogmessage += "disabled keep-alive";
-            else startlogmessage += "keep-alive rotation: every hour";
-
-            node.log(`settings: ${startlogmessage} retries: ${node.retry}`);
-
-            const HOUR = 3600000;
-            node.interval_id = setInterval(async () => {
-                if (!node.disablekeepalive) {
-                    let timestamp = new Date();
-
-                    try {
-                        let agent = <MindConnectAgent>node.agent;
-                        await retry(node.retry, () => agent.RenewToken(), "RenewToken");
-                        node.status({
-                            fill: "green",
-                            shape: "dot",
-                            text: `Last keep alive key rotation at ${timestamp}`
-                        });
-                        node.log(`Last keep alive key rotation at ${timestamp}`);
-                    } catch (error) {
-                        node.error(error);
-                        node.status({
-                            fill: "red",
-                            shape: "ring",
-                            text: `Error occured during keep alive ${error} on ${timestamp}`
-                        });
-                    }
-                } else {
-                    node.log("Keep alive for this agent is disabled");
-                }
-            }, HOUR);
-
-            if (agent.GetProfile() === "RSA_3072") {
-                node.privatekey = node.privatekey.trim();
-
-                if (!node.privatekey.toString().startsWith("-----BEGIN RSA PRIVATE KEY-----")) {
-                    throw new Error("Invalid certificate it has to start with : -----BEGIN RSA PRIVATE KEY-----");
-                }
-
-                if (!node.privatekey.endsWith("\n")) {
-                    node.privatekey += "\n";
-                }
-
-                if (!node.privatekey.toString().endsWith("-----END RSA PRIVATE KEY-----\n")) {
-                    throw new Error("Invalid certificate it has to end with : -----END RSA PRIVATE KEY-----\n");
-                }
-
-                node.agent.SetupAgentCertificate(node.privatekey.toString());
-            }
-        } catch (error) {
-            node.error(error);
-            node.status({ fill: "red", shape: "ring", text: `Error occured ${error}` });
-        }
+        configureAgent(node);
 
         this.on("input", msg => {
             (async () => {
                 try {
-                    const agent = <MindConnectAgent>node.agent;
+                    const agent = <mindconnectNodejs.MindConnectAgent>node.agent;
                     node.status({});
+
+                    const rcValidator = remoteConfigurationValidator();
+
+                    if (await rcValidator(msg.payload)) {
+                        node.status({ fill: "blue", shape: "dot", text: "received remote configuration" });
+                        const newConfiguration = msg.payload as IConfigurationInfo;
+                        configureAgent(node, newConfiguration);
+                        copyConfiguration(config, newConfiguration);
+                        // TODO: add restarting of the flow and node
+                        return msg;
+                    }
 
                     if (!node.agent) {
                         node.error(
@@ -154,7 +99,7 @@ export = function(RED: any): void {
 
                     if (await eventValidator(msg.payload)) {
                         node.status({ fill: "grey", shape: "dot", text: `recieved event` });
-                        const event = <BaseEvent>msg.payload;
+                        const event = <mindconnectNodejs.BaseEvent>msg.payload;
                         if (!event.entityId) {
                             event.entityId = agent.ClientId();
                         }
@@ -195,7 +140,11 @@ export = function(RED: any): void {
                         });
                         const result = await retry(
                             node.retry,
-                            () => agent.BulkPostData(<TimeStampedDataPoint[]>msg.payload, node.validate),
+                            () =>
+                                agent.BulkPostData(
+                                    <mindconnectNodejs.TimeStampedDataPoint[]>msg.payload,
+                                    node.validate
+                                ),
                             "BulkPost"
                         );
                         node.log(`Posted last bulk message at ${timestamp}`);
@@ -218,10 +167,10 @@ export = function(RED: any): void {
                         const fileErrors = fileValidator.errors || [];
                         const bulkErrors = bulkValidator.errors || [];
                         const timeSeriesErrors = tsValidator.errors || [];
+                        const rcValidatorErrors = rcValidator.errors || [];
 
                         let errorString =
                             "the payload was not recognized as an event, file or datapoints. See node help for proper msg.payload.formats";
-                        console.log(eventErrors, fileErrors, bulkErrors, timeSeriesErrors);
 
                         errorString += "\nEvent Errors:\n";
                         errorString += JSON.stringify(eventErrors, null, 2);
@@ -231,6 +180,8 @@ export = function(RED: any): void {
                         errorString += JSON.stringify(bulkErrors, null, 2);
                         errorString += "\nTimeSeries Errors:\n";
                         errorString += JSON.stringify(timeSeriesErrors, null, 2);
+                        errorString += "Configuration Errors:\n";
+                        errorString += JSON.stringify(rcValidatorErrors, null, 2);
 
                         throw new Error(errorString);
                     }

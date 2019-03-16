@@ -143,13 +143,26 @@ export const timeSeriesSchema = {
     }
 };
 
+// TODO: Add the better validation
+
 export const remoteConfigurationSchema = {
     definitions: {},
     $schema: "http://json-schema.org/draft-07/schema#",
     $id: "http://example.com/root.json",
     type: "object",
     title: "The Root Schema",
-    required: ["name"],
+    required: [
+        "name",
+        "configtype",
+        "agentconfig",
+        "privatekey",
+        "model",
+        "validate",
+        "validateevent",
+        "chunk",
+        "disablekeepalive",
+        "retry"
+    ],
     properties: {
         name: {
             $id: "#/properties/name",
@@ -159,11 +172,18 @@ export const remoteConfigurationSchema = {
             examples: ["Hello"],
             pattern: "^(.*)$"
         },
+        configtype: {
+            $id: "#/properties/configtype",
+            type: "string",
+            title: "The Configtype Schema",
+            default: "",
+            examples: ["SHARED_SECRET"],
+            pattern: "^(.*)$"
+        },
         agentconfig: {
             $id: "#/properties/agentconfig",
             type: "object",
             title: "The Agentconfig Schema",
-            default: null,
             required: ["content", "expiration"],
             properties: {
                 content: {
@@ -185,7 +205,7 @@ export const remoteConfigurationSchema = {
                             type: "string",
                             title: "The Iat Schema",
                             default: "",
-                            examples: ["eyJra.....g"],
+                            examples: ["eyJraW...a1"],
                             pattern: "^(.*)$"
                         },
                         clientCredentialProfile: {
@@ -198,7 +218,7 @@ export const remoteConfigurationSchema = {
                                 type: "string",
                                 title: "The Items Schema",
                                 default: "",
-                                examples: ["RSA_3072"],
+                                examples: ["SHARED_SECRET"],
                                 pattern: "^(.*)$"
                             }
                         },
@@ -207,7 +227,7 @@ export const remoteConfigurationSchema = {
                             type: "string",
                             title: "The Clientid Schema",
                             default: "",
-                            examples: ["1dfbc6d8b23547f386af04ea6754ffa7"],
+                            examples: ["d72262e71ea0470eb9f880176b888938"],
                             pattern: "^(.*)$"
                         },
                         tenant: {
@@ -235,7 +255,15 @@ export const remoteConfigurationSchema = {
             type: "string",
             title: "The Privatekey Schema",
             default: "",
-            examples: ["Blubb"],
+            examples: [""],
+            pattern: "^(.*)$"
+        },
+        model: {
+            $id: "#/properties/model",
+            type: "string",
+            title: "The Model Schema",
+            default: "",
+            examples: [""],
             pattern: "^(.*)$"
         },
         validate: {
@@ -245,10 +273,10 @@ export const remoteConfigurationSchema = {
             default: false,
             examples: [true]
         },
-        validteevent: {
-            $id: "#/properties/validteevent",
+        validateevent: {
+            $id: "#/properties/validateevent",
             type: "boolean",
-            title: "The Validteevent Schema",
+            title: "The Validateevent Schema",
             default: false,
             examples: [false]
         },
@@ -268,10 +296,11 @@ export const remoteConfigurationSchema = {
         },
         retry: {
             $id: "#/properties/retry",
-            type: "integer",
+            type: "string",
             title: "The Retry Schema",
-            default: 0,
-            examples: [3]
+            default: "",
+            examples: ["7"],
+            pattern: "^(.*)$"
         }
     }
 };
@@ -310,11 +339,12 @@ export interface IFileInfo {
 
 export interface IConfigurationInfo {
     name: string;
-    agentConfiguration?: IMindConnectConfiguration;
-    rsaPrivateKey?: string;
+    agentconfig: string | IMindConnectConfiguration;
+    rsaPrivateKey: string;
     validate: boolean;
     validateevent: boolean;
     chunk: boolean;
     disablekeepalive: boolean;
     retry: 3;
+    [x: string]: any;
 }

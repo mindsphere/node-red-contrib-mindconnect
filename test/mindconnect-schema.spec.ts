@@ -127,18 +127,24 @@ describe("Schema Validators", () => {
 
         await rcVal({}).should.be.false;
         await rcVal([{}]).should.be.false;
-        await rcVal({ name: "test" }).should.be.true;
+        await rcVal({ name: "test" }).should.be.false;
         await rcVal({ name: 123 }).should.be.false;
-        await rcVal({ name: "testNode", validate: true }).should.be.true;
-        await rcVal({ name: "testNode", validate: true, eventvalidate: false }).should.be.true;
-        await rcVal({ name: "testNode", validate: true, validateevent: false }).should.be.true;
+        await rcVal({ name: "testNode", validate: true }).should.be.false;
+        await rcVal({ name: "testNode", validate: true, eventvalidate: false }).should.be.false;
+        await rcVal({ name: "testNode", validate: true, validateevent: false }).should.be.false;
         await rcVal({ name: "testNode", validate: true, validateevent: false, agentconfig: "" }).should.be.false;
         await rcVal({ name: "testNode", validate: true, validateevent: false, agentconfig: {} }).should.be.false;
         await rcVal({
             name: "testNode",
+            configtype: "SHARED_SECRET",
             validate: true,
             validateevent: false,
-            agentconfig: sharedSecretConfig
+            agentconfig: sharedSecretConfig,
+            privatekey: "",
+            model: "",
+            chunk: false,
+            disablekeepalive: false,
+            retry: "7"
         }).should.be.true;
     });
 });
