@@ -64,3 +64,6 @@ demo.json
 tmp
 #ignore jenkins reports
 report.xml
+
+# ignore istanbul code coverage
+.nyc_output
