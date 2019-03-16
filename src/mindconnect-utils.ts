@@ -1,8 +1,8 @@
+// Copyright Siemens AG, 2019
 import { MindConnectAgent } from "@mindconnect/mindconnect-nodejs";
 import { IConfigurationInfo } from "./mindconnect-schema";
 
-// Copyright Siemens AG, 2019
-export const copyConfiguration = (node, config) => {
+export const copyConfiguration = (node: IConfigurationInfo, config: IConfigurationInfo) => {
     node.name = config.name;
     node.configtype = config.configtype;
     node.agentconfig = config.agentconfig;
