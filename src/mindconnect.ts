@@ -11,32 +11,13 @@ import {
     remoteConfigurationValidator,
     timeSeriesValidator
 } from "./mindconnect-schema";
-import { configureAgent, copyConfiguration } from "./mindconnect-utils";
+import { configureAgent, copyConfiguration, retryWithNodeLog } from "./mindconnect-utils";
 
 export = function(RED: any): void {
     function nodeRedMindConnectAgent(config: any) {
         RED.nodes.createNode(this, config);
         copyConfiguration(this, config);
         let node = this;
-
-        const sleep = (ms: any) => new Promise(resolve => setTimeout(resolve, ms));
-
-        const retry = async (n, func, operation) => {
-            let error;
-            for (let i = 0; i < n; i++) {
-                try {
-                    if (i > 0) {
-                        node.status({ fill: "yellow", shape: "ring", text: `${operation}: retrying ${i + 1} of ${n}` });
-                        node.log(`${operation}: retrying ${i + 1} of ${n}`);
-                        await sleep(i * 300);
-                    }
-                    return await func();
-                } catch (err) {
-                    error = err;
-                }
-            }
-            throw error;
-        };
 
         configureAgent(node);
 
@@ -67,15 +48,16 @@ export = function(RED: any): void {
 
                     if (!agent.IsOnBoarded() || (msg._forceOnBoard && msg._forceOnBoard === true)) {
                         node.status({ fill: "grey", shape: "dot", text: `onboarding` });
-                        await retry(node.retry, () => agent.OnBoard(), "OnBoard");
+                        await retryWithNodeLog(node.retry, () => agent.OnBoard(), "OnBoard", node);
                     }
 
                     if (!agent.HasDataSourceConfiguration() || (msg._forceGetConfig && msg._forceGetConfig === true)) {
                         node.status({ fill: "grey", shape: "dot", text: `getting configuration` });
-                        node.model = await retry(
+                        node.model = await retryWithNodeLog(
                             node.retry,
                             () => agent.GetDataSourceConfiguration(),
-                            "GetConfiguration"
+                            "GetConfiguration",
+                            node
                         );
                     }
 
@@ -103,10 +85,11 @@ export = function(RED: any): void {
                         if (!event.entityId) {
                             event.entityId = agent.ClientId();
                         }
-                        const result = await retry(
+                        const result = await retryWithNodeLog(
                             node.retry,
                             () => agent.PostEvent(event, timestamp, node.validateevent),
-                            "PostEvent"
+                            "PostEvent",
+                            node
                         );
                         node.log(`Posted last event at ${timestamp}`);
                         node.status({ fill: "green", shape: "dot", text: `Posted last event at ${timestamp}` });
@@ -116,7 +99,7 @@ export = function(RED: any): void {
                         const fileInfo = <IFileInfo>msg.payload;
                         node.status({ fill: "grey", shape: "dot", text: `recieved fileInfo ${fileInfo.fileName}` });
 
-                        const result = await retry(
+                        const result = await retryWithNodeLog(
                             node.retry,
                             () =>
                                 agent.Upload(
@@ -126,7 +109,8 @@ export = function(RED: any): void {
                                     node.chunk,
                                     fileInfo.entityId
                                 ),
-                            "FileUpload"
+                            "FileUpload",
+                            node
                         );
                         node.log(`Uploaded file at ${timestamp}`);
                         node.status({ fill: "green", shape: "dot", text: `Uploaded file at ${timestamp}` });
@@ -138,14 +122,15 @@ export = function(RED: any): void {
                             shape: "dot",
                             text: `recieved ${msg.payload.length} data points for bulk upload `
                         });
-                        const result = await retry(
+                        const result = await retryWithNodeLog(
                             node.retry,
                             () =>
                                 agent.BulkPostData(
                                     <mindconnectNodejs.TimeStampedDataPoint[]>msg.payload,
                                     node.validate
                                 ),
-                            "BulkPost"
+                            "BulkPost",
+                            node
                         );
                         node.log(`Posted last bulk message at ${timestamp}`);
                         node.status({ fill: "green", shape: "dot", text: `Posted last bulk message at ${timestamp}` });
@@ -153,10 +138,11 @@ export = function(RED: any): void {
                         node.send(msg);
                     } else if (await tsValidator(msg.payload)) {
                         node.status({ fill: "grey", shape: "dot", text: `recieved data points` });
-                        const result = await retry(
+                        const result = await retryWithNodeLog(
                             node.retry,
                             () => agent.PostData(msg.payload, timestamp, node.validate),
-                            "PostData"
+                            "PostData",
+                            node
                         );
                         node.log(`Posted last message at ${timestamp}`);
                         node.status({ fill: "green", shape: "dot", text: `Posted last message at ${timestamp}` });

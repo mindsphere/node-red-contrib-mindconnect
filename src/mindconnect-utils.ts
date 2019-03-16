@@ -2,6 +2,25 @@
 import { MindConnectAgent } from "@mindconnect/mindconnect-nodejs";
 import { IConfigurationInfo } from "./mindconnect-schema";
 
+const sleep = (ms: any) => new Promise(resolve => setTimeout(resolve, ms));
+
+export const retryWithNodeLog = async (n, func, operation, node) => {
+    let error;
+    for (let i = 0; i < n; i++) {
+        try {
+            if (i > 0) {
+                node.status({ fill: "yellow", shape: "ring", text: `${operation}: retrying ${i + 1} of ${n}` });
+                node.log(`${operation}: retrying ${i + 1} of ${n}`);
+                await sleep(i * 300);
+            }
+            return await func();
+        } catch (err) {
+            error = err;
+        }
+    }
+    throw error;
+};
+
 export const copyConfiguration = (node: IConfigurationInfo, config: IConfigurationInfo) => {
     node.name = config.name;
     node.configtype = config.configtype;
@@ -14,6 +33,7 @@ export const copyConfiguration = (node: IConfigurationInfo, config: IConfigurati
     node.disablekeepalive = config.disablekeepalive;
     node.retry = config.retry;
 };
+
 export const configureAgent = (mcnode: IConfigurationInfo, newConfig?: IConfigurationInfo) => {
     try {
         if (newConfig) {
@@ -40,7 +60,7 @@ export const configureAgent = (mcnode: IConfigurationInfo, newConfig?: IConfigur
 
                 try {
                     let agent = <MindConnectAgent>mcnode.agent;
-                    await retry(mcnode.retry, () => agent.RenewToken(), "RenewToken");
+                    await retryWithNodeLog(mcnode.retry, () => agent.RenewToken(), "RenewToken", mcnode);
                     mcnode.status({
                         fill: "green",
                         shape: "dot",
