@@ -2,7 +2,7 @@
 import { MindConnectAgent } from "@mindconnect/mindconnect-nodejs";
 import { IConfigurationInfo } from "./mindconnect-schema";
 
-const sleep = (ms: any) => new Promise(resolve => setTimeout(resolve, ms));
+export const sleep = (ms: any) => new Promise(resolve => setTimeout(resolve, ms));
 
 export const retryWithNodeLog = async (n, func, operation, node) => {
     let error;
@@ -53,6 +53,7 @@ export const configureAgent = (mcnode: IConfigurationInfo, newConfig?: IConfigur
         if (mcnode.disablekeepalive) startlogmessage += "disabled keep-alive";
         else startlogmessage += "keep-alive rotation: every hour";
         mcnode.log(`settings: ${startlogmessage} retries: ${mcnode.retry}`);
+        mcnode.status({ fill: "grey", shape: "dot", text: `settings: ${startlogmessage} retries: ${mcnode.retry}` });
         const HOUR = 3600000;
         mcnode.interval_id = setInterval(async () => {
             if (!mcnode.disablekeepalive) {

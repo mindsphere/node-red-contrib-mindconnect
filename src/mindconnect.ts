@@ -11,7 +11,7 @@ import {
     remoteConfigurationValidator,
     timeSeriesValidator
 } from "./mindconnect-schema";
-import { configureAgent, copyConfiguration, retryWithNodeLog } from "./mindconnect-utils";
+import { configureAgent, copyConfiguration, retryWithNodeLog, sleep } from "./mindconnect-utils";
 
 export = function(RED: any): void {
     function nodeRedMindConnectAgent(config: any) {
@@ -27,14 +27,27 @@ export = function(RED: any): void {
                     const agent = <mindconnectNodejs.MindConnectAgent>node.agent;
                     node.status({});
 
+                    console.log(node.z, node.id);
                     const rcValidator = remoteConfigurationValidator();
 
                     if (await rcValidator(msg.payload)) {
-                        node.status({ fill: "blue", shape: "dot", text: "received remote configuration" });
+                        node.status({ fill: "blue", shape: "dot", text: "received remote configuration..." });
+                        await sleep(2000);
+                        node.status({
+                            fill: "yellow",
+                            shape: "dot",
+                            text: "the flow will restart in 2 seconds..."
+                        });
+                        await sleep(2000);
                         const newConfiguration = msg.payload as IConfigurationInfo;
                         configureAgent(node, newConfiguration);
                         copyConfiguration(config, newConfiguration);
                         // TODO: add restarting of the flow and node
+                        node.status({
+                            fill: "green",
+                            shape: "dot",
+                            text: "...flow restarted, please reload your brower."
+                        });
                         return msg;
                     }
 
