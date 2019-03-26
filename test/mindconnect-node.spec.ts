@@ -9,16 +9,13 @@ helper.init(require.resolve("node-red"));
 chai.should();
 
 describe("MindConnect Node-RED node", () => {
-    before(done => {
+    beforeEach(done => {
         helper.startServer(done);
     });
 
-    after(done => {
-        helper.stopServer(done);
-    });
-
-    afterEach(function() {
+    afterEach(done => {
         helper.unload();
+        helper.stopServer(done);
     });
 
     const sharedSecretConfig: IMindConnectConfiguration = require("../agentconfig.json");
