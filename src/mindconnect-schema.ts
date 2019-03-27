@@ -339,12 +339,14 @@ export interface IFileInfo {
 
 export interface IConfigurationInfo {
     name: string;
+    configtype: string;
     agentconfig: string | IMindConnectConfiguration;
-    rsaPrivateKey: string;
+    privatekey: string;
+    model: string;
     validate: boolean;
     validateevent: boolean;
     chunk: boolean;
     disablekeepalive: boolean;
-    retry: 3;
+    retry: string;
     [x: string]: any;
 }
