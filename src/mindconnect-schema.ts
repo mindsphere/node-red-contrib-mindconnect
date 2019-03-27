@@ -143,8 +143,6 @@ export const timeSeriesSchema = {
     }
 };
 
-// TODO: Add the better validation
-
 export const remoteConfigurationSchema = {
     definitions: {},
     $schema: "http://json-schema.org/draft-07/schema#",
