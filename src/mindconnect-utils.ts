@@ -1,6 +1,9 @@
 // Copyright Siemens AG, 2019
 import { MindConnectAgent } from "@mindconnect/mindconnect-nodejs";
+import * as debug from "debug";
+import fetch from "node-fetch";
 import { IConfigurationInfo } from "./mindconnect-schema";
+const log = debug("node-red-contrib-mindconnect");
 
 export const sleep = (ms: any) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -96,5 +99,73 @@ export const configureAgent = (mcnode: IConfigurationInfo, newConfig?: IConfigur
     } catch (error) {
         mcnode.error(error);
         mcnode.status({ fill: "red", shape: "ring", text: `Error occured ${error}` });
+    }
+};
+
+export const reloadFlow = async (node, settings, newConfig) => {
+    const flowId = node.z;
+    const nodeId = node.id;
+    try {
+        let uri = `http://localhost:${settings.uiPort || 1880}`;
+        if (settings.httpAdminRoot) {
+            uri += settings.httpAdminRoot;
+        }
+
+        if (!uri.endsWith("/")) {
+            uri += "/";
+        }
+
+        uri = `${uri}flow/${flowId}`;
+        const response = await fetch(uri, { method: "GET" });
+
+        if (!response.ok) {
+            throw new Error(`${response.statusText} ${await response.text()}`);
+        }
+
+        if (response.status >= 200 && response.status <= 299) {
+            const flow = await response.json();
+
+            if (!flow.nodes) {
+                throw new Error("No nodes in flow!");
+            }
+
+            const currentNode = (flow.nodes as []).find((x: any) => {
+                return x.id === nodeId;
+            });
+
+            if (!currentNode) {
+                throw new Error("there is no node with such id!");
+            }
+            configureAgent(node, newConfig);
+
+            if (typeof newConfig.agentconfig !== "string") {
+                newConfig.agentconfig = JSON.stringify(newConfig.agentconfig);
+            }
+            copyConfiguration(currentNode, newConfig);
+
+            const putResponse = await fetch(uri, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(flow)
+            });
+
+            if (!putResponse.ok || putResponse.status < 200 || putResponse.status > 299) {
+                throw new Error(
+                    `error reloading flow ${putResponse.status} ${putResponse.statusText} ${await putResponse.text()}`
+                );
+            }
+
+            node.status({
+                fill: "green",
+                shape: "dot",
+                text: "the configuration was received and the flow was restarted. please reload your browser!"
+            });
+        } else {
+            throw new Error(`invalid response ${await response.text()}`);
+        }
+    } catch (err) {
+        const message = `Error occurred reloading flow: ${flowId}, ${nodeId} ${err.message}`;
+        log(message);
+        throw new Error(message);
     }
 };

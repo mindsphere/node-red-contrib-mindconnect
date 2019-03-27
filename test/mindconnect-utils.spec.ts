@@ -14,7 +14,7 @@ describe("MindConnect Utils", () => {
         const then = new Date();
         await sleep(500);
         const now = new Date();
-        (now.getTime() - then.getTime()).should.be.gte(500);
+        (now.getTime() - then.getTime()).should.be.gte(490);
     });
 
     it("should be able to retry with node log", async () => {
