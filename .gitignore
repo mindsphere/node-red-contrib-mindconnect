@@ -60,6 +60,10 @@ bower_components
 .npmrc
 *.bak
 agentconfig.json
+demo.json
 tmp
 #ignore jenkins reports
 report.xml
+
+# ignore istanbul code coverage
+.nyc_output

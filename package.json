@@ -1,6 +1,6 @@
 {
     "name": "@mindconnect/node-red-contrib-mindconnect",
-    "version": "3.4.0-1",
+    "version": "3.4.0-2",
     "description": "node red mindconnect node using mindconnect-nodejs library.",
     "main": "index.js",
     "scripts": {
@@ -14,8 +14,8 @@
         "node:watch": "nodemon -e js,html  --watch src node_modules/node-red/red.js --userDir ../devnodes ",
         "test:watch": "mocha --watch test/ --growl --reporter=spec --inspect --timeout=0",
         "doc": "typedoc -out docs --excludePrivate --readme ./README.md --target es6 --name node-red-contrib-mindconnect --exclude \"**/*+(test-agent|index|.spec|.e2e).ts\" && cp -R images docs/images/ && cp CHANGELOG.md docs/CHANGELOG.md",
-        "test": "npm run ts:build && mocha --colors --reporter spec  --exit",
-        "test-jenkins": "npm run ts:build && cross-env JUNIT_REPORT_PATH=./report.xml mocha --colors --reporter mocha-jenkins-reporter --exit "
+        "test": "npm run ts:build && nyc mocha --colors --reporter spec  --timeout:5000 --exit",
+        "test-jenkins": "npm run ts:build && cross-env JUNIT_REPORT_PATH=./report.xml mocha --colors --reporter mocha-jenkins-reporter --timeout:5000 --exit "
     },
     "repository": {
         "type": "git",
@@ -32,15 +32,17 @@
         "@types/ajv": "^1.0.0",
         "@types/chai": "^4.1.7",
         "@types/mocha": "^5.2.6",
-        "@types/node": "^10.5.6",
+        "@types/node": "^10.14.4",
+        "@types/node-fetch": "^2.1.6",
         "chai": "^4.2.0",
         "concurrently": "^3.6.1",
         "cross-env": "^5.2.0",
         "mocha": "^6.0.2",
         "mocha-jenkins-reporter": "^0.4.1",
-        "node-red": "^0.19.6",
-        "node-red-node-test-helper": "^0.1.8",
+        "node-red": "^0.20.3",
+        "node-red-node-test-helper": "^0.2.2",
         "nodemon": "^1.18.10",
+        "nyc": "^13.3.0",
         "tslint": "^5.13.1",
         "typedoc": "^0.14.2",
         "typescript": "^3.3.3",
@@ -54,6 +56,7 @@
     "dependencies": {
         "@mindconnect/mindconnect-nodejs": "^3.3.0",
         "ajv": "^6.9.2",
-        "debug": "^4.1.1"
+        "debug": "^4.1.1",
+        "node-fetch": "^2.3.0"
     }
 }

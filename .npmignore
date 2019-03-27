@@ -19,5 +19,5 @@ Docker
 .prettierrc.yaml
 .prettierignore
 report.xml
-
+.nyc_output
 

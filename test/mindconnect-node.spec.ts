@@ -9,16 +9,13 @@ helper.init(require.resolve("node-red"));
 chai.should();
 
 describe("MindConnect Node-RED node", () => {
-    before(done => {
+    beforeEach(done => {
         helper.startServer(done);
     });
 
-    after(done => {
-        helper.stopServer(done);
-    });
-
-    afterEach(function() {
+    afterEach(done => {
         helper.unload();
+        helper.stopServer(done);
     });
 
     const sharedSecretConfig: IMindConnectConfiguration = require("../agentconfig.json");
@@ -150,9 +147,9 @@ describe("MindConnect Node-RED node", () => {
                     sourceType: "UnitTest Agent",
                     sourceId: "application",
                     source: "MindConnect Agent",
-                    severity: 40, // 0-99 : 20:error, 30:warning, 40: information
+                    severity: 40, // ? 0-99 : 20:error, 30:warning, 40: information
                     description: "Event sent at " + new Date().toISOString(),
-                    timestamp: new Date().toISOString() // you have to set the timestamp here
+                    timestamp: new Date().toISOString()
                 }
             });
         });
