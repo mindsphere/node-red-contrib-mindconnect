@@ -179,6 +179,7 @@ export = function(RED: any): void {
                 } catch (error) {
                     node.error(error);
                     msg._mindsphereStatus = "Error";
+                    msg._error = `${new Date().toISOString()} ${error.message}`;
                     node.send(msg);
                     node.status({ fill: "red", shape: "dot", text: `${error}` });
                 }

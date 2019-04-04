@@ -54,7 +54,7 @@
         }
     },
     "dependencies": {
-        "@mindconnect/mindconnect-nodejs": "^3.3.0",
+        "@mindconnect/mindconnect-nodejs": "^3.4.0-1",
         "ajv": "^6.9.2",
         "debug": "^4.1.1",
         "node-fetch": "^2.3.0"

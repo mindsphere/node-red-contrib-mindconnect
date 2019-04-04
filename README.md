@@ -154,10 +154,11 @@ The node can be configured to retry all mindsphere operations (1-10 times, with 
 If you need more complex flows, the node also returns the
 
 ```javascript
-msg._mindsphereStatus;
+msg._mindsphereStatus; // OK on success othervise error
+msg_error // The timestamped error message
 ```
 
-property which can be used to create more complex flows. (e.g. in the flow below, the unrecoverable errors are written in error.log file)
+properties which can be used to create more complex flows. (e.g. in the flow below, the unrecoverable errors are written in error.log file and the failed data is stored in backupdata.log file)
 
 ![errorhandling](images/errorhandling.png)
 
