@@ -84,7 +84,7 @@
     This node can send data points (single or in bulk), events or upload a file to MindSphere.
     </p>
   
-    <p><b>Data Points:</b><br/>
+    <p><i class="fa fa-info-circle"></i> <b>Data Points:</b><br/>
         In order to send datapoints to MindSphere you have to pass the following message in the msg.payload (e.g. from a function node)
         </p>
     <pre>
@@ -107,7 +107,7 @@ return msg;
 
     </pre>
 
-    <p><b>Data Points (bulk):</b><br/>
+    <p><i class="fa fa-info-circle"></i> <b>Data Points (bulk):</b><br/>
         In order to send datapoints in a bulk to MindSphere you have to pass the following message in the msg.payload (e.g. from a function node)
         </p>
     <pre>
@@ -131,7 +131,7 @@ const values = [
 msg.payload = values;  
 return msg;
     </pre>
-    <p><b>Events:</b><br/>
+    <p><i class="fa fa-info-circle"></i> <b>Events:</b><br/>
         Send an event to MindSphere by passing the event message in the payload. You can send events to all assets you have access to in your tenant. Pass the
         assetid in the entity id property.
         </p>
@@ -151,7 +151,7 @@ return msg;
     </pre>
 
 
-    <p><b>File Upload:</b><br/>
+    <p><i class="fa fa-info-circle"></i> <b>File Upload:</b><br/>
         You have to pass the object with file information in the message: 
         </p>
     <pre>
@@ -177,9 +177,20 @@ msg._forceGetConfig = true;
     </pre>
 
     <p>
+        <i class="fa fa-info-circle"></i> <b>Error Handling:</b><br/>
+    </p>
+    <p>
+    The following two properties can be used to create more complex error flows:
+    </p>
+    <pre>
+msg._mindsphereStatus; // OK on success othervise error
+msg_error; // The timestamped error message
+    </pre>
+    
+    <p>
         More Documentation:
         <ul>
-            <li><a href="https://developer.mindsphere.io" target="_new">MindSphere Developer Documentation</a></li>
+            <li> <a href="https://developer.mindsphere.io" target="_new"><i class="fa fa-external-link"></i> MindSphere Developer Documentation</a></li>
         </ul>
     </p>
 

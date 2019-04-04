@@ -1,11 +1,14 @@
 # Changelog
 
-## 3.4.0 (Vienna Caracals) - March 2019
+## 3.4.0 (Vienna Caracals) - April 2019
 
 ## New Features 3.4.0
 
+- updated to version 3.4.0. of mindconnect-nodejs library.
 - auto keep-alive: the node will renew the token every hour even when there is no data sent.
+- programatic delivery of the configuration - prerequisite for auto-configuration node which is coming in next versions
 - moved schema-validation to mindconnect-schema.ts, improved code and documentation
+- new msg._error message with timestamped error property for better flows
 
 ## 3.3.0 (Vienna Panthers) - February 2019
 
