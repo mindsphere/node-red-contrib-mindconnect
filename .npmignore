@@ -20,4 +20,7 @@ Docker
 .prettierignore
 report.xml
 .nyc_output
+*.log
+demo.json
+
 
