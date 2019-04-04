@@ -9,7 +9,6 @@
 - programatic delivery of the configuration - prerequisite for auto-configuration node which is coming in next versions
 - moved schema-validation to mindconnect-schema.ts, improved code and documentation
 - new msg._error message with timestamped error property for better flows
- 
 
 ## 3.3.0 (Vienna Panthers) - February 2019
 
