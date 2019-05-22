@@ -82,6 +82,12 @@ export const fileInfoSchema = {
             title: "The Sourcetype Schema ",
             default: ""
         },
+        filePath: {
+            $id: "/properties/sourceType",
+            type: "string",
+            title: "The filePath Schema ",
+            default: ""
+        },
         description: {
             $id: "/properties/description",
             type: "string",
@@ -332,6 +338,7 @@ export interface IFileInfo {
     entityId: string;
     fileName: string;
     fileType: string;
+    filePath?: string;
     description?: string;
 }
 
@@ -346,5 +353,6 @@ export interface IConfigurationInfo {
     chunk: boolean;
     disablekeepalive: boolean;
     retry: string;
+    parallel: string;
     [x: string]: any;
 }

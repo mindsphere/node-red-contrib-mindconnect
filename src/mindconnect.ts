@@ -21,6 +21,8 @@ export = function(RED: any): void {
 
         configureAgent(node);
 
+        let promises = [];
+
         this.on("input", msg => {
             (async () => {
                 try {
@@ -182,6 +184,7 @@ export = function(RED: any): void {
                     msg._error = `${new Date().toISOString()} ${error.message}`;
                     node.send(msg);
                     node.status({ fill: "red", shape: "dot", text: `${error}` });
+                    promises = [];
                 }
             })();
             return;

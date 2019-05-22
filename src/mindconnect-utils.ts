@@ -35,6 +35,7 @@ export const copyConfiguration = (node: IConfigurationInfo, config: IConfigurati
     node.chunk = config.chunk;
     node.disablekeepalive = config.disablekeepalive;
     node.retry = config.retry;
+    node.parallel = config.parallel;
 };
 
 export const configureAgent = (mcnode: IConfigurationInfo, newConfig?: IConfigurationInfo) => {
@@ -55,6 +56,9 @@ export const configureAgent = (mcnode: IConfigurationInfo, newConfig?: IConfigur
         if (mcnode.chunk) startlogmessage += "chunked upload ";
         if (mcnode.disablekeepalive) startlogmessage += "disabled keep-alive";
         else startlogmessage += "keep-alive rotation: every hour";
+
+        mcnode.parallel = mcnode.parallel || "1";
+        startlogmessage += ` parallel requests: ${mcnode.parallel}`;
         mcnode.log(`settings: ${startlogmessage} retries: ${mcnode.retry}`);
         mcnode.status({ fill: "grey", shape: "dot", text: `settings: ${startlogmessage} retries: ${mcnode.retry}` });
         const HOUR = 3600000;

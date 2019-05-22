@@ -1,21 +1,20 @@
 <!-- // Copyright Siemens AG, 2017-->
-<link href="mindsphere.css" rel="stylesheet">
-</link>
+<link href="mindsphere.css" rel="stylesheet"/>
 
 <script type="text/x-red" data-template-name="mindconnect">
     <div id="_msbar">
         <span  style="line-height:36px">
             &nbsp;&nbsp;MindConnect Node-RED Agent 
-        </span> <span style="color:#aaaaaa">v3.4.0</span>
+        </span> <span style="color:#aaaaaa">v3.5.0</span>
     </div>
 
     <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <label for="node-input-name" title="Agent Name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
 
     <div class="form-row">
-        <label for=""><i class="fa fa-lock"></i> Profile</span></label>
+        <label for="" title="Security Profile (SHARED_SECRET | RSA_3072)"><i class="fa fa-lock"></i> Profile</span></label>
         <select id="input-config-type-select">
             <option value="SHARED_SECRET">SHARED_SECRET</option>
             <option value="RSA_3072">RSA_3072</option>
@@ -23,9 +22,15 @@
     </div>
 
     <div class="form-row node-text-editor-row">
-            <label for=""><i class="fa fa-repeat"></i> Retries</span></label>
+            <label for=" title="Retry n times before throwing an error."><i class="fa fa-repeat"></i> Retries</span></label>
             <input id="node-input-retry" class="ui-spinner-input" value="1" style="width:50px"/>
-        </div>
+    </div>
+
+    <div class="form-row node-text-editor-row">
+        <label for="" title="Maximum number of asynchronous requests."><i class="fa fa-arrow-circle-up"></i> 
+            Max. Async Requests <i class="fa fa-exclamation-circle" title="This feature is experimental!"></i></label>
+        <input id="node-input-parallel" class="ui-spinner-input" value="1" style="width:50px"/>
+    </div>
 
     <div class="form-row node-text-editor-row">
         <p><span id="noLinkSpan"><i class="fa fa-id-card"></i> Agent Configuration</span><span id="linkSpan"><a id="configLink" target="_new" title="Agent Configuration in the MindSphere"><i class="fa fa-external-link"></i> Agent Configuration</a></span></p>
@@ -74,6 +79,9 @@
         <i class="fa fa-info-circle"></i> <b>Keep alive:</b>
         The node will check/renew the communication token every hour even when there is no data sent.
         The recommended setting is to leave the keep alive enabled.
+        <br/><br/>
+        <i class="fa fa-info-circle"></i> <b>Max. parallel requests:</b>
+        If this setting is &gt; 1 the node will not wait for every request to finish running before continuing with the next request. (experimental)
 
     </div>
 
@@ -308,7 +316,12 @@ msg_error; // The timestamped error message
             retry : {
                 value:3,
                 validate: RED.validators.number()
+            },
+            parallel : {
+                value:1,
+                validate: RED.validators.number()
             }
+
         },
         inputs: 1,
         outputs: 1,
@@ -335,6 +348,15 @@ msg_error; // The timestamped error message
                 max:10,
                 min:1
             });
+
+            const p=this.parallel || 1;
+
+            $("#node-input-parallel").val(p);
+            $("#node-input-parallel").spinner({
+                max:3,
+                min:1
+            });
+
 
             $("#input-config-type-select").change(function () {
                 let value = $("#input-config-type-select").val();
