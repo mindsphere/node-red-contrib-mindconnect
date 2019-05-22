@@ -27,6 +27,12 @@ stages {
         sh 'npm run test-jenkins'
       }
     }
+    stage('License') {
+      steps {
+        sh 'npm run license > license-checker.txt'
+        sh 'npm run license:summary >> license-checker.txt'
+      }
+    }
     stage('Package') {
       steps {
         sh '''
@@ -37,6 +43,7 @@ stages {
     stage('Archive Artifacts') {
       steps {
         archiveArtifacts '*.tgz'
+        archiveArtifacts 'license-checker.txt'
       }
     }
   }
