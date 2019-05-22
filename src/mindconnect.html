@@ -80,8 +80,13 @@
         The node will check/renew the communication token every hour even when there is no data sent.
         The recommended setting is to leave the keep alive enabled.
         <br/><br/>
-        <i class="fa fa-info-circle"></i> <b>Max. parallel requests:</b>
-        If this setting is &gt; 1 the node will not wait for every request to finish running before continuing with the next request. (experimental)
+        <i class="fa fa-info-circle"></i> <b>Max async requests:</b>
+        If this setting is &gt; 1 the node will not wait for every request to finish running
+        before continuing with the next request. The setting also determines the maximal number of
+        parallel multipart uploads.
+         
+        (experimental)
+
 
     </div>
 
@@ -353,7 +358,7 @@ msg_error; // The timestamped error message
 
             $("#node-input-parallel").val(p);
             $("#node-input-parallel").spinner({
-                max:3,
+                max:10,
                 min:1
             });
 
