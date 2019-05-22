@@ -13,9 +13,11 @@
         "ts:lint": "tslint",
         "node:watch": "nodemon -e js,html  --watch src node_modules/node-red/red.js --userDir ../devnodes ",
         "test:watch": "mocha --watch test/ --growl --reporter=spec --inspect --timeout=0",
-        "doc": "typedoc -out docs --excludePrivate --readme ./README.md --target es6 --name node-red-contrib-mindconnect --exclude \"**/*+(test-agent|index|.spec|.e2e).ts\" && cp -R images docs/images/ && cp CHANGELOG.md docs/CHANGELOG.md",
+        "doc": "compodoc -p tsconfig.json --output docs --name \"@mindconnect/node-red-contrib-mindconnect\" --theme material && cp -r images/ docs/ ",
         "test": "npm run ts:build && nyc mocha --colors --reporter spec  --timeout:5000 --exit",
-        "test-jenkins": "npm run ts:build && cross-env JUNIT_REPORT_PATH=./report.xml mocha --colors --reporter mocha-jenkins-reporter --timeout:5000 --exit "
+        "test-jenkins": "npm run ts:build && cross-env JUNIT_REPORT_PATH=./report.xml mocha --colors --reporter mocha-jenkins-reporter --timeout:5000 --exit ",
+        "license": "license-checker --csv --onlyAllow \"Apache-2.0; Apache*; BSD; BSD-2-Clause; BSD-3-Clause; ISC; MIT; Unlicense; WTFPL; CC-BY-3.0; CC0-1.0\" --production",
+        "license:summary": "license-checker --summary --onlyAllow \"Apache-2.0; Apache*; BSD; BSD-2-Clause; BSD-3-Clause; ISC; MIT; Unlicense; WTFPL; CC-BY-3.0; CC0-1.0\" --production"
     },
     "repository": {
         "type": "git",
@@ -38,6 +40,7 @@
         "chai": "^4.2.0",
         "concurrently": "^4.1.0",
         "cross-env": "^5.2.0",
+        "license-checker": "^25.0.1",
         "mocha": "^6.1.4",
         "mocha-jenkins-reporter": "^0.4.1",
         "node-red": "^0.20.5",
