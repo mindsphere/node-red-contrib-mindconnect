@@ -169,7 +169,8 @@ describe("MindConnect Node-RED node", () => {
             n1.receive({
                 payload: {
                     fileName: "README.md",
-                    description: `File last uploaded on ${new Date().toISOString()}`
+                    description: `File last uploaded on ${new Date().toISOString()}`,
+                    filePath: `uploads/${new Date().getTime()}/README.md`
                 }
             });
         });
