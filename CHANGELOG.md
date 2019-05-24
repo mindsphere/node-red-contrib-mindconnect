@@ -6,7 +6,9 @@
 
 - updated to version 3.5.2 of mindconnect-nodejs library
 - chunked upload is now using the multipart upload file API
+- there is a new experimental parameter max async uploads: If this setting is > 1 the node will not wait for every request to finish
 - switched documentation generation to compodoc as typedoc doesn't seem to be maintained
+- bumped all versions
 
 ## Bugfixes 3.5.0
 

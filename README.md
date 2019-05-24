@@ -23,6 +23,12 @@ cd ~/.node-red/
 npm install @mindconnect/node-red-contrib-mindconnect
 ```
 
+## Node-RED - Manage Palette Installation
+
+You can install the node also via the Manage palette feature in the Node-RED administration UI.
+
+![palette](images/install_palette.png)
+
 ### FAQ
 
 - install to the .node-red folder if you have installed node-red globally
@@ -147,7 +153,7 @@ msg.payload = {
 return msg;
 ```
 
-If the experimental chunking feature is on, the files which are bigger then 8MB will be uploaded in 8 MB Chunks.
+If the experimental chunking feature is on, the files which are larger than 8MB will be uploaded in 8 MB Chunks.
 
 #### Error handling in the flows
 
@@ -162,6 +168,10 @@ msg_error // The timestamped error message
 properties which can be used to create more complex flows. (e.g. in the flow below, the unrecoverable errors are written in error.log file and the failed data is stored in backupdata.log file)
 
 ![errorhandling](images/errorhandling.png)
+
+## Demo flows
+
+[![Demo Flows](https://img.shields.io/badge/node--RED-playground-%23009999.svg)](https://playground.mindconnect.rocks)
 
 ## How to reset everything
 
