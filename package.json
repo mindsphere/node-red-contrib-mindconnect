@@ -1,6 +1,6 @@
 {
     "name": "@mindconnect/node-red-contrib-mindconnect",
-    "version": "3.4.0",
+    "version": "3.5.0-2",
     "description": "node red mindconnect node using mindconnect-nodejs library.",
     "main": "index.js",
     "scripts": {
@@ -13,9 +13,11 @@
         "ts:lint": "tslint",
         "node:watch": "nodemon -e js,html  --watch src node_modules/node-red/red.js --userDir ../devnodes ",
         "test:watch": "mocha --watch test/ --growl --reporter=spec --inspect --timeout=0",
-        "doc": "typedoc -out docs --excludePrivate --readme ./README.md --target es6 --name node-red-contrib-mindconnect --exclude \"**/*+(test-agent|index|.spec|.e2e).ts\" && cp -R images docs/images/ && cp CHANGELOG.md docs/CHANGELOG.md",
-        "test": "npm run ts:build && nyc mocha --colors --reporter spec  --timeout:5000 --exit",
-        "test-jenkins": "npm run ts:build && cross-env JUNIT_REPORT_PATH=./report.xml mocha --colors --reporter mocha-jenkins-reporter --timeout:5000 --exit "
+        "doc": "compodoc -p tsconfig.json --output docs --name \"@mindconnect/node-red-contrib-mindconnect\" --theme material && cp -r images/ docs/ ",
+        "test": "npm run ts:build && nyc mocha --colors --reporter spec  --timeout=5000 --exit",
+        "test-jenkins": "npm run ts:build && cross-env JUNIT_REPORT_PATH=./report.xml mocha --colors --reporter mocha-jenkins-reporter --timeout=15000 --exit ",
+        "license": "license-checker --csv --onlyAllow \"Apache-2.0; Apache*; BSD; BSD-2-Clause; BSD-3-Clause; ISC; MIT; Unlicense; WTFPL; CC-BY-3.0; CC0-1.0\" --production",
+        "license:summary": "license-checker --summary --onlyAllow \"Apache-2.0; Apache*; BSD; BSD-2-Clause; BSD-3-Clause; ISC; MIT; Unlicense; WTFPL; CC-BY-3.0; CC0-1.0\" --production"
     },
     "repository": {
         "type": "git",
@@ -29,24 +31,25 @@
     "author": "@sn0wcat",
     "license": "MIT",
     "devDependencies": {
+        "@compodoc/compodoc": "^1.1.9",
         "@types/ajv": "^1.0.0",
         "@types/chai": "^4.1.7",
         "@types/mocha": "^5.2.6",
-        "@types/node": "^10.14.4",
-        "@types/node-fetch": "^2.1.6",
+        "@types/node": "^12.0.2",
+        "@types/node-fetch": "^2.3.4",
         "chai": "^4.2.0",
-        "concurrently": "^3.6.1",
+        "concurrently": "^4.1.0",
         "cross-env": "^5.2.0",
-        "mocha": "^6.0.2",
+        "license-checker": "^25.0.1",
+        "mocha": "^6.1.4",
         "mocha-jenkins-reporter": "^0.4.1",
-        "node-red": "^0.20.3",
+        "node-red": "^0.20.5",
         "node-red-node-test-helper": "^0.2.2",
-        "nodemon": "^1.18.10",
-        "nyc": "^13.3.0",
-        "tslint": "^5.13.1",
-        "typedoc": "^0.14.2",
-        "typescript": "^3.3.3",
-        "typescript-tslint-plugin": "^0.3.1"
+        "nodemon": "^1.19.0",
+        "nyc": "^14.1.1",
+        "tslint": "^5.16.0",
+        "typescript": "^3.4.5",
+        "typescript-tslint-plugin": "^0.4.0"
     },
     "node-red": {
         "nodes": {
@@ -54,9 +57,9 @@
         }
     },
     "dependencies": {
-        "@mindconnect/mindconnect-nodejs": "^3.4.0",
-        "ajv": "^6.9.2",
+        "@mindconnect/mindconnect-nodejs": "^3.5.2",
+        "ajv": "^6.10.0",
         "debug": "^4.1.1",
-        "node-fetch": "^2.3.0"
+        "node-fetch": "^2.6.0"
     }
 }

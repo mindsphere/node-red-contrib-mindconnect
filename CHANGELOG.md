@@ -1,5 +1,17 @@
 # Changelog
 
+## 3.5.0 (Vienna Clouded Leopards) - May 2019
+
+## New Features 3.5.0
+
+- updated to version 3.5.2 of mindconnect-nodejs library
+- chunked upload is now using the multipart upload file API
+- switched documentation generation to compodoc as typedoc doesn't seem to be maintained
+
+## Bugfixes 3.5.0
+
+- improved documentation in README.md
+
 ## 3.4.0 (Vienna Caracals) - April 2019
 
 ## New Features 3.4.0

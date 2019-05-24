@@ -52,7 +52,8 @@ describe("MindConnect Utils", () => {
             validateevent: false,
             chunk: true,
             disablekeepalive: true,
-            retry: "2"
+            retry: "2",
+            parallel: "1"
         };
 
         const target = {} as IConfigurationInfo;
@@ -82,7 +83,8 @@ describe("MindConnect Utils", () => {
             validateevent: false,
             chunk: true,
             disablekeepalive: true,
-            retry: "2"
+            retry: "2",
+            parallel: "1"
         };
 
         const mock = ({ log: () => {}, status: () => {} } as unknown) as IConfigurationInfo;
@@ -112,7 +114,8 @@ describe("MindConnect Utils", () => {
             validateevent: false,
             chunk: true,
             disablekeepalive: false,
-            retry: "2"
+            retry: "2",
+            parallel: "1"
         };
 
         let errorCalled = false;
@@ -159,7 +162,8 @@ describe("MindConnect Utils", () => {
             validateevent: false,
             chunk: true,
             disablekeepalive: true,
-            retry: "2"
+            retry: "2",
+            parallel: "1"
         };
 
         let errorCalled = false;
