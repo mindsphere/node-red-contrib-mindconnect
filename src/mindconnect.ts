@@ -31,17 +31,7 @@ export = function(RED: any): void {
                     const rcValidator = remoteConfigurationValidator();
 
                     if (await rcValidator(msg.payload)) {
-                        node.status({ fill: "blue", shape: "dot", text: "received remote configuration..." });
-                        await sleep(300);
-                        node.status({
-                            fill: "yellow",
-                            shape: "dot",
-                            text: "the flow will restart in 1 second..."
-                        });
-                        await sleep(1000);
-                        const newConfiguration = msg.payload as IConfigurationInfo;
-                        await reloadFlow(node, RED.settings, newConfiguration);
-                        return msg;
+                        return await reconfigureNode(msg);
                     }
 
                     if (!node.agent) {
@@ -88,36 +78,24 @@ export = function(RED: any): void {
                     if (await eventValidator(msg.payload)) {
                         promises.push(sendEvent(msg, agent, timestamp));
                     } else if (await fileValidator(msg.payload)) {
-                        await sendFile(msg, agent, timestamp);
+                        promises.push(sendFile(msg, agent, timestamp));
                     } else if (await bulkValidator(msg.payload)) {
                         promises.push(sendBulkTimeSeriesData(msg, agent, timestamp));
                     } else if (await tsValidator(msg.payload)) {
                         promises.push(sendTimeSeriesData(agent, msg, timestamp));
                     } else {
-                        const eventErrors = eventValidator.errors || [];
-                        const fileErrors = fileValidator.errors || [];
-                        const bulkErrors = bulkValidator.errors || [];
-                        const timeSeriesErrors = tsValidator.errors || [];
-                        const rcValidatorErrors = rcValidator.errors || [];
-
-                        let errorString =
-                            "the payload was not recognized as an event, file or datapoints. See node help for proper msg.payload.formats";
-
-                        errorString += "\nEvent Errors:\n";
-                        errorString += JSON.stringify(eventErrors, null, 2);
-                        errorString += "\nFile Errors:\n";
-                        errorString += JSON.stringify(fileErrors, null, 2);
-                        errorString += "\nBulk Errors:\n";
-                        errorString += JSON.stringify(bulkErrors, null, 2);
-                        errorString += "\nTimeSeries Errors:\n";
-                        errorString += JSON.stringify(timeSeriesErrors, null, 2);
-                        errorString += "Configuration Errors:\n";
-                        errorString += JSON.stringify(rcValidatorErrors, null, 2);
+                        let errorString = extractErrorString(
+                            eventValidator,
+                            fileValidator,
+                            bulkValidator,
+                            tsValidator,
+                            rcValidator
+                        );
 
                         throw new Error(errorString);
                     }
 
-                    if (promises.length % node.parallel === 0) {
+                    if (promises.length % node.parallel === 0 && promises.length > 0) {
                         node.status({
                             fill: "blue",
                             shape: "dot",
@@ -137,6 +115,41 @@ export = function(RED: any): void {
             })();
             return;
         });
+
+        async function reconfigureNode(msg: any) {
+            node.status({ fill: "blue", shape: "dot", text: "received remote configuration..." });
+            await sleep(300);
+            node.status({
+                fill: "yellow",
+                shape: "dot",
+                text: "the flow will restart in 1 second..."
+            });
+            await sleep(1000);
+            const newConfiguration = msg.payload as IConfigurationInfo;
+            await reloadFlow(node, RED.settings, newConfiguration);
+            return msg;
+        }
+
+        function extractErrorString(eventValidator, fileValidator, bulkValidator, tsValidator, rcValidator) {
+            const eventErrors = eventValidator.errors || [];
+            const fileErrors = fileValidator.errors || [];
+            const bulkErrors = bulkValidator.errors || [];
+            const timeSeriesErrors = tsValidator.errors || [];
+            const rcValidatorErrors = rcValidator.errors || [];
+            let errorString =
+                "the payload was not recognized as an event, file or datapoints. See node help for proper msg.payload.formats";
+            errorString += "\nEvent Errors:\n";
+            errorString += JSON.stringify(eventErrors, null, 2);
+            errorString += "\nFile Errors:\n";
+            errorString += JSON.stringify(fileErrors, null, 2);
+            errorString += "\nBulk Errors:\n";
+            errorString += JSON.stringify(bulkErrors, null, 2);
+            errorString += "\nTimeSeries Errors:\n";
+            errorString += JSON.stringify(timeSeriesErrors, null, 2);
+            errorString += "Configuration Errors:\n";
+            errorString += JSON.stringify(rcValidatorErrors, null, 2);
+            return errorString;
+        }
 
         async function sendTimeSeriesData(agent: mindconnectNodejs.MindConnectAgent, msg: any, timestamp: any) {
             node.status({ fill: "grey", shape: "dot", text: `recieved data points` });
@@ -172,17 +185,23 @@ export = function(RED: any): void {
 
         async function sendFile(msg: any, agent: mindconnectNodejs.MindConnectAgent, timestamp: Date) {
             const fileInfo = <IFileInfo>msg.payload;
-            node.status({ fill: "grey", shape: "dot", text: `recieved fileInfo ${fileInfo.fileName}` });
+            const message = Buffer.isBuffer(fileInfo.fileName) ? "Buffer" : fileInfo.fileName;
+            node.status({ fill: "grey", shape: "dot", text: `recieved fileInfo ${message}` });
+
+            let parallelUploads = node.parallel || 1;
+            const entityId = fileInfo.entityId || agent.ClientId();
+            if (Buffer.isBuffer(fileInfo) && !fileInfo.filePath) {
+                throw Error("you have to provide the filePath when using Buffer as the payload");
+            }
+
             const result = await retryWithNodeLog(
                 node.retry,
                 () =>
-                    agent.Upload(
-                        fileInfo.fileName,
-                        fileInfo.fileType,
-                        fileInfo.description,
-                        node.chunk,
-                        fileInfo.entityId
-                    ),
+                    agent.UploadFile(entityId, fileInfo.filePath || fileInfo.fileName, fileInfo.fileName, {
+                        chunk: node.chunk,
+                        parallelUploads: parallelUploads,
+                        type: fileInfo.fileType
+                    }),
                 "FileUpload",
                 node
             );

@@ -170,9 +170,10 @@ return msg;
     <pre>
 msg.payload = {
     entityId: "1234567890abcdef1234567890abcdef", //optional
-    fileName : "package.json",
-    fileType : "application/json", //optional
-    description: "testfile"
+    fileName : "digitaltwin.png", // you can also pass a Buffer object instead
+    fileType : "image/png", //optional
+    filePath : "images/digitaltwin.png",
+    description: "image uploaded with node-red-contrib-mindconnect"
 } 
 
 return msg;

@@ -78,7 +78,7 @@ export const fileInfoSchema = {
         },
         fileName: {
             $id: "/properties/sourceType",
-            type: "string",
+            type: ["string", "object"],
             title: "The Sourcetype Schema ",
             default: ""
         },

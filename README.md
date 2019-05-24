@@ -139,8 +139,9 @@ The node requires json objects as input in following format (e.g. from a functio
 ```javascript
 msg.payload = {
     entityId: "d72262e71ea0470eb9f880176b888938", //optional (per default files are uploaded to the agent)
-    fileName: "package.json",
-    fileType: "application/json", //optional, it is automatically determined if there is no fileType specified
+    fileName: "digitaltwin.png", // you can also pass an instance of a Buffer
+    fileType: "image/png", //optional, it is automatically determined if there is no fileType specified
+    filePath: "images/digitaltwin.png", // required if you are using buffer instead of the file name
     description: "testfile"
 };
 return msg;
