@@ -1,17 +1,6 @@
 FROM nodered/node-red-docker:rpi-v8
 COPY Docker/ARM/qemu-arm-static /usr/bin
 
-# build and package 
-RUN mkdir /tmp/install
-WORKDIR /tmp/install
-COPY --chown=node-red package*.json ./
-RUN npm install
-COPY --chown=node-red . . 
-
-RUN npm pack
-RUN cp *.tgz /usr/src/node-red
-RUN cd .. && rm -rf /tmp/install
-
+# Install the node from npm for ARM builds
 WORKDIR /usr/src/node-red
-RUN npm install `ls mindconnect-node-red-contrib*.tgz`
-RUN rm mindconnect-node-red-contrib*.tgz
+RUN npm install @mindconnect/node-red-contrib-mindconnect@latest
