@@ -13,6 +13,7 @@ This project has started as a community effort at Siemens AG and is now availabl
 [![Total alerts](https://img.shields.io/lgtm/alerts/g/mindsphere/node-red-contrib-mindconnect.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/mindsphere/node-red-contrib-mindconnect/alerts/)
 [![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/mindsphere/node-red-contrib-mindconnect.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/mindsphere/node-red-contrib-mindconnect/context:javascript) [![Greenkeeper badge](https://badges.greenkeeper.io/mindsphere/node-red-contrib-mindconnect.svg)](https://greenkeeper.io/)
 [![Documentation](https://img.shields.io/badge/mindsphere-documentation-%23009999.svg)](https://opensource.mindsphere.io/docs/node-red-contrib-mindconnect/index.html)
+[![Forum](https://img.shields.io/badge/mindsphere-community-%23009999.svg)](https://community.plm.automation.siemens.com/t5/Developer-Space/bd-p/MindSphere-platform-forum)
 
 
 The node is written in typescript/javascript without any native dependencies so it should work beside x86 also on other platforms (e.g. on raspberry pi, IoT2000 etc, you just have to have Node-RED installed).
