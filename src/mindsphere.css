@@ -39,7 +39,6 @@
     color: #ffffff;
     text-decoration: none;
 }
-.headerLink:focus,
 .headerLink:hover {
     color: #00bfa5;
     text-decoration: none;
