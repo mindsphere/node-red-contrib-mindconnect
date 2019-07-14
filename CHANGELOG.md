@@ -1,5 +1,18 @@
 # Changelog
 
+## 3.6.0 (Vienna Jungle Cats) - July 2019
+
+## New Features 3.6.0
+
+- Added Links to MindSphere OpenSource Tools and Libraries Documentation
+- upgraded to version 3.6.0 of the mindconnect-nodejs library
+- bumped all dependencies
+- added explicit :rw to the docker container documentation (see #39)
+
+## Bugfixes 3.6.0
+
+- improved documentation in README.md
+
 ## 3.5.0 (Vienna Clouded Leopards) - May 2019
 
 ## New Features 3.5.0
