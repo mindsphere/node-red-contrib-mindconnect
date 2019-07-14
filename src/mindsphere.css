@@ -1,28 +1,46 @@
- /* Copyright Siemens AG, 2017 */
+/* Copyright Siemens AG, 2017 */
 
- #_msbar:before {
-     content: ' ';
-     display: block;
-     position: relative;
-     top: -4px;
-     left: 0;
-     right: 0;
-     height: 4px;
-     background-image: -owg-linear-gradient(to right, #50bebe 0%, #099 33%, #0099b0 66%, #0099cb 100%);
-     background-image: -webkit-gradient(linear, left top, right top, from(#50bebe), color-stop(33%, #099), color-stop(66%, #0099b0), to(#0099cb));
-     background-image: linear-gradient(to right, #50bebe 0%, #099 33%, #0099b0 66%, #0099cb 100%);
-     margin: 0, 0, 0, 0
- }
+#_msbar:before {
+    content: " ";
+    display: block;
+    position: relative;
+    top: -4px;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background-image: -owg-linear-gradient(to right, #50bebe 0%, #099 33%, #0099b0 66%, #0099cb 100%);
+    background-image: -webkit-gradient(
+        linear,
+        left top,
+        right top,
+        from(#50bebe),
+        color-stop(33%, #099),
+        color-stop(66%, #0099b0),
+        to(#0099cb)
+    );
+    background-image: linear-gradient(to right, #50bebe 0%, #099 33%, #0099b0 66%, #0099cb 100%);
+    margin: 0, 0, 0, 0;
+}
 
- #_msbar {
-     left: 0;
-     right: 0;
-     height: 40px;
-     font-size: 16px;
-     color: white;
-     background: black;
-     text-align: left;
-     margin-bottom: 20px;
-     vertical-align: middle;
-     height: 40px;
- }
+#_msbar {
+    left: 0;
+    right: 0;
+    height: 40px;
+    font-size: 16px;
+    color: white;
+    background: black;
+    text-align: left;
+    margin-bottom: 20px;
+    vertical-align: middle;
+    height: 40px;
+}
+
+.headerLink {
+    color: #ffffff;
+    text-decoration: none;
+}
+.headerLink:focus,
+.headerLink:hover {
+    color: #00bfa5;
+    text-decoration: none;
+}
