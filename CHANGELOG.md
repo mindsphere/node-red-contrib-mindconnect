@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.6.1 (Vienna Jungle Cats) - July 2019 - Recovery
+
+## Bugfixes 3.6.1
+
+- Security fix: Bumped the lodash dependency to 4.17.4
+
 ## 3.6.0 (Vienna Jungle Cats) - July 2019
 
 ## New Features 3.6.0
