@@ -119,6 +119,8 @@ msg.payload = values;
 return msg;
 ```
 
+**Note:** All MindSphere timestamps must be in the **ISO format** (use `toISOString()` function).
+
 #### Send events
 
 The node requires json objects as input in following format (e.g. from a function node). You can send an event to any asset you have access to in your tenant. Just use the asset id in the entityid.
@@ -165,7 +167,7 @@ If you need more complex flows, the node also returns the
 
 ```javascript
 msg._mindsphereStatus; // OK on success othervise error
-msg_error // The timestamped error message
+msg._error; // The timestamped error message
 ```
 
 properties which can be used to create more complex flows. (e.g. in the flow below, the unrecoverable errors are written in error.log file and the failed data is stored in backupdata.log file)
