@@ -1,6 +1,6 @@
 {
     "name": "@mindconnect/node-red-contrib-mindconnect",
-    "version": "3.6.1",
+    "version": "3.6.2",
     "description": "node red mindconnect node using mindconnect-nodejs library.",
     "main": "index.js",
     "scripts": {
@@ -57,7 +57,7 @@
         }
     },
     "dependencies": {
-        "@mindconnect/mindconnect-nodejs": "^3.6.0",
+        "@mindconnect/mindconnect-nodejs": "^3.6.1",
         "ajv": "^6.10.2",
         "debug": "^4.1.1",
         "node-fetch": "^2.6.0"
