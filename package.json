@@ -43,7 +43,7 @@
         "license-checker": "^25.0.1",
         "mocha": "^6.1.4",
         "mocha-jenkins-reporter": "^0.4.1",
-        "node-red": "^0.20.7",
+        "node-red": "^1.0.0",
         "node-red-node-test-helper": "^0.2.3",
         "nodemon": "^1.19.1",
         "nyc": "^14.1.1",
