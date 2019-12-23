@@ -46,7 +46,7 @@
         "node-red": "^0.20.7",
         "node-red-node-test-helper": "^0.2.3",
         "nodemon": "^1.19.1",
-        "nyc": "^14.1.1",
+        "nyc": "^15.0.0",
         "tslint": "^5.18.0",
         "typescript": "^3.5.3",
         "typescript-tslint-plugin": "^0.5.4"
