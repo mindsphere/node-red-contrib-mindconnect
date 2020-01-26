@@ -41,7 +41,7 @@
         "concurrently": "^4.1.1",
         "cross-env": "^6.0.0",
         "license-checker": "^25.0.1",
-        "mocha": "^6.1.4",
+        "mocha": "^7.0.1",
         "mocha-jenkins-reporter": "^0.4.1",
         "node-red": "^0.20.7",
         "node-red-node-test-helper": "^0.2.3",
