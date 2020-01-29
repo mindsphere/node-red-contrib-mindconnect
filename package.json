@@ -34,7 +34,7 @@
         "@compodoc/compodoc": "^1.1.10",
         "@types/ajv": "^1.0.0",
         "@types/chai": "^4.1.7",
-        "@types/mocha": "^5.2.7",
+        "@types/mocha": "^7.0.0",
         "@types/node": "^12.6.2",
         "@types/node-fetch": "^2.3.7",
         "chai": "^4.2.0",
