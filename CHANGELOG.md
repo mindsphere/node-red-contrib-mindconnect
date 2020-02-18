@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.7.0 (Vienna Ocelots) - Febraury 2020
+
+## Bugfixes 3.7.0
+
+- bumped all dependencies
+- the unit tests are now using independent agents
+
 ## 3.6.2 (Vienna Jungle Cats) - September 2019
 
 ## Bugfixes 3.6.2
