@@ -5,8 +5,8 @@
 ## Bugfixes 3.7.0
 
 - fixed CSS for node-red >1.0.0 (the node title is white again)
+- updated to mindconnect-nodejs 3.7.0
 - bumped all dependencies
-- the unit tests are now using independent agents
 
 ## 3.6.2 (Vienna Jungle Cats) - September 2019
 
