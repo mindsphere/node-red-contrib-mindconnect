@@ -36,14 +36,14 @@
 }
 
 .headerLink {
-    color: #ffffff;
-    text-decoration: none;
+    color: #ffffff !important;
+    text-decoration: none !important;
 }
 .headerLink:focus {
-    color: #ffffff;
-    text-decoration: none;
+    color: #ffffff !important;
+    text-decoration: none !important;
 }
 .headerLink:hover {
-    color: #00bfa5;
-    text-decoration: none;
+    color: #00bfa5 !important;
+    text-decoration: none !important;
 }

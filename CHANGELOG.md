@@ -4,6 +4,7 @@
 
 ## Bugfixes 3.7.0
 
+- fixed CSS for node-red >1.0.0 (the node title is white again)
 - bumped all dependencies
 - the unit tests are now using independent agents
 
