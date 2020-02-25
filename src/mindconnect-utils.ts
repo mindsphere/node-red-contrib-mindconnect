@@ -36,6 +36,7 @@ export const copyConfiguration = (node: IConfigurationInfo, config: IConfigurati
     node.disablekeepalive = config.disablekeepalive;
     node.retry = config.retry;
     node.parallel = config.parallel;
+    node.asyncduration = config.asyncduration;
 };
 
 export const configureAgent = (mcnode: IConfigurationInfo, newConfig?: IConfigurationInfo) => {
@@ -58,7 +59,8 @@ export const configureAgent = (mcnode: IConfigurationInfo, newConfig?: IConfigur
         else startlogmessage += "keep-alive rotation: every hour";
 
         mcnode.parallel = mcnode.parallel || "1";
-        startlogmessage += ` parallel requests: ${mcnode.parallel}`;
+        mcnode.asyncduration = mcnode.asyncduration || "10";
+        startlogmessage += ` parallel requests: ${mcnode.parallel} async requests wait: ${mcnode.asyncduration}s`;
         mcnode.log(`settings: ${startlogmessage} retries: ${mcnode.retry}`);
         mcnode.status({ fill: "grey", shape: "dot", text: `settings: ${startlogmessage} retries: ${mcnode.retry}` });
         const HOUR = 3600000;

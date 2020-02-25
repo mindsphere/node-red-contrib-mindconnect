@@ -53,7 +53,8 @@ describe("MindConnect Utils", () => {
             chunk: true,
             disablekeepalive: true,
             retry: "2",
-            parallel: "1"
+            parallel: "1",
+            asyncduration: "3"
         };
 
         const target = {} as IConfigurationInfo;
@@ -84,7 +85,8 @@ describe("MindConnect Utils", () => {
             chunk: true,
             disablekeepalive: true,
             retry: "2",
-            parallel: "1"
+            parallel: "1",
+            asyncduration: "3"
         };
 
         const mock = ({ log: () => {}, status: () => {} } as unknown) as IConfigurationInfo;
@@ -115,7 +117,8 @@ describe("MindConnect Utils", () => {
             chunk: true,
             disablekeepalive: false,
             retry: "2",
-            parallel: "1"
+            parallel: "1",
+            asyncduration: "3"
         };
 
         let errorCalled = false;
@@ -163,7 +166,8 @@ describe("MindConnect Utils", () => {
             chunk: true,
             disablekeepalive: true,
             retry: "2",
-            parallel: "1"
+            parallel: "1",
+            asyncduration: "3"
         };
 
         let errorCalled = false;

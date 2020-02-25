@@ -354,5 +354,6 @@ export interface IConfigurationInfo {
     disablekeepalive: boolean;
     retry: string;
     parallel: string;
+    asyncduration: string;
     [x: string]: any;
 }

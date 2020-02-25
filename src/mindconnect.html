@@ -30,8 +30,14 @@
 
     <div class="form-row node-text-editor-row">
         <label for="" title="Maximum number of asynchronous requests."><i class="fa fa-arrow-circle-up"></i> 
-            Max. Async Requests <i class="fa fa-exclamation-circle" title="This feature is experimental!"></i></label>
+            Max. Async Requests</span></label>
         <input id="node-input-parallel" class="ui-spinner-input" value="1" style="width:50px"/>
+    </div>
+
+    <div class="form-row node-text-editor-row">
+        <label for="" title="wait for all started requests to finish after x seconds"><i class="fa fa-arrow-circle-down"></i> 
+            Async Duration </span></label>
+        <input id="node-input-asyncduration" class="ui-spinner-input" value="1" style="width:50px"/> (in seconds)
     </div>
 
     <div class="form-row node-text-editor-row">
@@ -60,8 +66,8 @@
     
     <div class="form-row node-text-editor-row">
         <label for="node-input-chunk"></label>
-        <label for="node-input-chunk" style="width:70%" title="this feature is experimental!"">
-        <input type="checkbox" id="node-input-chunk" style="display:inline-block; width:22px; vertical-align:baseline;">Upload file in chunks. (experimental) <i class="fa fa-exclamation-circle"></i></label> 
+        <label for="node-input-chunk" style="width:70%">
+        <input type="checkbox" id="node-input-chunk" style="display:inline-block; width:22px; vertical-align:baseline;">Upload file in chunks. </label> 
     </div>
 
     <div class="form-row node-text-editor-row">
@@ -85,7 +91,11 @@
         <i class="fa fa-info-circle"></i> <b>Max async requests:</b>
         If this setting is &gt; 1 the node will not wait for every request to finish running
         before continuing with the next request. The setting also determines the maximal number of
-        parallel multipart uploads. (experimental)
+        parallel multipart uploads. 
+        <br/><br/>
+        <i class="fa fa-info-circle"></i> <b>Async duration:</b>
+        The node will wait for started requests to finish after configured number of seconds independent of 
+        the maximum number of configured parallel requests.
     </div>
 
 </script>
@@ -328,6 +338,10 @@ msg_error; // The timestamped error message
             parallel : {
                 value:1,
                 validate: RED.validators.number()
+            },
+            asyncduration : {
+                value:1,
+                validate: RED.validators.number()
             }
 
         },
@@ -364,6 +378,16 @@ msg_error; // The timestamped error message
                 max:10,
                 min:1
             });
+
+
+            const a=this.asyncduration || 10;
+
+            $("#node-input-asyncduration").val(a);
+            $("#node-input-asyncduration").spinner({
+                max:600,
+                min:1
+            });
+
 
 
             $("#input-config-type-select").change(function () {
