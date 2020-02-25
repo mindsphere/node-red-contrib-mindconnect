@@ -3,6 +3,7 @@
 import * as mindconnectNodejs from "@mindconnect/mindconnect-nodejs";
 import * as path from "path";
 import {
+    actionSchemaValidator,
     bulkUploadValidator,
     eventSchemaValidator,
     fileInfoValidator,
@@ -74,8 +75,15 @@ export = function(RED: any): void {
                     const fileValidator = fileInfoValidator();
                     const bulkValidator = bulkUploadValidator();
                     const tsValidator = timeSeriesValidator();
+                    const actionValidator = actionSchemaValidator();
 
-                    if (await eventValidator(msg.payload)) {
+                    if (await actionValidator(msg.payload)) {
+                        node.status({
+                            fill: "blue",
+                            shape: "dot",
+                            text: `${msg.payload.action} called at ${msg.payload.timestamp}`
+                        });
+                    } else if (await eventValidator(msg.payload)) {
                         promises.push(sendEvent(msg, agent, timestamp));
                     } else if (await fileValidator(msg.payload)) {
                         promises.push(sendFile(msg, agent, timestamp));
@@ -89,7 +97,8 @@ export = function(RED: any): void {
                             fileValidator,
                             bulkValidator,
                             tsValidator,
-                            rcValidator
+                            rcValidator,
+                            actionValidator
                         );
 
                         throw new Error(errorString);
@@ -130,14 +139,25 @@ export = function(RED: any): void {
             return msg;
         }
 
-        function extractErrorString(eventValidator, fileValidator, bulkValidator, tsValidator, rcValidator) {
+        function extractErrorString(
+            eventValidator,
+            fileValidator,
+            bulkValidator,
+            tsValidator,
+            rcValidator,
+            actionValidator
+        ) {
             const eventErrors = eventValidator.errors || [];
             const fileErrors = fileValidator.errors || [];
             const bulkErrors = bulkValidator.errors || [];
             const timeSeriesErrors = tsValidator.errors || [];
             const rcValidatorErrors = rcValidator.errors || [];
+            const actionErrors = actionValidator.errors || [];
             let errorString =
                 "the payload was not recognized as an event, file or datapoints. See node help for proper msg.payload.formats";
+
+            errorString += "Action Errors:\n";
+            errorString += JSON.stringify(actionErrors, null, 2);
             errorString += "\nEvent Errors:\n";
             errorString += JSON.stringify(eventErrors, null, 2);
             errorString += "\nFile Errors:\n";

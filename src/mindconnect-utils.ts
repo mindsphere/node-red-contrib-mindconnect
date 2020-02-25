@@ -64,6 +64,11 @@ export const configureAgent = (mcnode: IConfigurationInfo, newConfig?: IConfigur
         mcnode.log(`settings: ${startlogmessage} retries: ${mcnode.retry}`);
         mcnode.status({ fill: "grey", shape: "dot", text: `settings: ${startlogmessage} retries: ${mcnode.retry}` });
         const HOUR = 3600000;
+
+        mcnode.await_id = setInterval(async () => {
+            mcnode.receive({ payload: { action: "await", timestamp: new Date().toISOString() } });
+        }, parseInt(mcnode.asyncduration) * 1000);
+
         mcnode.interval_id = setInterval(async () => {
             if (!mcnode.disablekeepalive) {
                 let timestamp = new Date();
