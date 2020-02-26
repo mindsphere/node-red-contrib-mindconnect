@@ -2,6 +2,7 @@
 
 import * as mindconnectNodejs from "@mindconnect/mindconnect-nodejs";
 import * as path from "path";
+import * as allSettled from "promise.allsettled";
 import {
     actionSchemaValidator,
     bulkUploadValidator,
@@ -23,6 +24,9 @@ export = function(RED: any): void {
         configureAgent(node);
 
         let promises = [];
+        let awaitPromises = false;
+
+        allSettled.shim();
 
         this.on("input", msg => {
             (async () => {
@@ -78,11 +82,7 @@ export = function(RED: any): void {
                     const actionValidator = actionSchemaValidator();
 
                     if (await actionValidator(msg.payload)) {
-                        node.status({
-                            fill: "blue",
-                            shape: "dot",
-                            text: `${msg.payload.action} called at ${msg.payload.timestamp}`
-                        });
+                        awaitPromises = true;
                     } else if (await eventValidator(msg.payload)) {
                         promises.push(sendEvent(msg, agent, timestamp));
                     } else if (await fileValidator(msg.payload)) {
@@ -104,14 +104,20 @@ export = function(RED: any): void {
                         throw new Error(errorString);
                     }
 
-                    if (promises.length % node.parallel === 0 && promises.length > 0) {
+                    if (
+                        (promises.length % node.parallel === 0 && promises.length > 0) ||
+                        (promises.length > 0 && awaitPromises)
+                    ) {
                         node.status({
                             fill: "blue",
                             shape: "dot",
                             text: `waiting for ${promises.length}requests to finish`
                         });
-                        await Promise.all(promises);
+                        const results = await allSettled(promises);
+                        console.log(results.length);
+
                         promises = [];
+                        awaitPromises = false;
                     }
                 } catch (error) {
                     node.error(error);
@@ -120,6 +126,7 @@ export = function(RED: any): void {
                     node.send(msg);
                     node.status({ fill: "red", shape: "dot", text: `${error}` });
                     promises = [];
+                    awaitPromises = false;
                 }
             })();
             return;
@@ -183,6 +190,7 @@ export = function(RED: any): void {
             node.status({ fill: "green", shape: "dot", text: `Posted last message at ${timestamp}` });
             msg._mindsphereStatus = result ? "OK" : "Error";
             node.send(msg);
+            return msg;
         }
 
         async function sendBulkTimeSeriesData(msg: any, agent: mindconnectNodejs.MindConnectAgent, timestamp: Date) {
@@ -201,6 +209,7 @@ export = function(RED: any): void {
             node.status({ fill: "green", shape: "dot", text: `Posted last bulk message at ${timestamp}` });
             msg._mindsphereStatus = result ? "OK" : "Error";
             node.send(msg);
+            return msg;
         }
 
         async function sendFile(msg: any, agent: mindconnectNodejs.MindConnectAgent, timestamp: Date) {
@@ -229,6 +238,7 @@ export = function(RED: any): void {
             node.status({ fill: "green", shape: "dot", text: `Uploaded file at ${timestamp}` });
             msg._mindsphereStatus = result ? "OK" : "Error";
             node.send(msg);
+            return msg;
         }
 
         async function sendEvent(msg: any, agent: mindconnectNodejs.MindConnectAgent, timestamp: any) {
@@ -247,6 +257,7 @@ export = function(RED: any): void {
             node.status({ fill: "green", shape: "dot", text: `Posted last event at ${timestamp}` });
             msg._mindsphereStatus = result ? "OK" : "Error";
             node.send(msg);
+            return msg;
         }
     }
 

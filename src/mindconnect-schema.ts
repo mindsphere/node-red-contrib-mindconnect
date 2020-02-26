@@ -17,7 +17,7 @@ export const actionSchema = {
             title: "The Action Schema",
             default: "",
             examples: ["await"],
-            pattern: "^(.*)$"
+            oneOf: [{ enum: ["await", "renew"] }]
         },
         timestamp: {
             $id: "#/properties/timestamp",
@@ -195,7 +195,8 @@ export const remoteConfigurationSchema = {
         "validateevent",
         "chunk",
         "disablekeepalive",
-        "retry"
+        "retry",
+        "asyncduration"
     ],
     properties: {
         name: {
@@ -334,7 +335,15 @@ export const remoteConfigurationSchema = {
             title: "The Retry Schema",
             default: "",
             examples: ["7"],
-            pattern: "^(.*)$"
+            pattern: "^([0-9]*)$"
+        },
+        asyncduration: {
+            $id: "#/properties/asyncduration",
+            type: "string",
+            title: "The asyncduration Schema",
+            default: "",
+            examples: ["7"],
+            pattern: "^([0-9]*)$"
         }
     }
 };

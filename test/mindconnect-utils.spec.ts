@@ -90,7 +90,7 @@ describe("MindConnect Utils", () => {
         };
 
         const mock = ({ log: () => {}, status: () => {} } as unknown) as IConfigurationInfo;
-        await configureAgent(mock, config);
+        configureAgent(mock, config);
         mock.agent.should.not.be.undefined;
         mock.agent._configuration.should.not.be.undefined;
         mock.should.be.deep.include(config);
@@ -136,7 +136,7 @@ describe("MindConnect Utils", () => {
             }
         } as unknown) as IConfigurationInfo;
 
-        await configureAgent(mock, config);
+        configureAgent(mock, config);
         mock.agent.should.not.be.undefined;
         mock.agent._configuration.should.not.be.undefined;
         mock.should.be.deep.include(config);
@@ -182,7 +182,7 @@ describe("MindConnect Utils", () => {
             }
         } as unknown) as IConfigurationInfo;
 
-        await configureAgent(mock, config);
+        configureAgent(mock, config);
         mock.agent.should.not.be.undefined;
         mock.agent._configuration.should.not.be.undefined;
         mock.should.be.deep.include(config);
