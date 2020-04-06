@@ -86,7 +86,11 @@ export = function(RED: any): void {
                     const actionValidator = actionSchemaValidator();
 
                     if (await actionValidator(msg.payload)) {
-                        awaitPromises = true;
+                        if (msg.payload.action === "await") {
+                            awaitPromises = true;
+                        } else if (msg.payload.action === "renew") {
+                            promises.push(renewToken(msg, agent, timestamp));
+                        }
                     } else if (await eventValidator(msg.payload)) {
                         promises.push(sendEvent(msg, agent, timestamp));
                     } else if (await fileValidator(msg.payload)) {
@@ -105,7 +109,7 @@ export = function(RED: any): void {
                             actionValidator
                         );
 
-                        throw new Error(errorString);
+                        promises.push(handleInputError(msg, { message: errorString }, timestamp));
                     }
 
                     if (
@@ -122,10 +126,13 @@ export = function(RED: any): void {
                         const fullfilled = results.length;
                         const rejected = results.filter((pr: any) => pr.value._mindsphereStatus === "Error").length;
 
+                        node.log(
+                            `Parallel requests status: ${fullfilled} finished with ${rejected} errors at ${timestamp}`
+                        );
                         node.status({
                             fill: rejected === 0 ? "green" : "red",
                             shape: "dot",
-                            text: `successfully awaited ${fullfilled} requests with ${rejected} errors`
+                            text: `Parallel requests status: ${fullfilled} finished with ${rejected} errors at ${timestamp}`
                         });
 
                         promises = [];
@@ -184,6 +191,31 @@ export = function(RED: any): void {
             errorString += "Configuration Errors:\n";
             errorString += JSON.stringify(rcValidatorErrors, null, 2);
             return errorString;
+        }
+
+        async function handleInputError(msg: any, error, timestamp: Date) {
+            handleError(node, msg, error, false);
+            return msg;
+        }
+
+        async function renewToken(msg: any, agent: MindConnectAgent, timestamp: Date) {
+            if (node.disablekeepalive) {
+                node.log("Keep alive for this agent is disabled");
+                return;
+            }
+
+            try {
+                node.status({ fill: "grey", shape: "dot", text: `renewing agent token` });
+                await retryWithNodeLog(node.retry, () => agent.RenewToken(), "RenewToken", node);
+                node.log(`Last keep alive key rotation at ${timestamp}`);
+                node.status({ fill: "green", shape: "dot", text: `Last keep alive key rotation at ${timestamp}` });
+                msg._mindsphereStatus = "OK";
+                // this is a control message, we are not sending the mesage further
+            } catch (error) {
+                // this is a control message, we are not sending the mesage further
+                handleError(node, msg, error, false);
+            }
+            return msg;
         }
 
         async function sendTimeSeriesData(msg: any, agent: MindConnectAgent, timestamp: Date) {

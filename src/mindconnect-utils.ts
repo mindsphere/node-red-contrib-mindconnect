@@ -70,30 +70,9 @@ export const configureAgent = (mcnode: IConfigurationInfo, newConfig?: IConfigur
         }, parseInt(mcnode.asyncduration) * 1000);
 
         mcnode.interval_id = setInterval(async () => {
-            if (!mcnode.disablekeepalive) {
-                let timestamp = new Date();
-
-                try {
-                    let agent = <MindConnectAgent>mcnode.agent;
-                    await retryWithNodeLog(mcnode.retry, () => agent.RenewToken(), "RenewToken", mcnode);
-                    mcnode.status({
-                        fill: "green",
-                        shape: "dot",
-                        text: `Last keep alive key rotation at ${timestamp}`
-                    });
-                    mcnode.log(`Last keep alive key rotation at ${timestamp}`);
-                } catch (error) {
-                    mcnode.error(error);
-                    mcnode.status({
-                        fill: "red",
-                        shape: "ring",
-                        text: `Error occured during keep alive ${error} on ${timestamp}`
-                    });
-                }
-            } else {
-                mcnode.log("Keep alive for this agent is disabled");
-            }
+            mcnode.receive({ payload: { action: "renew", timestamp: new Date().toISOString() } });
         }, HOUR);
+
         if (mcnode.agent.GetProfile() === "RSA_3072") {
             mcnode.privatekey = mcnode.privatekey.trim();
             if (!mcnode.privatekey.toString().startsWith("-----BEGIN RSA PRIVATE KEY-----")) {
@@ -184,13 +163,15 @@ export const reloadFlow = async (node, settings, newConfig) => {
 export const handleError = (
     node: IMindConnectNode,
     msg: { _mindsphereStatus: string; _error: string },
-    error: { message: any }
+    error: { message: any },
+    sendMessage: boolean = true
 ) => {
     node.error(error);
     msg._mindsphereStatus = "Error";
     msg._error = `${new Date().toISOString()} ${error.message}`;
-    node.send(msg);
-    node.status({ fill: "red", shape: "dot", text: `${error}` });
+    sendMessage && node.send(msg);
+    const errortext = error.message || error;
+    node.status({ fill: "red", shape: "dot", text: `${errortext}` });
 };
 
 export interface IMindConnectNode {

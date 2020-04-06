@@ -5,6 +5,7 @@
 ## New Features 3.7.0
 
 - the node will await parallel asynchronous requests automatically after configured number of seconds
+- the node will regularly display information about asynchronous requests
 
 ## Bugfixes 3.7.0
 
