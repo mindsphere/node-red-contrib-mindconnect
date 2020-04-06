@@ -180,3 +180,22 @@ export const reloadFlow = async (node, settings, newConfig) => {
         throw new Error(message);
     }
 };
+
+export const handleError = (
+    node: IMindConnectNode,
+    msg: { _mindsphereStatus: string; _error: string },
+    error: { message: any }
+) => {
+    node.error(error);
+    msg._mindsphereStatus = "Error";
+    msg._error = `${new Date().toISOString()} ${error.message}`;
+    node.send(msg);
+    node.status({ fill: "red", shape: "dot", text: `${error}` });
+};
+
+export interface IMindConnectNode {
+    agent: MindConnectAgent;
+    error: (arg0: any) => void;
+    send: (arg0: any) => void;
+    status: (arg0: { fill: string; shape: string; text: string }) => void;
+}

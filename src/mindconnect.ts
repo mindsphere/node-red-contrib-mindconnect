@@ -1,6 +1,6 @@
 // Copyright Siemens AG, 2017
 
-import * as mindconnectNodejs from "@mindconnect/mindconnect-nodejs";
+import { BaseEvent, MindConnectAgent } from "@mindconnect/mindconnect-nodejs";
 import * as path from "path";
 import * as allSettled from "promise.allsettled";
 import {
@@ -13,7 +13,14 @@ import {
     remoteConfigurationValidator,
     timeSeriesValidator
 } from "./mindconnect-schema";
-import { configureAgent, copyConfiguration, reloadFlow, retryWithNodeLog, sleep } from "./mindconnect-utils";
+import {
+    configureAgent,
+    copyConfiguration,
+    handleError,
+    reloadFlow,
+    retryWithNodeLog,
+    sleep
+} from "./mindconnect-utils";
 
 export = function(RED: any): void {
     function nodeRedMindConnectAgent(config: any) {
@@ -31,10 +38,8 @@ export = function(RED: any): void {
         this.on("input", msg => {
             (async () => {
                 try {
-                    const agent = <mindconnectNodejs.MindConnectAgent>node.agent;
-                    node.status({});
+                    const agent = <MindConnectAgent>node.agent;
                     const rcValidator = remoteConfigurationValidator();
-
                     if (await rcValidator(msg.payload)) {
                         return await reconfigureNode(msg);
                     }
@@ -70,7 +75,6 @@ export = function(RED: any): void {
                         );
                     }
 
-                    node.status({ fill: "grey", shape: "dot", text: `posting data` });
                     if (!msg.payload) {
                         throw new Error("you have to have a payload in your msg.payload to post the data!");
                     }
@@ -90,7 +94,7 @@ export = function(RED: any): void {
                     } else if (await bulkValidator(msg.payload)) {
                         promises.push(sendBulkTimeSeriesData(msg, agent, timestamp));
                     } else if (await tsValidator(msg.payload)) {
-                        promises.push(sendTimeSeriesData(agent, msg, timestamp));
+                        promises.push(sendTimeSeriesData(msg, agent, timestamp));
                     } else {
                         let errorString = extractErrorString(
                             eventValidator,
@@ -111,20 +115,24 @@ export = function(RED: any): void {
                         node.status({
                             fill: "blue",
                             shape: "dot",
-                            text: `waiting for ${promises.length}requests to finish`
+                            text: `awaiting ${promises.length} parallel requests...`
                         });
-                        const results = await allSettled(promises);
-                        console.log(results.length);
+                        const results = (await allSettled(promises)) || [];
+
+                        const fullfilled = results.length;
+                        const rejected = results.filter((pr: any) => pr.value._mindsphereStatus === "Error").length;
+
+                        node.status({
+                            fill: rejected === 0 ? "green" : "red",
+                            shape: "dot",
+                            text: `successfully awaited ${fullfilled} requests with ${rejected} errors`
+                        });
 
                         promises = [];
                         awaitPromises = false;
                     }
                 } catch (error) {
-                    node.error(error);
-                    msg._mindsphereStatus = "Error";
-                    msg._error = `${new Date().toISOString()} ${error.message}`;
-                    node.send(msg);
-                    node.status({ fill: "red", shape: "dot", text: `${error}` });
+                    handleError(node, msg, error);
                     promises = [];
                     awaitPromises = false;
                 }
@@ -178,85 +186,101 @@ export = function(RED: any): void {
             return errorString;
         }
 
-        async function sendTimeSeriesData(agent: mindconnectNodejs.MindConnectAgent, msg: any, timestamp: any) {
-            node.status({ fill: "grey", shape: "dot", text: `recieved data points` });
-            const result = await retryWithNodeLog(
-                node.retry,
-                () => agent.PostData(msg.payload, timestamp, node.validate),
-                "PostData",
-                node
-            );
-            node.log(`Posted last message at ${timestamp}`);
-            node.status({ fill: "green", shape: "dot", text: `Posted last message at ${timestamp}` });
-            msg._mindsphereStatus = result ? "OK" : "Error";
-            node.send(msg);
-            return msg;
-        }
-
-        async function sendBulkTimeSeriesData(msg: any, agent: mindconnectNodejs.MindConnectAgent, timestamp: Date) {
-            node.status({
-                fill: "grey",
-                shape: "dot",
-                text: `recieved ${msg.payload.length} data points for bulk upload `
-            });
-            const result = await retryWithNodeLog(
-                node.retry,
-                () => agent.BulkPostData(<mindconnectNodejs.TimeStampedDataPoint[]>msg.payload, node.validate),
-                "BulkPost",
-                node
-            );
-            node.log(`Posted last bulk message at ${timestamp}`);
-            node.status({ fill: "green", shape: "dot", text: `Posted last bulk message at ${timestamp}` });
-            msg._mindsphereStatus = result ? "OK" : "Error";
-            node.send(msg);
-            return msg;
-        }
-
-        async function sendFile(msg: any, agent: mindconnectNodejs.MindConnectAgent, timestamp: Date) {
-            const fileInfo = <IFileInfo>msg.payload;
-            const message = Buffer.isBuffer(fileInfo.fileName) ? "Buffer" : fileInfo.fileName;
-            node.status({ fill: "grey", shape: "dot", text: `recieved fileInfo ${message}` });
-
-            let parallelUploads = node.parallel || 1;
-            const entityId = fileInfo.entityId || agent.ClientId();
-            if (Buffer.isBuffer(fileInfo) && !fileInfo.filePath) {
-                throw Error("you have to provide the filePath when using Buffer as the payload");
+        async function sendTimeSeriesData(msg: any, agent: MindConnectAgent, timestamp: Date) {
+            try {
+                node.status({ fill: "grey", shape: "dot", text: `recieved data points` });
+                await retryWithNodeLog(
+                    node.retry,
+                    () => agent.PostData(msg.payload, timestamp, node.validate),
+                    "PostData",
+                    node
+                );
+                node.log(`Posted last message at ${timestamp}`);
+                node.status({ fill: "green", shape: "dot", text: `Posted last message at ${timestamp}` });
+                msg._mindsphereStatus = "OK";
+                node.send(msg);
+            } catch (error) {
+                handleError(node, msg, error);
             }
-
-            const result = await retryWithNodeLog(
-                node.retry,
-                () =>
-                    agent.UploadFile(entityId, fileInfo.filePath || fileInfo.fileName, fileInfo.fileName, {
-                        chunk: node.chunk,
-                        parallelUploads: parallelUploads,
-                        type: fileInfo.fileType
-                    }),
-                "FileUpload",
-                node
-            );
-            node.log(`Uploaded file at ${timestamp}`);
-            node.status({ fill: "green", shape: "dot", text: `Uploaded file at ${timestamp}` });
-            msg._mindsphereStatus = result ? "OK" : "Error";
-            node.send(msg);
             return msg;
         }
 
-        async function sendEvent(msg: any, agent: mindconnectNodejs.MindConnectAgent, timestamp: any) {
-            node.status({ fill: "grey", shape: "dot", text: `recieved event` });
-            const event = <mindconnectNodejs.BaseEvent>msg.payload;
-            if (!event.entityId) {
-                event.entityId = agent.ClientId();
+        async function sendBulkTimeSeriesData(msg: any, agent: MindConnectAgent, timestamp: Date) {
+            try {
+                node.status({
+                    fill: "grey",
+                    shape: "dot",
+                    text: `recieved ${msg.payload.length} data points for bulk upload `
+                });
+                await retryWithNodeLog(
+                    node.retry,
+                    () => agent.BulkPostData(msg.payload, node.validate),
+                    "BulkPost",
+                    node
+                );
+                node.log(`Posted last bulk message at ${timestamp}`);
+                node.status({ fill: "green", shape: "dot", text: `Posted last bulk message at ${timestamp}` });
+                msg._mindsphereStatus = "OK";
+                node.send(msg);
+            } catch (error) {
+                handleError(node, msg, error);
             }
-            const result = await retryWithNodeLog(
-                node.retry,
-                () => agent.PostEvent(event, timestamp, node.validateevent),
-                "PostEvent",
-                node
-            );
-            node.log(`Posted last event at ${timestamp}`);
-            node.status({ fill: "green", shape: "dot", text: `Posted last event at ${timestamp}` });
-            msg._mindsphereStatus = result ? "OK" : "Error";
-            node.send(msg);
+            return msg;
+        }
+
+        async function sendFile(msg: any, agent: MindConnectAgent, timestamp: Date) {
+            try {
+                const fileInfo = <IFileInfo>msg.payload;
+                const message = Buffer.isBuffer(fileInfo.fileName) ? "Buffer" : fileInfo.fileName;
+                node.status({ fill: "grey", shape: "dot", text: `recieved fileInfo ${message}` });
+
+                let parallelUploads = node.parallel || 1;
+                const entityId = fileInfo.entityId || agent.ClientId();
+                if (Buffer.isBuffer(fileInfo) && !fileInfo.filePath) {
+                    throw Error("you have to provide the filePath when using Buffer as the payload");
+                }
+
+                await retryWithNodeLog(
+                    node.retry,
+                    () =>
+                        agent.UploadFile(entityId, fileInfo.filePath || fileInfo.fileName, fileInfo.fileName, {
+                            chunk: node.chunk,
+                            parallelUploads: parallelUploads,
+                            type: fileInfo.fileType
+                        }),
+                    "FileUpload",
+                    node
+                );
+                node.log(`Uploaded file at ${timestamp}`);
+                node.status({ fill: "green", shape: "dot", text: `Uploaded file at ${timestamp}` });
+                msg._mindsphereStatus = "OK";
+                node.send(msg);
+            } catch (error) {
+                handleError(node, msg, error);
+            }
+            return msg;
+        }
+
+        async function sendEvent(msg: any, agent: MindConnectAgent, timestamp: any) {
+            try {
+                node.status({ fill: "grey", shape: "dot", text: `recieved event` });
+                const event = <BaseEvent>msg.payload;
+                if (!event.entityId) {
+                    event.entityId = agent.ClientId();
+                }
+                const result = await retryWithNodeLog(
+                    node.retry,
+                    () => agent.PostEvent(event, timestamp, node.validateevent),
+                    "PostEvent",
+                    node
+                );
+                node.log(`Posted last event at ${timestamp}`);
+                node.status({ fill: "green", shape: "dot", text: `Posted last event at ${timestamp}` });
+                msg._mindsphereStatus = result ? "OK" : "Error";
+                node.send(msg);
+            } catch (error) {
+                handleError(node, msg, error);
+            }
             return msg;
         }
     }

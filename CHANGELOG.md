@@ -1,12 +1,18 @@
 # Changelog
 
-## 3.7.0 (Vienna Ocelots) - Febraury 2020
+## 3.7.0 (Vienna Ocelots) - April 2020
+
+## New Features 3.7.0
+
+- the node will await parallel asynchronous requests automatically after configured number of seconds
 
 ## Bugfixes 3.7.0
 
-- fixed CSS for node-red >1.0.0 (the node title is white again)
+- fixed CSS for node-red > 1.0.0 (the node title is white again)
 - updated to mindconnect-nodejs 3.7.0
 - bumped all dependencies
+
+Stay strong, safe and healthy! <3 :hearth:
 
 ## 3.6.2 (Vienna Jungle Cats) - September 2019
 
