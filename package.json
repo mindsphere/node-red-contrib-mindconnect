@@ -45,7 +45,7 @@
         "mocha-jenkins-reporter": "^0.4.1",
         "node-red": "^0.20.7",
         "node-red-node-test-helper": "^0.2.3",
-        "nodemon": "^1.19.1",
+        "nodemon": "^2.0.3",
         "nyc": "^14.1.1",
         "tslint": "^5.18.0",
         "typescript": "^3.5.3",
