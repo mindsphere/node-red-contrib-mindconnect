@@ -178,6 +178,27 @@ properties which can be used to create more complex flows. (e.g. in the flow bel
 
 [![Demo Flows](https://img.shields.io/badge/node--RED-playground-%23009999.svg)](https://playground.mindconnect.rocks)
 
+[MindConnect Node-RED playground](https://playground.mindconnect.rocks) provides following demo flows importing following Data to MindSphere
+
+- CPU-Usage
+- Batched MQTT Data
+- OPC-UA Data
+- Real Weather Data to MindSphere
+- Simulated Water Pump Data
+
+The simulated water pump data can be inspected at
+
+<https://dreamforce.mindconnect.rocks>
+
+This application can be used without mindsphere credentials.
+
+username: guest@mindsphere.io
+password: Siemens123!
+
+This data is also used as example for the KPI-Calculation and Trend prediction with help of MindSphere APIs.
+
+<https://github.com/mindsphere/analytics-examples>
+
 ## Troubleshooting
 
 If you have problems with your agent:

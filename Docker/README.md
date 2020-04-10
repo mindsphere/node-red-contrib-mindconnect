@@ -19,7 +19,7 @@ docker pull mindconnect/node-red-contrib-mindconnect
 
 - **latest** : latest state of the master branch on [GitHub](https://github.com/mindsphere/node-red-mindconnect) for multiple processor architecture.
 
-## Deprectated images supporting x86 or ARM architectures (until-3.6.2) 
+## Deprectated images supporting x86 or ARM architectures (until-3.6.2)
 
 These docker images are based on the [Node-RED-Docker](https://hub.docker.com/r/nodered/node-red-docker/) image (Node-RED version 0.20.*) and provide the preinstalled [node-red-contib-mindconnect](https://github.com/mindsphere/node-red-contrib-mindconnect) node.
 
