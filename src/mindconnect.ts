@@ -220,7 +220,7 @@ export = function(RED: any): void {
         }
 
         async function handleInputError(msg: any, error, timestamp: Date) {
-            handleError(node, msg, error, false);
+            handleError(node, msg, error);
             return msg;
         }
 
