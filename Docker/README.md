@@ -9,14 +9,25 @@
 These docker images are based on the [Node-RED-Docker](https://hub.docker.com/r/nodered/node-red/) image (Node-RED version 1.0.*) and provide the preinstalled [node-red-contib-mindconnect](https://github.com/mindsphere/node-red-contrib-mindconnect) node.
 
 ``` bash
-docker pull mindconnect/node-red-contrib-mindconnect #pulls the latest image, docker runtime will choose appropriate architecture
+
+#pull the latest image, docker runtime will choose the appropriate architecture.
+
+docker pull mindconnect/node-red-contrib-mindconnect
 ```
 
-## Images supporting x86 or ARM architectures (until-3.6.2) - deprecated
+### Tags
+
+- **latest** : latest state of the master branch on [GitHub](https://github.com/mindsphere/node-red-mindconnect) for multiple processor architecture.
+
+## Deprectated images supporting x86 or ARM architectures (until-3.6.2) 
 
 These docker images are based on the [Node-RED-Docker](https://hub.docker.com/r/nodered/node-red-docker/) image (Node-RED version 0.20.*) and provide the preinstalled [node-red-contib-mindconnect](https://github.com/mindsphere/node-red-contrib-mindconnect) node.
 
-These images are **deprecated**.
+### Deprecated Tags
+
+- **arm-latest** : latest state of the mater branch on [GitHub](https://github.com/mindsphere/node-red-mindconnect) for ARM processor architecture. (deprecated)
+- **x.x.x** : image containing the x.x.x. version of the node-red-contib-mondconnect agents for X86. (deprecated before 3.7.0)
+- **arm-x.x.x** : image containing the x.x.x. version of the node-red-contib-mondconnect agents for ARM. (deprecated)
 
 ## Using the images
 
