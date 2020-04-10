@@ -36,6 +36,7 @@ export const copyConfiguration = (node: IConfigurationInfo, config: IConfigurati
     node.disablekeepalive = config.disablekeepalive;
     node.retry = config.retry;
     node.parallel = config.parallel;
+    node.asyncduration = config.asyncduration;
 };
 
 export const configureAgent = (mcnode: IConfigurationInfo, newConfig?: IConfigurationInfo) => {
@@ -58,35 +59,20 @@ export const configureAgent = (mcnode: IConfigurationInfo, newConfig?: IConfigur
         else startlogmessage += "keep-alive rotation: every hour";
 
         mcnode.parallel = mcnode.parallel || "1";
-        startlogmessage += ` parallel requests: ${mcnode.parallel}`;
+        mcnode.asyncduration = mcnode.asyncduration || "10";
+        startlogmessage += ` parallel requests: ${mcnode.parallel} async requests wait: ${mcnode.asyncduration}s`;
         mcnode.log(`settings: ${startlogmessage} retries: ${mcnode.retry}`);
         mcnode.status({ fill: "grey", shape: "dot", text: `settings: ${startlogmessage} retries: ${mcnode.retry}` });
         const HOUR = 3600000;
-        mcnode.interval_id = setInterval(async () => {
-            if (!mcnode.disablekeepalive) {
-                let timestamp = new Date();
 
-                try {
-                    let agent = <MindConnectAgent>mcnode.agent;
-                    await retryWithNodeLog(mcnode.retry, () => agent.RenewToken(), "RenewToken", mcnode);
-                    mcnode.status({
-                        fill: "green",
-                        shape: "dot",
-                        text: `Last keep alive key rotation at ${timestamp}`
-                    });
-                    mcnode.log(`Last keep alive key rotation at ${timestamp}`);
-                } catch (error) {
-                    mcnode.error(error);
-                    mcnode.status({
-                        fill: "red",
-                        shape: "ring",
-                        text: `Error occured during keep alive ${error} on ${timestamp}`
-                    });
-                }
-            } else {
-                mcnode.log("Keep alive for this agent is disabled");
-            }
+        mcnode.await_id = setInterval(async () => {
+            mcnode.receive({ payload: { action: "await", timestamp: new Date().toISOString() } });
+        }, parseInt(mcnode.asyncduration) * 1000);
+
+        mcnode.interval_id = setInterval(async () => {
+            mcnode.receive({ payload: { action: "renew", timestamp: new Date().toISOString() } });
         }, HOUR);
+
         if (mcnode.agent.GetProfile() === "RSA_3072") {
             mcnode.privatekey = mcnode.privatekey.trim();
             if (!mcnode.privatekey.toString().startsWith("-----BEGIN RSA PRIVATE KEY-----")) {
@@ -173,3 +159,24 @@ export const reloadFlow = async (node, settings, newConfig) => {
         throw new Error(message);
     }
 };
+
+export const handleError = (
+    node: IMindConnectNode,
+    msg: { _mindsphereStatus: string; _error: string },
+    error: { message: any },
+    sendMessage: boolean = true
+) => {
+    node.error(error);
+    msg._mindsphereStatus = "Error";
+    msg._error = `${new Date().toISOString()} ${error.message}`;
+    sendMessage && node.send(msg);
+    const errortext = error.message || error;
+    node.status({ fill: "red", shape: "dot", text: `${errortext}` });
+};
+
+export interface IMindConnectNode {
+    agent: MindConnectAgent;
+    error: (arg0: any) => void;
+    send: (arg0: any) => void;
+    status: (arg0: { fill: string; shape: string; text: string }) => void;
+}

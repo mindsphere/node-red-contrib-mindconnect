@@ -4,6 +4,7 @@ import { IMindConnectConfiguration } from "@mindconnect/mindconnect-nodejs";
 import * as chai from "chai";
 import { describe, it } from "mocha";
 import {
+    actionSchemaValidator,
     bulkUploadValidator,
     eventSchemaValidator,
     fileInfoValidator,
@@ -28,6 +29,9 @@ describe("Schema Validators", () => {
 
         const rcVal = remoteConfigurationValidator();
         rcVal.should.exist;
+
+        const actionVal = actionSchemaValidator();
+        actionVal.should.exist;
     });
 
     it("should validate events", async () => {
@@ -42,9 +46,9 @@ describe("Schema Validators", () => {
             description: "Event sent at " + new Date().toISOString(),
             timestamp: new Date().toISOString()
         };
-        await eventVal({ sourceType: "Agent" }).should.be.false;
-        await eventVal({ event }).should.be.false;
-        await eventVal(event).should.be.true;
+        eventVal({ sourceType: "Agent" }).should.be.false;
+        eventVal({ event }).should.be.false;
+        eventVal(event).should.be.true;
     });
 
     it("should validate fileInfos", async () => {
@@ -58,17 +62,17 @@ describe("Schema Validators", () => {
             description: "testfile"
         };
 
-        await fiVal({}).should.be.false;
-        await fiVal(fileInfo).should.be.true;
+        fiVal({}).should.be.false;
+        fiVal(fileInfo).should.be.true;
         delete fileInfo.entityId;
-        await fiVal(fileInfo).should.be.true;
+        fiVal(fileInfo).should.be.true;
         delete fileInfo.fileType;
-        await fiVal(fileInfo).should.be.true;
+        fiVal(fileInfo).should.be.true;
         delete fileInfo.fileName;
-        await fiVal(fileInfo).should.be.false;
+        fiVal(fileInfo).should.be.false;
         fileInfo.fileName = "blubb";
         delete fileInfo.description;
-        await fiVal(fileInfo).should.be.false;
+        fiVal(fileInfo).should.be.false;
     });
 
     it("should validate timeseries", async () => {
@@ -82,17 +86,17 @@ describe("Schema Validators", () => {
             }
         ];
 
-        await tsVal({}).should.be.false;
-        await tsVal(values).should.be.true;
+        tsVal({}).should.be.false;
+        tsVal(values).should.be.true;
 
         for (let index = 0; index < 10; index++) {
             values.push({ dataPointId: "123", qualityCode: "1", value: "33.5" });
         }
-        await tsVal(values).should.be.true;
+        tsVal(values).should.be.true;
 
         (values as any[]).push({ xdataPointId: "123", qualityCode: "1", value: "33.5" }); // * invalid data point
-        await tsVal(values).should.be.false;
-        await tsVal([{ xdataPointId: "123", qualityCode: "1", value: "33.5" }]).should.be.false;
+        tsVal(values).should.be.false;
+        tsVal([{ xdataPointId: "123", qualityCode: "1", value: "33.5" }]).should.be.false;
     });
 
     it("should validate bulk", async () => {
@@ -106,17 +110,17 @@ describe("Schema Validators", () => {
             }
         ];
 
-        await buVal([{ timeSTAMP: new Date().toISOString(), values: values }]).should.be.false;
-        await buVal([{ timestamp: new Date().toISOString(), values: values }]).should.be.true;
+        buVal([{ timeSTAMP: new Date().toISOString(), values: values }]).should.be.false;
+        buVal([{ timestamp: new Date().toISOString(), values: values }]).should.be.true;
 
         for (let index = 0; index < 10; index++) {
             values.push({ dataPointId: "123", qualityCode: "1", value: "33.5" });
         }
-        await buVal([{ timestamp: new Date().toISOString(), values: values }]).should.be.true;
+        buVal([{ timestamp: new Date().toISOString(), values: values }]).should.be.true;
 
         (values as any[]).push({ xdataPointId: "123", qualityCode: "1", value: "33.5" }); // * invalid data point
-        await buVal([{ timestamp: new Date().toISOString(), values: values }]).should.be.true;
-        await buVal([{ xdataPointId: "123", qualityCode: "1", value: "33.5" }]).should.be.false;
+        buVal([{ timestamp: new Date().toISOString(), values: values }]).should.be.true;
+        buVal([{ xdataPointId: "123", qualityCode: "1", value: "33.5" }]).should.be.false;
     });
 
     it("should validate remoteConfiguration", async () => {
@@ -125,16 +129,16 @@ describe("Schema Validators", () => {
 
         const sharedSecretConfig: IMindConnectConfiguration = require("../agentconfig.json");
 
-        await rcVal({}).should.be.false;
-        await rcVal([{}]).should.be.false;
-        await rcVal({ name: "test" }).should.be.false;
-        await rcVal({ name: 123 }).should.be.false;
-        await rcVal({ name: "testNode", validate: true }).should.be.false;
-        await rcVal({ name: "testNode", validate: true, eventvalidate: false }).should.be.false;
-        await rcVal({ name: "testNode", validate: true, validateevent: false }).should.be.false;
-        await rcVal({ name: "testNode", validate: true, validateevent: false, agentconfig: "" }).should.be.false;
-        await rcVal({ name: "testNode", validate: true, validateevent: false, agentconfig: {} }).should.be.false;
-        await rcVal({
+        rcVal({}).should.be.false;
+        rcVal([{}]).should.be.false;
+        rcVal({ name: "test" }).should.be.false;
+        rcVal({ name: 123 }).should.be.false;
+        rcVal({ name: "testNode", validate: true }).should.be.false;
+        rcVal({ name: "testNode", validate: true, eventvalidate: false }).should.be.false;
+        rcVal({ name: "testNode", validate: true, validateevent: false }).should.be.false;
+        rcVal({ name: "testNode", validate: true, validateevent: false, agentconfig: "" }).should.be.false;
+        rcVal({ name: "testNode", validate: true, validateevent: false, agentconfig: {} }).should.be.false;
+        rcVal({
             name: "testNode",
             configtype: "SHARED_SECRET",
             validate: true,
@@ -145,6 +149,43 @@ describe("Schema Validators", () => {
             chunk: false,
             disablekeepalive: false,
             retry: "7"
+        }).should.be.false;
+
+        rcVal({
+            name: "testNode",
+            configtype: "SHARED_SECRET",
+            validate: true,
+            validateevent: false,
+            agentconfig: sharedSecretConfig,
+            privatekey: "",
+            model: "",
+            chunk: false,
+            disablekeepalive: false,
+            retry: "0xa7",
+            asyncduration: "23"
+        }).should.be.false;
+
+        rcVal({
+            name: "testNode",
+            configtype: "SHARED_SECRET",
+            validate: true,
+            validateevent: false,
+            agentconfig: sharedSecretConfig,
+            privatekey: "",
+            model: "",
+            chunk: false,
+            disablekeepalive: false,
+            retry: "7091",
+            asyncduration: "23"
         }).should.be.true;
+    });
+
+    it("should validate node actions", async () => {
+        const actionVal = actionSchemaValidator();
+        actionVal({}).should.be.false;
+        actionVal({ action: "" }).should.be.false;
+        actionVal({ action: "await", timestamp: new Date().toISOString() }).should.be.true;
+        actionVal({ action: "renew", timestamp: new Date().toISOString() }).should.be.true;
+        actionVal({ action: "non-existing-action", timestamp: new Date().toISOString() }).should.be.false;
     });
 });

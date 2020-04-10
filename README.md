@@ -14,7 +14,7 @@ This project has started as a community effort at Siemens AG and is now availabl
 [![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/mindsphere/node-red-contrib-mindconnect.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/mindsphere/node-red-contrib-mindconnect/context:javascript) [![Greenkeeper badge](https://badges.greenkeeper.io/mindsphere/node-red-contrib-mindconnect.svg)](https://greenkeeper.io/)
 [![Documentation](https://img.shields.io/badge/mindsphere-documentation-%23009999.svg)](https://opensource.mindsphere.io/docs/node-red-contrib-mindconnect/index.html)
 [![Forum](https://img.shields.io/badge/mindsphere-community-%23009999.svg)](https://community.plm.automation.siemens.com/t5/Developer-Space/bd-p/MindSphere-platform-forum)
-
+[![Demo Flows](https://img.shields.io/badge/node--RED-playground-%23009999.svg)](https://playground.mindconnect.rocks)
 
 The node is written in typescript/javascript without any native dependencies so it should work beside x86 also on other platforms (e.g. on raspberry pi, IoT2000 etc, you just have to have Node-RED installed).
 
@@ -178,7 +178,26 @@ properties which can be used to create more complex flows. (e.g. in the flow bel
 
 [![Demo Flows](https://img.shields.io/badge/node--RED-playground-%23009999.svg)](https://playground.mindconnect.rocks)
 
-## How to reset everything
+[MindConnect Node-RED playground](https://playground.mindconnect.rocks) provides following demo flows importing following data points to MindSphere
+
+- CPU-Usage
+- Batched MQTT Data
+- OPC-UA Data
+- Real Weather Data to MindSphere
+- Simulated Water Pump Data
+
+The simulated water pump data can be inspected at
+
+<https://dreamforce.mindconnect.rocks>
+
+This application can be used without mindsphere credentials.
+
+- username: guest@mindsphere.io
+- password: Siemens123!
+
+This data is also used as an example for the KPI-Calculation and Trend prediction with help of MindSphere APIs. <https://github.com/mindsphere/analytics-examples>
+
+## Troubleshooting
 
 If you have problems with your agent:
 
@@ -187,6 +206,23 @@ If you have problems with your agent:
 3. Offboard the agent.
 4. Create new settings for the mindconnect library.
 5. copy the new settings to the node.
+
+### Reseting the agent settings from version 3.7.0
+
+Since version 3.7.0. it is possible to delete the content of the .mc/agentconfig.json file and the agent settings directly from the node.
+
+Press on the "delete local configuration" :wastebucket: button on the node, confirm the dialog and redeploy the node.
+
+![delete local settings](images/deletelocal.png)
+
+If you are having problems, it is a good idea to restart the Node-RED runtime completely.
+
+### Diagnostic in MindSphere
+
+If the data is not arriving in your configured asset you should take a look if the data is beeing dropped in MindSphere because of a misconfiguration.
+The agent diagnostic button will lead you directly to the agent diagnostic application in the MindSphere.
+
+![diagnostic](images/diag.png)
 
 ## Generating the documentation
 

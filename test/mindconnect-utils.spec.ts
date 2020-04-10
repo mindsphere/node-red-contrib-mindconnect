@@ -53,7 +53,8 @@ describe("MindConnect Utils", () => {
             chunk: true,
             disablekeepalive: true,
             retry: "2",
-            parallel: "1"
+            parallel: "1",
+            asyncduration: "3"
         };
 
         const target = {} as IConfigurationInfo;
@@ -84,11 +85,12 @@ describe("MindConnect Utils", () => {
             chunk: true,
             disablekeepalive: true,
             retry: "2",
-            parallel: "1"
+            parallel: "1",
+            asyncduration: "3"
         };
 
         const mock = ({ log: () => {}, status: () => {} } as unknown) as IConfigurationInfo;
-        await configureAgent(mock, config);
+        configureAgent(mock, config);
         mock.agent.should.not.be.undefined;
         mock.agent._configuration.should.not.be.undefined;
         mock.should.be.deep.include(config);
@@ -115,7 +117,8 @@ describe("MindConnect Utils", () => {
             chunk: true,
             disablekeepalive: false,
             retry: "2",
-            parallel: "1"
+            parallel: "1",
+            asyncduration: "3"
         };
 
         let errorCalled = false;
@@ -133,7 +136,7 @@ describe("MindConnect Utils", () => {
             }
         } as unknown) as IConfigurationInfo;
 
-        await configureAgent(mock, config);
+        configureAgent(mock, config);
         mock.agent.should.not.be.undefined;
         mock.agent._configuration.should.not.be.undefined;
         mock.should.be.deep.include(config);
@@ -163,7 +166,8 @@ describe("MindConnect Utils", () => {
             chunk: true,
             disablekeepalive: true,
             retry: "2",
-            parallel: "1"
+            parallel: "1",
+            asyncduration: "3"
         };
 
         let errorCalled = false;
@@ -178,7 +182,7 @@ describe("MindConnect Utils", () => {
             }
         } as unknown) as IConfigurationInfo;
 
-        await configureAgent(mock, config);
+        configureAgent(mock, config);
         mock.agent.should.not.be.undefined;
         mock.agent._configuration.should.not.be.undefined;
         mock.should.be.deep.include(config);

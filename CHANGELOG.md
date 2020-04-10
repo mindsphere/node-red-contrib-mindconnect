@@ -1,5 +1,41 @@
 # Changelog
 
+## 3.7.0 (Vienna Ocelots) - April 2020
+
+## New Features 3.7.0
+
+- new docker images with version 1.0.* for multiple architectures
+- the old 0.20.* based docker images are now deprecated
+- the node has now a link to agent diagnostic application in the mindsphere
+- new configuration button to delete all local data of the agent (including the .mc/agentconfig.json)
+- the node will await parallel asynchronous requests automatically after configured number of seconds
+- the node will regularly display information about asynchronous requests
+
+### Important docker image user change - for users upgrading from versions before 3.7.0
+
+If you are using host directories for docker persistence and you are upgrading from previous version of docker images (which were based on 0.20.* version of node red) you will have to ensure that any existing data and .mc directory has the correct ownership.
+As of 1.0 this needs to be 1000:1000. This can be forced by running the command
+
+```bash
+sudo chown -R 1000:1000 path/to/your/node-red/data
+sudo chown -R 1000:1000 path/to/your/node-red/data/.mc
+```
+
+on the host system.
+
+Consider using docker named volumes instead.
+
+This is necessary because of the change in the base docker image of node-red. See also <https://nodered.org/docs/getting-started/docker>
+
+## Bugfixes 3.7.0
+
+- the node now removes previous keep alive and async logging interval on redeployement (#39)
+- fixed CSS for node-red > 1.0.0 (the node title is white again)
+- updated to mindconnect-nodejs 3.7.0
+- bumped all dependencies
+
+Stay strong, safe and healthy! <3 :hearth:
+
 ## 3.6.2 (Vienna Jungle Cats) - September 2019
 
 ## Bugfixes 3.6.2

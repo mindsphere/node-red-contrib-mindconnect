@@ -3,7 +3,35 @@
 import ajv = require("ajv");
 import { IMindConnectConfiguration } from "@mindconnect/mindconnect-nodejs";
 
+export const actionSchema = {
+    definitions: {},
+    $schema: "http://json-schema.org/draft-07/schema#",
+    $id: "http://opensource.mindsphere.io/mindconnect/action",
+    type: "object",
+    title: "The Root Schema",
+    required: ["action", "timestamp"],
+    properties: {
+        action: {
+            $id: "#/properties/action",
+            type: "string",
+            title: "The Action Schema",
+            default: "",
+            examples: ["await"],
+            oneOf: [{ enum: ["await", "renew"] }]
+        },
+        timestamp: {
+            $id: "#/properties/timestamp",
+            type: "string",
+            title: "The Timestamp Schema",
+            default: "",
+            examples: ["2020-02-25T09:31:01.493Z"],
+            pattern: "^(.*)$"
+        }
+    }
+};
+
 export const eventSchema = {
+    $id: "http://opensource.mindsphere.io/mindconnect/event",
     type: "object",
     properties: {
         entityId: {
@@ -64,7 +92,7 @@ export const eventSchema = {
 };
 
 export const fileInfoSchema = {
-    $id: "http://example.com/example.json",
+    $id: "http://opensource.mindsphere.io/mindconnect/fileinfo",
     type: "object",
     properties: {
         entityId: {
@@ -100,6 +128,7 @@ export const fileInfoSchema = {
 };
 
 export const bulkUploadSchema = {
+    $id: "http://opensource.mindsphere.io/mindconnect/bulkupload",
     type: "array",
     items: {
         type: "object",
@@ -131,6 +160,7 @@ export const bulkUploadSchema = {
 };
 
 export const timeSeriesSchema = {
+    $id: "http://opensource.mindsphere.io/mindconnect/timeseries",
     type: "array",
     items: {
         type: "object",
@@ -152,7 +182,7 @@ export const timeSeriesSchema = {
 export const remoteConfigurationSchema = {
     definitions: {},
     $schema: "http://json-schema.org/draft-07/schema#",
-    $id: "http://example.com/root.json",
+    $id: "http://opensource.mindsphere.io/mindconnect/remoteconfiguration",
     type: "object",
     title: "The Root Schema",
     required: [
@@ -165,7 +195,8 @@ export const remoteConfigurationSchema = {
         "validateevent",
         "chunk",
         "disablekeepalive",
-        "retry"
+        "retry",
+        "asyncduration"
     ],
     properties: {
         name: {
@@ -304,10 +335,23 @@ export const remoteConfigurationSchema = {
             title: "The Retry Schema",
             default: "",
             examples: ["7"],
-            pattern: "^(.*)$"
+            pattern: "^([0-9]*)$"
+        },
+        asyncduration: {
+            $id: "#/properties/asyncduration",
+            type: "string",
+            title: "The asyncduration Schema",
+            default: "",
+            examples: ["7"],
+            pattern: "^([0-9]*)$"
         }
     }
 };
+
+export function actionSchemaValidator(): ajv.ValidateFunction {
+    const schemaValidator = new ajv({ $data: true, allErrors: true });
+    return schemaValidator.compile(actionSchema);
+}
 
 export function remoteConfigurationValidator(): ajv.ValidateFunction {
     const schemaValidator = new ajv({ $data: true, allErrors: true });
@@ -354,5 +398,6 @@ export interface IConfigurationInfo {
     disablekeepalive: boolean;
     retry: string;
     parallel: string;
+    asyncduration: string;
     [x: string]: any;
 }

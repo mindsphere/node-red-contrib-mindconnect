@@ -36,14 +36,28 @@
 }
 
 .headerLink {
-    color: #ffffff;
-    text-decoration: none;
+    color: #ffffff !important;
+    text-decoration: none !important;
 }
 .headerLink:focus {
-    color: #ffffff;
-    text-decoration: none;
+    color: #ffffff !important;
+    text-decoration: none !important;
 }
 .headerLink:hover {
-    color: #00bfa5;
-    text-decoration: none;
+    color: #00bfa5 !important;
+    text-decoration: none !important;
+}
+
+.deleteLink:hover {
+    color: #af235f !important;
+    text-decoration: none !important;
+    font-size: 150% !important;
+    cursor: pointer !important;
+}
+
+.diagLink:hover {
+    color: #009999 !important;
+    text-decoration: none !important;
+    font-size: 150% !important;
+    cursor: pointer !important;
 }
