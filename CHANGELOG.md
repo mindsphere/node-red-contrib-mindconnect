@@ -11,6 +11,7 @@
 
 ## Bugfixes 3.7.0
 
+- the node now removes previous keep alive and async logging interval on redeployement (#39)
 - fixed CSS for node-red > 1.0.0 (the node title is white again)
 - updated to mindconnect-nodejs 3.7.0
 - bumped all dependencies

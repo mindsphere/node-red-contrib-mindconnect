@@ -44,6 +44,13 @@ export = function(RED: any): void {
 
         allSettled.shim();
 
+        this.on("close", () => {
+            clearInterval(node.interval_id);
+            clearInterval(node.await_id);
+            node.log("cleared keep alive and async duration interval");
+            node.status({});
+        });
+
         this.on("input", msg => {
             (async () => {
                 try {
