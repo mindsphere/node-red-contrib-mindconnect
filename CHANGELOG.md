@@ -4,6 +4,8 @@
 
 ## New Features 3.7.0
 
+- the node has now a link to agent diagnostic application in the mindsphere
+- new configuration button to delete all local data of the agent (including the .mc/agentconfig.json)
 - the node will await parallel asynchronous requests automatically after configured number of seconds
 - the node will regularly display information about asynchronous requests
 

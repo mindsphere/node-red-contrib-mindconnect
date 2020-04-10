@@ -1,6 +1,7 @@
 // Copyright Siemens AG, 2017
 
 import { BaseEvent, MindConnectAgent } from "@mindconnect/mindconnect-nodejs";
+import * as fs from "fs";
 import * as path from "path";
 import * as allSettled from "promise.allsettled";
 import {
@@ -25,8 +26,16 @@ import {
 export = function(RED: any): void {
     function nodeRedMindConnectAgent(config: any) {
         RED.nodes.createNode(this, config);
-        copyConfiguration(this, config);
         let node = this;
+        copyConfiguration(this, config);
+
+        try {
+            const agentConfig = JSON.parse(config.agentconfig);
+            if (agentConfig.action === "delete") {
+                handleDeleteConfiguration(agentConfig);
+                return;
+            }
+        } catch (err) {}
 
         configureAgent(node);
 
@@ -146,6 +155,23 @@ export = function(RED: any): void {
             })();
             return;
         });
+
+        function handleDeleteConfiguration(agentConfig: any) {
+            const fileName = path.resolve(`.mc/${agentConfig.clientId}.json`);
+            try {
+                fs.unlinkSync(fileName);
+                node.status({ fill: "blue", shape: "dot", text: `deleted configuration file ${fileName}` });
+            } catch (error) {
+                node.error(error);
+                node.status({ fill: "red", shape: "dot", text: `error deleting ${fileName}` });
+            }
+
+            node.on("input", () => {
+                node.error("The node is not correctly configured!");
+                node.status({ fill: "red", shape: "dot", text: `The node is not correctly configured!` });
+            });
+            return;
+        }
 
         async function reconfigureNode(msg: any) {
             node.status({ fill: "blue", shape: "dot", text: "received remote configuration..." });

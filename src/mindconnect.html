@@ -41,11 +41,33 @@
     </div>
 
     <div class="form-row node-text-editor-row">
-        <p><span id="noLinkSpan"><i class="fa fa-id-card"></i> Agent Configuration</span><span id="linkSpan"><a id="configLink" target="_new" title="Agent Configuration in the MindSphere"><i class="fa fa-external-link"></i> Agent Configuration</a></span></p>
+        <p>
+            <span id="noLinkSpan">
+                <i class="fa fa-id-card"></i> Agent Configuration
+            </span>
+            <span id="linkSpan" style="margin-top: 5px">
+                <a id="configLink" target="_new" title="Agent Configuration in the MindSphere"><i class="fa fa-external-link"></i> Agent Configuration</a> 
+                &nbsp;<a id="diagLink" class="diagLink" target="_new" title="Agent Diagnotic in MindSphere"><i class="fa fa-stethoscope" aria-hidden="true"></i><a>
+                <a id="resetLink" class="deleteLink" style="float:right" title="Delete local agent configuration."><i class="fa fa-trash"></i></a>
+            </span>
+        </p>
+        <p id="deleteConfig" style="color: #af235f !important; display:none">
+            Please re-deploy the flow to delete the local configuration!
+        </p>
         <textarea style="height: 150px; min-height:150px; width:100%; overflow-y:scroll" class="node-text-editor" id="node-input-agentconfig"
             placeholder="Copy Authentication JSON from MindSphere (use MindConnectLib [core.mclib] asset type)"></textarea>
     </div>
 
+     
+    <div id="dialog" title="Delete local agent configuration?" style="display:none">
+
+        <p>
+            <i class="fa fa-exclamation-triangle"style="float:left; color: #af235f !important; font-size: 300% !important; margin-right:20px" aria-hidden="true"></i>
+            The local agent configuration (including the data stored in <span style="color: #af235f !important" id="idLink"></span>) 
+            will be deleted. Are you sure?
+        </p>
+    </div>
+    
     <div class="form-row node-text-editor-row hidden" id="private-key">
         <p><i class="fa fa-key"></i> RSA 3072 Private Key</p>
         <textarea style="height: 150px; min-height:150px; width:100%; overflow-y:scroll" class="node-text-editor" id="node-input-privatekey"
@@ -279,8 +301,12 @@ msg_error; // The timestamped error message
                 required: true,
                 validate: (v) => { 
                     try {
+                    const data = JSON.parse(v);
+                    if (data.action === "delete" && data.clientId) {
+                        return true;
+                    }
                     const validator=configValidator(); 
-                    const result= validator(JSON.parse(v)); 
+                    const result= validator(data); 
                     return result;
 
                     } catch (err) {
@@ -356,9 +382,37 @@ msg_error; // The timestamped error message
 
             $("#noLinkSpan").hide();
             try {
+                const node = this;
                 const agentConfig = JSON.parse(this.agentconfig);
-                const target =agentConfig.content.baseUrl.replace("southgate", `${agentConfig.content.tenant}-assetmanager`) + `/entity/${agentConfig.content.clientId}/plugin/uipluginassetmanagermclib`;
+                const target = agentConfig.content.baseUrl.replace("southgate", `${agentConfig.content.tenant}-assetmanager`) + `/entity/${agentConfig.content.clientId}/plugin/uipluginassetmanagermclib`;
+                const diag = agentConfig.content.baseUrl.replace("southgate", `${agentConfig.content.tenant}-agentdiagnostic`);
+
                 $("#configLink").attr("href", target);
+                $("#diagLink").attr("href", diag);
+                $("#idLink").text(`.mc/${agentConfig.content.clientId}.json`);
+
+                $("#resetLink").click(()=>{
+                    $("#dialog").dialog({
+                        modal:true,
+                        width:500,
+                        resizable: false,
+                        buttons: {
+                             "Delete configuration": function() {
+                                    $("#linkSpan").hide();
+                                    $("#noLinkSpan").hide();
+                                    $("#deleteConfig").show();
+                                    // node.agentConfig = {action: "delete", clientId:`${agentConfig.content.clientId}`};
+                                    $("#node-input-agentconfig").val(JSON.stringify({action: "delete", clientId: `${agentConfig.content.clientId}`}));
+                                    $( this ).dialog( "close" );
+                            },
+                            Cancel: function() {
+                                $( this ).dialog( "close" );
+                            }
+                        }
+                    });
+                    return false;
+                });
+
             } catch (err) {
                 $("#linkSpan").hide();
                 $("#noLinkSpan").show();
