@@ -1,4 +1,4 @@
-FROM nodered/node-red-docker:v8
+FROM nodered/node-red
 
 # build and package 
 RUN mkdir /tmp/install
