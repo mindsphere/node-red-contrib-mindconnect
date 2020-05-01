@@ -1,67 +1,70 @@
 {
-    "name": "@mindconnect/node-red-contrib-mindconnect",
-    "version": "3.7.0",
-    "description": "node red mindconnect node using mindconnect-nodejs library.",
-    "main": "index.js",
-    "scripts": {
-        "prepare": "tsc",
-        "start": "node node_modules/node-red/red.js --userDir ../devnodes",
-        "start-dev": "cross-env NODE_TLS_REJECT_UNAUTHORIZED=0  concurrently --raw \"npm run node:watch\"  \"npm run ts:watch \" ",
-        "test-dev": "cross-env NODE_TLS_REJECT_UNAUTHORIZED=0  concurrently --raw  \"npm run ts:watch \" \"npm run test:watch\" ",
-        "ts:build": "tsc",
-        "ts:watch": "tsc -w",
-        "ts:lint": "tslint",
-        "node:watch": "nodemon -e js,html  --watch src node_modules/node-red/red.js --userDir ../devnodes ",
-        "test:watch": "mocha --watch test/ --growl --reporter=spec --inspect --timeout=0",
-        "doc": "compodoc -p tsconfig.json --output docs --name \"@mindconnect/node-red-contrib-mindconnect\" --theme material && cp -r images/ docs/ ",
-        "test": "npm run ts:build && nyc mocha --colors --reporter spec  --timeout=5000 --exit",
-        "test-jenkins": "npm run ts:build && cross-env JUNIT_REPORT_PATH=./report.xml mocha --colors --reporter mocha-jenkins-reporter --timeout=15000 --exit ",
-        "license": "license-checker --csv --onlyAllow \"Apache-2.0; Apache*; BSD; BSD-2-Clause; BSD-3-Clause; ISC; MIT; Unlicense; WTFPL; CC-BY-3.0; CC0-1.0\" --production",
-        "license:summary": "license-checker --summary --onlyAllow \"Apache-2.0; Apache*; BSD; BSD-2-Clause; BSD-3-Clause; ISC; MIT; Unlicense; WTFPL; CC-BY-3.0; CC0-1.0\" --production"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/mindsphere/node-red-contrib-mindconnect.git"
-    },
-    "keywords": [
-        "MindSphere",
-        "MindConnect",
-        "node-red"
-    ],
-    "author": "@sn0wcat",
-    "license": "MIT",
-    "devDependencies": {
-        "@compodoc/compodoc": "^1.1.11",
-        "@types/ajv": "^1.0.0",
-        "@types/chai": "^4.2.11",
-        "@types/mocha": "^7.0.2",
-        "@types/node": "^13.11.1",
-        "@types/node-fetch": "^2.5.5",
-        "@types/promise.allsettled": "^1.0.3",
-        "chai": "^4.2.0",
-        "concurrently": "^5.1.0",
-        "cross-env": "^7.0.2",
-        "license-checker": "^25.0.1",
-        "mocha": "^7.1.1",
-        "mocha-jenkins-reporter": "^0.4.3",
-        "node-red": "^1.0.5",
-        "node-red-node-test-helper": "^0.2.3",
-        "nodemon": "^2.0.3",
-        "nyc": "^15.0.1",
-        "tslint": "^6.1.1",
-        "typescript": "^3.8.3",
-        "typescript-tslint-plugin": "^0.5.5"
-    },
-    "node-red": {
-        "nodes": {
-            "mindconnect": "src/mindconnect.js"
-        }
-    },
-    "dependencies": {
-        "@mindconnect/mindconnect-nodejs": "^3.7.0",
-        "ajv": "^6.12.0",
-        "debug": "^4.1.1",
-        "node-fetch": "^2.6.0",
-        "promise.allsettled": "^1.0.2"
+  "name": "@mindconnect/node-red-contrib-mindconnect",
+  "version": "3.7.0",
+  "description": "node red mindconnect node using mindconnect-nodejs library.",
+  "main": "index.js",
+  "scripts": {
+    "prepare": "npm run snyk-protect && tsc",
+    "start": "node node_modules/node-red/red.js --userDir ../devnodes",
+    "start-dev": "cross-env NODE_TLS_REJECT_UNAUTHORIZED=0  concurrently --raw \"npm run node:watch\"  \"npm run ts:watch \" ",
+    "test-dev": "cross-env NODE_TLS_REJECT_UNAUTHORIZED=0  concurrently --raw  \"npm run ts:watch \" \"npm run test:watch\" ",
+    "ts:build": "tsc",
+    "ts:watch": "tsc -w",
+    "ts:lint": "tslint",
+    "node:watch": "nodemon -e js,html  --watch src node_modules/node-red/red.js --userDir ../devnodes ",
+    "test:watch": "mocha --watch test/ --growl --reporter=spec --inspect --timeout=0",
+    "doc": "compodoc -p tsconfig.json --output docs --name \"@mindconnect/node-red-contrib-mindconnect\" --theme material && cp -r images/ docs/ ",
+    "test": "npm run ts:build && nyc mocha --colors --reporter spec  --timeout=5000 --exit",
+    "test-jenkins": "npm run ts:build && cross-env JUNIT_REPORT_PATH=./report.xml mocha --colors --reporter mocha-jenkins-reporter --timeout=15000 --exit ",
+    "license": "license-checker --csv --onlyAllow \"Apache-2.0; Apache*; BSD; BSD-2-Clause; BSD-3-Clause; ISC; MIT; Unlicense; WTFPL; CC-BY-3.0; CC0-1.0\" --production",
+    "license:summary": "license-checker --summary --onlyAllow \"Apache-2.0; Apache*; BSD; BSD-2-Clause; BSD-3-Clause; ISC; MIT; Unlicense; WTFPL; CC-BY-3.0; CC0-1.0\" --production",
+    "snyk-protect": "snyk protect"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mindsphere/node-red-contrib-mindconnect.git"
+  },
+  "keywords": [
+    "MindSphere",
+    "MindConnect",
+    "node-red"
+  ],
+  "author": "@sn0wcat",
+  "license": "MIT",
+  "devDependencies": {
+    "@compodoc/compodoc": "^1.1.11",
+    "@types/ajv": "^1.0.0",
+    "@types/chai": "^4.2.11",
+    "@types/mocha": "^7.0.2",
+    "@types/node": "^13.11.1",
+    "@types/node-fetch": "^2.5.5",
+    "@types/promise.allsettled": "^1.0.3",
+    "chai": "^4.2.0",
+    "concurrently": "^5.1.0",
+    "cross-env": "^7.0.2",
+    "license-checker": "^25.0.1",
+    "mocha": "^7.1.1",
+    "mocha-jenkins-reporter": "^0.4.3",
+    "node-red": "^1.0.5",
+    "node-red-node-test-helper": "^0.2.3",
+    "nodemon": "^2.0.3",
+    "nyc": "^15.0.1",
+    "tslint": "^6.1.1",
+    "typescript": "^3.8.3",
+    "typescript-tslint-plugin": "^0.5.5"
+  },
+  "node-red": {
+    "nodes": {
+      "mindconnect": "src/mindconnect.js"
     }
+  },
+  "dependencies": {
+    "@mindconnect/mindconnect-nodejs": "^3.7.0",
+    "ajv": "^6.12.0",
+    "debug": "^4.1.1",
+    "node-fetch": "^2.6.0",
+    "promise.allsettled": "^1.0.2",
+    "snyk": "^1.316.1"
+  },
+  "snyk": true
 }
