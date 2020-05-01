@@ -1,4 +1,10 @@
 # Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
-version: v1.13.5
+version: v1.14.1
 ignore: {}
-patch: {}
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  SNYK-JS-LODASH-567746:
+    - '@mindconnect/mindconnect-nodejs > csvtojson > lodash':
+        patched: '2020-05-01T07:51:35.671Z'
+    - '@mindconnect/mindconnect-nodejs > lodash':
+        patched: '2020-05-01T07:51:35.671Z'
