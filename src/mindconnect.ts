@@ -12,7 +12,7 @@ import {
     IConfigurationInfo,
     IFileInfo,
     remoteConfigurationValidator,
-    timeSeriesValidator
+    timeSeriesValidator,
 } from "./mindconnect-schema";
 import {
     configureAgent,
@@ -20,10 +20,10 @@ import {
     handleError,
     reloadFlow,
     retryWithNodeLog,
-    sleep
+    sleep,
 } from "./mindconnect-utils";
 
-export = function(RED: any): void {
+export = function (RED: any): void {
     function nodeRedMindConnectAgent(config: any) {
         RED.nodes.createNode(this, config);
         let node = this;
@@ -51,7 +51,7 @@ export = function(RED: any): void {
             node.status({});
         });
 
-        this.on("input", msg => {
+        this.on("input", (msg) => {
             (async () => {
                 try {
                     const agent = <MindConnectAgent>node.agent;
@@ -101,6 +101,17 @@ export = function(RED: any): void {
                     const tsValidator = timeSeriesValidator();
                     const actionValidator = actionSchemaValidator();
 
+                    if (msg._includeMindSphereToken) {
+                        msg.headers = { ...msg.headers, Authorization: `Bearer ${await agent.GetAgentToken()}` };
+                        node.status({
+                            fill: "green",
+                            shape: "dot",
+                            text: `propagating authentication token in msg.headers...`,
+                        });
+                        node.send(msg);
+                        return;
+                    }
+
                     if (await actionValidator(msg.payload)) {
                         if (msg.payload.action === "await") {
                             awaitPromises = true;
@@ -135,7 +146,7 @@ export = function(RED: any): void {
                         node.status({
                             fill: "blue",
                             shape: "dot",
-                            text: `awaiting ${promises.length} parallel requests...`
+                            text: `awaiting ${promises.length} parallel requests...`,
                         });
                         const results = (await allSettled(promises)) || [];
 
@@ -148,7 +159,7 @@ export = function(RED: any): void {
                         node.status({
                             fill: rejected === 0 ? "green" : "red",
                             shape: "dot",
-                            text: `Parallel requests status: ${fullfilled} finished with ${rejected} errors at ${timestamp}`
+                            text: `Parallel requests status: ${fullfilled} finished with ${rejected} errors at ${timestamp}`,
                         });
 
                         promises = [];
@@ -186,7 +197,7 @@ export = function(RED: any): void {
             node.status({
                 fill: "yellow",
                 shape: "dot",
-                text: "the flow will restart in 1 second..."
+                text: "the flow will restart in 1 second...",
             });
             await sleep(1000);
             const newConfiguration = msg.payload as IConfigurationInfo;
@@ -275,7 +286,7 @@ export = function(RED: any): void {
                 node.status({
                     fill: "grey",
                     shape: "dot",
-                    text: `recieved ${msg.payload.length} data points for bulk upload `
+                    text: `recieved ${msg.payload.length} data points for bulk upload `,
                 });
                 await retryWithNodeLog(
                     node.retry,
@@ -311,7 +322,7 @@ export = function(RED: any): void {
                         agent.UploadFile(entityId, fileInfo.filePath || fileInfo.fileName, fileInfo.fileName, {
                             chunk: node.chunk,
                             parallelUploads: parallelUploads,
-                            type: fileInfo.fileType
+                            type: fileInfo.fileType,
                         }),
                     "FileUpload",
                     node
@@ -352,12 +363,12 @@ export = function(RED: any): void {
 
     RED.nodes.registerType("mindconnect", nodeRedMindConnectAgent);
 
-    RED.httpAdmin.get("/ajv.min.js", function(req, res) {
+    RED.httpAdmin.get("/ajv.min.js", function (req, res) {
         const filename = require.resolve("ajv/dist/ajv.min.js");
         res.sendFile(filename);
     });
 
-    RED.httpAdmin.get("/mindsphere.css", function(req, res) {
+    RED.httpAdmin.get("/mindsphere.css", function (req, res) {
         const filename = path.join(__dirname, "mindsphere.css");
         res.sendFile(filename);
     });

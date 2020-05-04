@@ -7,7 +7,7 @@
             &nbsp;&nbsp;<a href="https://opensource.mindsphere.io/docs/node-red-contrib-mindconnect/index.html" target="_new" class="headerLink" title="Documentation">
                 <i class="fa fa-globe"></i> MindConnect Node-RED Agent 
             </a>
-        </span> <span style="color:#aaaaaa !important">v3.7.0</span>
+        </span> <span style="color:#aaaaaa !important">v3.8.0 - alpha</span>
     </div>
 
     <div class="form-row">
@@ -221,6 +221,18 @@ msg._forceGetConfig = true;
     </pre>
 
     <p>
+        <i class="fa fa-info-circle"></i> <b>JWT Token Generation:</b><br/>
+    </p>
+
+    <p>
+        The node can be used to generate authentication tokens which you can use to call your own custom southbound APIs.
+        The msg.headers will have a Mindsphere Authorization JWT.
+    </p>
+    <pre>
+msg._includeMindSphereToken = true;
+    </pre>
+
+    <p>
         <i class="fa fa-info-circle"></i> <b>Error Handling:</b><br/>
     </p>
     <p>
@@ -228,7 +240,7 @@ msg._forceGetConfig = true;
     </p>
     <pre>
 msg._mindsphereStatus; // OK on success othervise error
-msg_error; // The timestamped error message
+msg._error; // The timestamped error message
     </pre>
     
     <p>
