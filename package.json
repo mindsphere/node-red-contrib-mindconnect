@@ -1,6 +1,6 @@
 {
     "name": "@mindconnect/node-red-contrib-mindconnect",
-    "version": "3.8.0-0",
+    "version": "3.8.0-1",
     "description": "node red mindconnect node using mindconnect-nodejs library.",
     "main": "index.js",
     "scripts": {
@@ -35,20 +35,20 @@
         "@types/ajv": "^1.0.0",
         "@types/chai": "^4.2.11",
         "@types/mocha": "^7.0.2",
-        "@types/node": "^13.11.1",
-        "@types/node-fetch": "^2.5.5",
+        "@types/node": "^13.13.4",
+        "@types/node-fetch": "^2.5.7",
         "@types/promise.allsettled": "^1.0.3",
         "chai": "^4.2.0",
-        "concurrently": "^5.1.0",
+        "concurrently": "^5.2.0",
         "cross-env": "^7.0.2",
         "license-checker": "^25.0.1",
-        "mocha": "^7.1.1",
+        "mocha": "^7.1.2",
         "mocha-jenkins-reporter": "^0.4.3",
-        "node-red": "^1.0.5",
+        "node-red": "^1.0.6",
         "node-red-node-test-helper": "^0.2.3",
         "nodemon": "^2.0.3",
         "nyc": "^15.0.1",
-        "tslint": "^6.1.1",
+        "tslint": "^6.1.2",
         "typescript": "^3.8.3",
         "typescript-tslint-plugin": "^0.5.5"
     },
@@ -59,7 +59,7 @@
     },
     "dependencies": {
         "@mindconnect/mindconnect-nodejs": "^3.7.0",
-        "ajv": "^6.12.0",
+        "ajv": "^6.12.2",
         "debug": "^4.1.1",
         "node-fetch": "^2.6.0",
         "promise.allsettled": "^1.0.2"

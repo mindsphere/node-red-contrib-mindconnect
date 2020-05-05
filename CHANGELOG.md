@@ -5,8 +5,9 @@
 ## New Features 3.8.0
 
 - Added msg._includeMindSphereToken switch which propagates the MindSphere Authentication Token in msg.headers
-- The _includeMindSphereToken switch can be used in conjuction with the http request node to call custom southbound mindsphere APIs (#83)
-
+- The msg._includeMindSphereToken switch can be used in conjuction with the http request node to call custom southbound mindsphere APIs (#83)
+- New examples on <https://playground.mindconnect.rocks> for flows
+- Bumped all dependencies
 
 ## 3.7.0 (Vienna Ocelots) - April 2020
 
