@@ -142,8 +142,11 @@ msg.payload = {
 return msg;
 ```
 
-The node will per default validate if the event is valid for your agent configuration. This feature can be switched off in the settings but it
-is not recommended to do so.
+If you are using the custom events instead of MindSphere Standard Events please include the following switch in the message.
+
+```javascript
+msg._customEvent=true;
+```
 
 #### File Upload
 

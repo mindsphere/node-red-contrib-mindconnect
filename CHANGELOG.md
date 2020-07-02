@@ -4,6 +4,7 @@
 
 ## New Features 3.8.0
 
+- Custom Event Support via _customEvent switch on the message.
 - Added msg._includeMindSphereToken and msg._ignorePayload switch which propagates the MindSphere Authentication Token in msg.headers
 - The msg._includeMindSphereToken switch can be used in conjuction with the http request node to call custom southbound mindsphere APIs (#83)
 - New examples on <https://playground.mindconnect.rocks> for flows
@@ -12,7 +13,7 @@
 
 ## BugFix 3.8.0
 
-- Node is now Node-RED 1.10 compatible (thanks to @knolleary for pointing the root cause :heart:)
+- Node is now Node-RED 1.10 compatible.
 
 ## 3.7.0 (Vienna Ocelots) - April 2020
 

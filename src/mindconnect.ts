@@ -121,7 +121,7 @@ export = function (RED: any): void {
                         } else if (msg.payload.action === "renew") {
                             promises.push(renewToken(msg, agent, timestamp));
                         }
-                    } else if (await eventValidator(msg.payload)) {
+                    } else if ((await eventValidator(msg.payload)) || msg._customEvent === true) {
                         promises.push(sendEvent(msg, agent, timestamp));
                     } else if (await fileValidator(msg.payload)) {
                         promises.push(sendFile(msg, agent, timestamp));

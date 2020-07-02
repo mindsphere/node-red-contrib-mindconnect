@@ -187,6 +187,9 @@ msg.payload = {
     "additionalProperty" : ""
 };
 return msg;</pre>
+                <p>If you are using Custom Events instead of MindSphereStandardEvents please include the _customEvent switch in the message.</p>
+                <pre>
+msg._customEvent=true;</pre>
 
                 <p><i class="fa fa-info-circle"></i> <b>File Upload:</b><br/>
                     You have to pass the object with file information in the message:
@@ -207,8 +210,8 @@ return msg;</pre>
                     the following parameters on the message. (This should be used for debugging only!)
                 </p>
                 <pre>
-msg._forceOnBoard= true;
-msg._forceGetConfig = true;</pre>
+msg._forceOnBoard=true;
+msg._forceGetConfig=true;</pre>
                 <p>
                     <i class="fa fa-info-circle"></i> <b>JWT Token Generation:</b><br/>
                 </p>
@@ -222,6 +225,9 @@ msg._includeMindSphereToken=true;</pre>
             <p>if you just want to get the token without sending any data to MindSphere </p>
             <pre>
 msg._ignorePayload=true;</pre>
+                <p>
+                    Treat the tokens as you would treat any other type of credentials.
+                </p>
                 <p>
                     <i class="fa fa-info-circle"></i> <b>Error Handling:</b><br/>
                 </p>
