@@ -108,8 +108,11 @@ export = function (RED: any): void {
                             shape: "dot",
                             text: `propagating authentication token in msg.headers...`,
                         });
-                        node.send(msg);
-                        return;
+
+                        if (msg._ignorePayload) {
+                            node.send(msg);
+                            return;
+                        }
                     }
 
                     if (await actionValidator(msg.payload)) {
@@ -118,7 +121,7 @@ export = function (RED: any): void {
                         } else if (msg.payload.action === "renew") {
                             promises.push(renewToken(msg, agent, timestamp));
                         }
-                    } else if (await eventValidator(msg.payload)) {
+                    } else if ((await eventValidator(msg.payload)) || msg._customEvent === true) {
                         promises.push(sendEvent(msg, agent, timestamp));
                     } else if (await fileValidator(msg.payload)) {
                         promises.push(sendFile(msg, agent, timestamp));
@@ -363,12 +366,12 @@ export = function (RED: any): void {
 
     RED.nodes.registerType("mindconnect", nodeRedMindConnectAgent);
 
-    RED.httpAdmin.get("/ajv.min.js", function (req, res) {
+    RED.httpAdmin.get("/mindconnect/ajv.min.js", function (req, res) {
         const filename = require.resolve("ajv/dist/ajv.min.js");
         res.sendFile(filename);
     });
 
-    RED.httpAdmin.get("/mindsphere.css", function (req, res) {
+    RED.httpAdmin.get("/mindconnect/mindsphere.css", function (req, res) {
         const filename = path.join(__dirname, "mindsphere.css");
         res.sendFile(filename);
     });

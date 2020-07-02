@@ -2,7 +2,9 @@
 
 ## Node-RED Agent for the MindConnect API
 
-![node-red-contrib-mindconnect](images/nodered.png)
+<!-- markdownlint-disable MD033 -->
+<img src="images/mindconnect-node-red-logo.svg" alt="@mindconnect/node-red-contrib-mindconnect" width="300px"/>
+<!-- markdownlint-enableMD033 -->
 
 This node enables the Node-RED users to upload timeseries, files and events to MindSphere.
 This project has started as a community effort at Siemens AG and is now available for general use.
@@ -11,7 +13,7 @@ This project has started as a community effort at Siemens AG and is now availabl
 [![npm](https://img.shields.io/npm/v/@mindconnect/node-red-contrib-mindconnect/latest.svg?style=flat)](https://www.npmjs.com/package/@mindconnect/node-red-contrib-mindconnect) ![downloads](https://img.shields.io/npm/dw/@mindconnect/node-red-contrib-mindconnect.svg?colorB=009999)
 [![Known Vulnerabilities](https://snyk.io/test/github/mindsphere/node-red-contrib-mindconnect/badge.svg?targetFile=package.json)](https://snyk.io/test/github/mindsphere/node-red-contrib-mindconnect?targetFile=package.json)
 [![Total alerts](https://img.shields.io/lgtm/alerts/g/mindsphere/node-red-contrib-mindconnect.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/mindsphere/node-red-contrib-mindconnect/alerts/)
-[![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/mindsphere/node-red-contrib-mindconnect.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/mindsphere/node-red-contrib-mindconnect/context:javascript) 
+[![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/mindsphere/node-red-contrib-mindconnect.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/mindsphere/node-red-contrib-mindconnect/context:javascript)
 [![Documentation](https://img.shields.io/badge/mindsphere-documentation-%23009999.svg)](https://opensource.mindsphere.io/docs/node-red-contrib-mindconnect/index.html)
 [![Forum](https://img.shields.io/badge/mindsphere-community-%23009999.svg)](https://community.plm.automation.siemens.com/t5/Developer-Space/bd-p/MindSphere-platform-forum)
 [![Demo Flows](https://img.shields.io/badge/node--RED-playground-%23009999.svg)](https://playground.mindconnect.rocks)
@@ -140,8 +142,11 @@ msg.payload = {
 return msg;
 ```
 
-The node will per default validate if the event is valid for your agent configuration. This feature can be switched off in the settings but it
-is not recommended to do so.
+If you are using the custom events instead of MindSphere Standard Events please include the following switch in the message.
+
+```javascript
+msg._customEvent=true;
+```
 
 #### File Upload
 
@@ -174,6 +179,23 @@ properties which can be used to create more complex flows. (e.g. in the flow bel
 
 ![errorhandling](images/errorhandling.png)
 
+## JWT Token Generation for SouthBound APIs
+
+The node can be used to generate authentication tokens which you can use to call your own custom southbound APIs.
+The msg.headers will have a Mindsphere Authorization JWT.
+
+```javascript
+msg._includeMindSphereToken=true;
+```
+
+if you just want to get the token without sending any data to MindSphere
+
+```javascript
+msg._ignorePayload=true;
+```
+
+Treat tokens as you would any other credentials.
+
 ## Demo flows
 
 [![Demo Flows](https://img.shields.io/badge/node--RED-playground-%23009999.svg)](https://playground.mindconnect.rocks)
@@ -185,6 +207,7 @@ properties which can be used to create more complex flows. (e.g. in the flow bel
 - OPC-UA Data
 - Real Weather Data to MindSphere
 - Simulated Water Pump Data
+- Custom SouthBound API Calls
 
 The simulated water pump data can be inspected at
 
