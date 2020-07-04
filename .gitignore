@@ -52,6 +52,8 @@ flows/.config.json
 dist/
 .mc
 docs
+schema.json
+
 #ignore bower, we copy the files for now to public/assets
 bower.json
 bower_components
@@ -67,3 +69,4 @@ report.xml
 
 # ignore istanbul code coverage
 .nyc_output
+

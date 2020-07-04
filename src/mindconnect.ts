@@ -366,11 +366,6 @@ export = function (RED: any): void {
 
     RED.nodes.registerType("mindconnect", nodeRedMindConnectAgent);
 
-    RED.httpAdmin.get("/mindconnect/ajv.min.js", function (req, res) {
-        const filename = require.resolve("ajv/dist/ajv.min.js");
-        res.sendFile(filename);
-    });
-
     RED.httpAdmin.get("/mindconnect/mindsphere.css", function (req, res) {
         const filename = path.join(__dirname, "mindsphere.css");
         res.sendFile(filename);
