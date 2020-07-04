@@ -6,7 +6,7 @@
             &nbsp;&nbsp;<a href="https://opensource.mindsphere.io/docs/node-red-contrib-mindconnect/index.html" target="_new" class="headerLink" title="Documentation">
                 <i class="fa fa-globe"></i> MindConnect Node-RED Agent
             </a>
-        </span> <span style="color:#aaaaaa !important">v3.8.0</span>
+        </span> <span style="color:#aaaaaa !important">v3.8.1</span>
     </div>
 
     <div class="form-row">
@@ -249,48 +249,10 @@ msg._error; // The timestamped error message</pre>
                     </ul>
                 </p>
 </script>
-<script type="text/javascript" src="mindconnect/ajv.min.js"></script>
+
 
 <script type="text/javascript">
-    const configurationSchema = {
-        type: "object",
-        required: ["content"],
-        properties: {
-            content: {
-                type: "object",
-                required: ["baseUrl", "iat", "clientCredentialProfile", "clientId", "tenant"],
-                properties: {
-                    baseUrl: {
-                        type: "string",
-                    },
-                    iat: {
-                        type: "string",
-                    },
-                    clientCredentialProfile: {
-                        type: "array",
-                        items: {
-                            type: "string",
-                        },
-                    },
-                    clientId: {
-                        type: "string",
-                    },
-                    tenant: {
-                        type: "string",
-                    },
-                },
-            },
-            expiration: {
-                type: "string",
-            },
-        },
-    };
-
-    function configValidator() {
-        const schemaValidator = new Ajv({ $data: true, allErrors: true });
-        return schemaValidator.compile(configurationSchema);
-    }
-
+    
     RED.nodes.registerType("mindconnect", {
         category: "mindsphere",
         color: "#41aaaa",
@@ -310,6 +272,9 @@ msg._error; // The timestamped error message</pre>
                         if (data.action === "delete" && data.clientId) {
                             return true;
                         }
+
+                        // generated json schema for validation if the data type is indeed configuration object
+                        function configValidator(){"use strict";var e=function e(r,t,a,i,s){if(!r||"object"!=typeof r||Array.isArray(r))return e.errors=[{keyword:"type",dataPath:(t||"")+"",schemaPath:"#/type",params:{type:"object"},message:"should be object"}],!1;var n=r.content;if(void 0===n)return e.errors=[{keyword:"required",dataPath:(t||"")+"",schemaPath:"#/required",params:{missingProperty:"content"},message:"should have required property 'content'"}],!1;var o=0;if(!n||"object"!=typeof n||Array.isArray(n))return e.errors=[{keyword:"type",dataPath:(t||"")+".content",schemaPath:"#/properties/content/type",params:{type:"object"},message:"should be object"}],!1;if(void 0===n.baseUrl)return e.errors=[{keyword:"required",dataPath:(t||"")+".content",schemaPath:"#/properties/content/required",params:{missingProperty:"baseUrl"},message:"should have required property 'baseUrl'"}],!1;var p=0;if("string"!=typeof n.baseUrl)return e.errors=[{keyword:"type",dataPath:(t||"")+".content.baseUrl",schemaPath:"#/properties/content/properties/baseUrl/type",params:{type:"string"},message:"should be string"}],!1;if(0===p){if(void 0===n.iat)return e.errors=[{keyword:"required",dataPath:(t||"")+".content",schemaPath:"#/properties/content/required",params:{missingProperty:"iat"},message:"should have required property 'iat'"}],!1;if(p=0,"string"!=typeof n.iat)return e.errors=[{keyword:"type",dataPath:(t||"")+".content.iat",schemaPath:"#/properties/content/properties/iat/type",params:{type:"string"},message:"should be string"}],!1;if(0===p){var d=n.clientCredentialProfile;if(void 0===d)return e.errors=[{keyword:"required",dataPath:(t||"")+".content",schemaPath:"#/properties/content/required",params:{missingProperty:"clientCredentialProfile"},message:"should have required property 'clientCredentialProfile'"}],!1;if(p=0,!Array.isArray(d))return e.errors=[{keyword:"type",dataPath:(t||"")+".content.clientCredentialProfile",schemaPath:"#/properties/content/properties/clientCredentialProfile/type",params:{type:"array"},message:"should be array"}],!1;for(var y=0;y<d.length;y++)if("string"!=typeof d[y])return e.errors=[{keyword:"type",dataPath:(t||"")+".content.clientCredentialProfile["+y+"]",schemaPath:"#/properties/content/properties/clientCredentialProfile/items/type",params:{type:"string"},message:"should be string"}],!1;if(0===p){if(void 0===n.clientId)return e.errors=[{keyword:"required",dataPath:(t||"")+".content",schemaPath:"#/properties/content/required",params:{missingProperty:"clientId"},message:"should have required property 'clientId'"}],!1;if(p=0,"string"!=typeof n.clientId)return e.errors=[{keyword:"type",dataPath:(t||"")+".content.clientId",schemaPath:"#/properties/content/properties/clientId/type",params:{type:"string"},message:"should be string"}],!1;if(0===p){if(void 0===n.tenant)return e.errors=[{keyword:"required",dataPath:(t||"")+".content",schemaPath:"#/properties/content/required",params:{missingProperty:"tenant"},message:"should have required property 'tenant'"}],!1;if(p=0,"string"!=typeof n.tenant)return e.errors=[{keyword:"type",dataPath:(t||"")+".content.tenant",schemaPath:"#/properties/content/properties/tenant/type",params:{type:"string"},message:"should be string"}],!1}}}}if(0===o)if(void 0===r.expiration);else if(o=0,"string"!=typeof r.expiration)return e.errors=[{keyword:"type",dataPath:(t||"")+".expiration",schemaPath:"#/properties/expiration/type",params:{type:"string"},message:"should be string"}],!1;return e.errors=null,!0};return e.schema={type:"object",required:["content"],properties:{content:{type:"object",required:["baseUrl","iat","clientCredentialProfile","clientId","tenant"],properties:{baseUrl:{type:"string"},iat:{type:"string"},clientCredentialProfile:{type:"array",items:{type:"string"}},clientId:{type:"string"},tenant:{type:"string"}}},expiration:{type:"string"}}},e.errors=null,e}; // lgtm [js/useless-assignment-to-local]
                         const validator = configValidator();
                         const result = validator(data);
                         return result;
@@ -383,7 +348,6 @@ msg._error; // The timestamped error message</pre>
         oneditprepare: function () {
             $("#noLinkSpan").hide();
             try {
-                const node = this;
                 const agentConfig = JSON.parse(this.agentconfig);
                 const target =
                     agentConfig.content.baseUrl.replace("southgate", `${agentConfig.content.tenant}-assetmanager`) +
