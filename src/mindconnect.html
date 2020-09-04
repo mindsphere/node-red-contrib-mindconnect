@@ -68,8 +68,18 @@
         </p>
     </div>
 
-    <div id="configDialog" style="diplay:none">
-        <a id="configLink" class="ghostLink diagLink" target="_new" title="Agent Configuration in the MindSphere"><i class="fa fa-wrench"></i> MindSphere Config</a>
+    <div id="configDialog" style="display:none">
+        <b><i class="fa fa-cogs"></i> Automatic Data Source Configuration:</b>
+        <br/><br/>
+        The data source configuration will automatically create the data source and data mappings for selected asset. If you want to use
+        a more complex configuration (e.g. if you want to map the agent to multiple assets and/or aspects) please use the
+        <a id="configLink" class="ghostLink diagLink" target="_new" title="Agent Configuration in the MindSphere"><i class="fa fa-wrench"></i> MindSphere Configuration Dialog</a> instead.
+        <br/><br/>
+        <i class="fa fa-info-circle"></i> The automatic data source configuration will delete all previously configured data sources and mappings.
+        <br/><br/>
+        <b>Filter Asset List:</b> <input id="configDialog-filter"> <a id="configDialog-filterLink" class="ghostLink diagLink" title="Filter AssetList"><i class="fa fa-filter"></i> Filter Assets</a>
+        <br/><br/>
+        <ul id="configDialog-assetList" style="list-style:none"></ul>
     </div>
 
 
@@ -436,6 +446,50 @@ msg._error; // The timestamped error message</pre>
                     }
             }
 
+
+            
+            async function bindAssetList(nodeId, filter) {
+                    try {
+                    const infoRequest = await fetch (`mindconnect/asset/${nodeId}/${filter}`);
+                    const result = await infoRequest.json();
+                    
+                    const assetList = $("#configDialog-assetList");
+                    assetList.empty();
+
+                        
+                        result._embedded.assets.forEach(element => {
+                            const listItem = $('<li/>');
+                            listItem.html(`<i class="fa fa-long-arrow-right"></i> <a class="diagLink ghostLink" title="Start Automatic Configuration for this Asset"> [${element.typeId}]<span style="color:#354C80"> ${element.name}</span><a>`);
+                            listItem.click(async ()=>{
+                            
+                                if (window.confirm("Are you sure? Any previous configuration or mappings will be deleted.")) {
+
+                                    const result = await fetch(`mindconnect/assets/${nodeId}/${element.assetId}`, {method:"post", body: JSON.stringify({})});
+                                    if (!result.error) {
+                                        listItem.html(`<i class="fa fa-check-circle" style='color:#65C728'></i> <a class="diagLink ghostLink" style='color:#65C728' title="Start Automatic Configuration for this Asset"> [${element.typeId}]<span style="color:#65C728"> ${element.name}</span><a>`);
+                                    }
+                                    return false;
+                                }
+                                
+                            });
+                            assetList.append(listItem);
+                            
+                            // const list = $('<ul/>').appendTo("#infoDialog-infoList");
+                            // list.css("list-style", "none");
+
+                            // element.dataPoints.forEach((dataPoint) => {
+                            //     list.append(
+                            //     `<li><i class="fa fa-long-arrow-right"></i> DataPointId: <span style="color:#354C80">${dataPoint.id}</span> Name: <span style="color:#354C80">${dataPoint.name}</span> Type: <span style="color:#354C80">${dataPoint.type}</span> Unit: <span style="color:#354C80">${dataPoint.unit}</span></li>`
+                            //     );   
+                            // });
+                        });
+
+                    } catch (err) {
+                            alert(err);
+                    }
+            }
+           
+
             
             $("#noLinkSpan").hide();
             try {
@@ -504,8 +558,9 @@ msg._error; // The timestamped error message</pre>
 
                 $("#localConfigLink").click(async () => {
 
+                    $("#configDialog-filterLink").click(()=>bindAssetList(this.id, $('#configDialog-filter').val()|| "root"));
                     $("#configDialog").dialog({
-                        open: await bindInfoDialog(this.id, fleetManagerUrlTemplate),
+                        open: await bindAssetList(this.id, "root"),
                         modal: true,
                         title: "Agent Configuration",
                         width: 800,

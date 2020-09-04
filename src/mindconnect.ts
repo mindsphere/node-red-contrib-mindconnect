@@ -400,12 +400,66 @@ export = function (RED: any): void {
         }
     });
 
-    // RED.httpAdmin.post("/mindconnect/assets/:id", async (req, res) => {
-    //     const node = RED.nodes.getNode(req.params.id);
-    //     node.status({ fill: "green", shape: "dot", text: `httppost` });
+    RED.httpAdmin.get("/mindconnect/asset/:id/:filter", async (req, res) => {
+        try {
+            const node = RED.nodes.getNode(req.params.id);
+            // console.log(req.params.id, node);
+            if (!node) {
+                throw new Error(`Invalid node-red node id! ${req.params.id}`);
+            }
+            const agent = node.agent as MindConnectAgent;
 
-    //     const agent = node.agent as MindConnectAgent;
+            const am = agent.Sdk().GetAssetManagementClient();
 
-    //     res.send({ id: req.params.id, clientid: agent.ClientId(), isOnboarded: agent.IsOnBoarded() });
-    // });
+            const filter =
+                req.params.filter === "root"
+                    ? JSON.stringify({
+                          not: {
+                              typeId: {
+                                  startsWith: "core",
+                              },
+                          },
+                      })
+                    : JSON.stringify({
+                          or: {
+                              typeId: {
+                                  contains: `${req.params.filter}`,
+                              },
+                              name: {
+                                  contains: `${req.params.filter}`,
+                              },
+                          },
+                      });
+
+            const children = await am.GetAssets({
+                size: 2000,
+                filter: filter,
+            });
+            res.send(children);
+        } catch (err) {
+            res.send({ error: err.message });
+        }
+    });
+
+    RED.httpAdmin.post("/mindconnect/assets/:id/:assetid", async (req, res) => {
+        try {
+            const node = RED.nodes.getNode(req.params.id);
+            node.status({ fill: "green", shape: "dot", text: `httppost` });
+
+            console.log(req.params);
+            const agent = node.agent as MindConnectAgent;
+
+            await agent.DeleteAllMappings();
+            await agent.ConfigureAgentForAssetId(req.params.assetid);
+
+            node.status({
+                fill: "green",
+                shape: "dot",
+                text: `successfully auto-configured agent for ${req.params.assetid}`,
+            });
+            res.send({ id: req.params.id, clientid: agent.ClientId(), isOnboarded: agent.IsOnBoarded() });
+        } catch (err) {
+            res.send({ error: err.message });
+        }
+    });
 };
