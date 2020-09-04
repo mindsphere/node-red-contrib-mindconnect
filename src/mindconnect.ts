@@ -370,4 +370,42 @@ export = function (RED: any): void {
         const filename = path.join(__dirname, "mindsphere.css");
         res.sendFile(filename);
     });
+
+    RED.httpAdmin.get("/mindconnect/agentinfo/:id", async (req, res) => {
+        try {
+            const node = RED.nodes.getNode(req.params.id);
+            const agent = node.agent as MindConnectAgent;
+            const configuration = await agent.GetDataSourceConfiguration();
+            const mappings = await agent.GetDataMappings();
+            res.send({
+                id: req.params.id,
+                clientid: agent.ClientId(),
+                isOnboarded: agent.IsOnBoarded(),
+                configuration: configuration,
+                mappings: mappings,
+            });
+        } catch (err) {
+            res.send({ error: err });
+        }
+    });
+
+    RED.httpAdmin.get("/mindconnect/assets/:id/:assetid", async (req, res) => {
+        try {
+            const node = RED.nodes.getNode(req.params.id);
+            const agent = node.agent as MindConnectAgent;
+            const asset = await agent.Sdk().GetAssetManagementClient().GetAsset(req.params.assetid);
+            res.send(asset);
+        } catch (err) {
+            res.send({ error: err });
+        }
+    });
+
+    // RED.httpAdmin.post("/mindconnect/assets/:id", async (req, res) => {
+    //     const node = RED.nodes.getNode(req.params.id);
+    //     node.status({ fill: "green", shape: "dot", text: `httppost` });
+
+    //     const agent = node.agent as MindConnectAgent;
+
+    //     res.send({ id: req.params.id, clientid: agent.ClientId(), isOnboarded: agent.IsOnBoarded() });
+    // });
 };
