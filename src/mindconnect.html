@@ -47,7 +47,8 @@
             <span id="linkSpan" style="margin-top: 5px">
                 <a id="localConfigLink" class="ghostLink diagLink" title="Agent Configuration"><i class="fa fa-cogs"></i> Agent Configuration</a>
                 <a id="localInfoLink" class="ghostLink diagLink" title="Agent Configuration Info"><i class="fa fa-info-circle"></i> Agent Information</a>
-                <a id="diagLink" class="ghostLink diagLink" target="_new" title="Agent Diagnostic in MindSphere"><i class="fa fa-stethoscope" aria-hidden="true"></i> Agent Diagnostic</a>
+                <a id="configLink" class="ghostLink diagLink" target="_new" title="Agent Configuration in the MindSphere"><i class="fa fa-wrench"></i> </a> 
+                <a id="diagLink" class="ghostLink diagLink" target="_new" title="Agent Diagnostic in MindSphere"><i class="fa fa-stethoscope" aria-hidden="true"></i> </a>
                 <a id="resetLink" class="ghostLink deleteLink"  title="Delete local agent configuration."><i class="fa fa-trash"></i></a>
             </span>
         </p>
@@ -62,38 +63,54 @@
     <div id="dialog" title="Delete local agent configuration?" style="display:none">
 
         <p>
-            <i class="fa fa-exclamation-triangle"style="float:left; color: #af235f !important; font-size: 300% !important; margin-right:20px" aria-hidden="true"></i>
+            <i class="fa fa-exclamation-triangle" style="float:left; color: #af235f !important; font-size: 300% !important; margin-right:20px" aria-hidden="true"></i>
             The local agent configuration (including the data stored in <span style="color: #af235f !important" id="idLink"></span>)
             will be deleted. Are you sure?
         </p>
     </div>
 
     <div id="configDialog" style="display:none">
-        <b><i class="fa fa-cogs"></i> Automatic Data Source Configuration:</b>
-        <br/><br/>
-        The data source configuration will automatically create the data source and data mappings for selected asset. If you want to use
-        a more complex configuration (e.g. if you want to map the agent to multiple assets and/or aspects) please use the
-        <a id="configLink" class="ghostLink diagLink" target="_new" title="Agent Configuration in the MindSphere"><i class="fa fa-wrench"></i> MindSphere Configuration Dialog</a> instead.
-        <br/><br/>
-        <i class="fa fa-info-circle"></i> The automatic data source configuration will delete all previously configured data sources and mappings.
-        <br/><br/>
-        <b>Filter Asset List:</b> <input id="configDialog-filter"> <a id="configDialog-filterLink" class="ghostLink diagLink" title="Filter AssetList"><i class="fa fa-filter"></i> Filter Assets</a>
-        <br/><br/>
-        <ul id="configDialog-assetList" style="list-style:none"></ul>
+        <div id="configDialog-content">
+            <b><i class="fa fa-cogs"></i> Automatic Data Source Configuration:</b>
+            <br/><br/>
+            The data source configuration will automatically create the data source and data mappings for selected asset. If you want to use
+            a more complex configuration (e.g. if you want to map the agent to multiple assets and/or aspects) please use the
+            <a id="configDialog-configLink" class="ghostLink diagLink" target="_new" title="Agent Configuration in the MindSphere"><i class="fa fa-wrench"></i> MindSphere Configuration Dialog</a> instead.
+            <br/><br/>
+            <i class="fa fa-info-circle"></i> The automatic data source configuration will delete all previously configured data sources and mappings.
+            <br/><br/>
+            <b>Filter Asset List:</b> <input id="configDialog-filter"></input> <a id="configDialog-filterLink" class="ghostLink diagLink" title="Filter AssetList"><i class="fa fa-filter"></i> Filter Assets</a>
+            <br/><br/>
+            <ul id="configDialog-assetList" style="list-style:none"></ul>
+        </div>
+        <div id="configDialog-error" style="display:none">
+            <p>
+                <i class="fa fa-exclamation-triangle" style="float:left; color: #af235f !important; font-size: 300% !important; margin-right:20px" aria-hidden="true"></i>
+                <span id="configDialog-error-text"></span>
+            </p>
+        </div>
     </div>
 
 
     <div id="infoDialog" style="display:none">
-            <b><i class="fa fa-cogs"></i> Data Source Configuration:</b> 
-            <a id="infoDialog-copyLink" class="ghostLink diagLink" title="Copy Time Series Template to Clipboard"><i class="fa fa-clipboard"></i> TimeSeries Template</a>
-            <a id="infoDialog-copyBulkLink" class="ghostLink diagLink" title="Copy Bulk TimeSeries Template to Clipboard"><i class="fa fa-clipboard"></i> Bulk TimeSeries Template</a>
-            <br/>
-            <span id="infoDialog-output" style="color:#969696; font-size:12px"></span>
-            <br/>
-            <ul id="infoDialog-infoList" style="list-style:none"></ul>
-            <br/>
-            <b><i class="fa fa-arrows-h"></i> Mappings</b>:
-            <ul id="infoDialog-mappingList" style="list-style:none"></ul>
+            <div id="infoDialog-content">
+                <b><i class="fa fa-cogs"></i> Data Source Configuration:</b> 
+                <a id="infoDialog-copyLink" class="ghostLink diagLink" title="Copy Time Series Template to Clipboard"><i class="fa fa-clipboard"></i> TimeSeries Template</a>
+                <a id="infoDialog-copyBulkLink" class="ghostLink diagLink" title="Copy Bulk TimeSeries Template to Clipboard"><i class="fa fa-clipboard"></i> Bulk TimeSeries Template</a>
+                <br/>
+                <span id="infoDialog-output" style="color:#969696; font-size:12px"></span>
+                <br/>
+                <ul id="infoDialog-infoList" style="list-style:none"></ul>
+                <br/>
+                <b><i class="fa fa-arrows-h"></i> Mappings</b>:
+                <ul id="infoDialog-mappingList" style="list-style:none"></ul>
+            </div>
+            <div id="infoDialog-error" style="display:none">
+                <p>
+                    <i class="fa fa-exclamation-triangle" style="float:left; color: #af235f !important; font-size: 300% !important; margin-right:20px" aria-hidden="true"></i>
+                    <span id="infoDialog-error-text"></span>
+                </p>
+            </div>
     </div>
 
 
@@ -395,8 +412,21 @@ msg._error; // The timestamped error message</pre>
 
             async function bindInfoDialog(nodeId, urlTemplate) {
                     try {
-                    const infoRequest = await fetch (`mindconnect/agentinfo/${nodeId}`);
+                    const infoRequest = await fetch (`mindconnect/agentinfo/${nodeId}`, {
+                        method: "get",
+                        headers: {
+                            Authorization: getAuth(),
+                            accept: "application/json"
+                        }
+                    });
+                    if (!infoRequest.ok) {
+                        throw new Error(`${infoRequest.status} ${infoRequest.statusText}`)
+                    }
                     const result = await infoRequest.json();
+                    
+                    if (result.error) {
+                                throw (new Error(result.error));
+                    }
                     
                     $("#infoDialog-infoList").empty();
 
@@ -428,7 +458,19 @@ msg._error; // The timestamped error message</pre>
                             const mapping = sortedMappings[index];
 
                             if (!assetNames[mapping.entityId]) {
-                                const assetResponse = await fetch (`mindconnect/assets/${nodeId}/${mapping.entityId}`);
+                                const assetResponse = await fetch (`mindconnect/assets/${nodeId}/${mapping.entityId}`,{
+                                    method: "get",
+                                    headers: {
+                                        Authorization: getAuth(),
+                                        accept: "application/json"
+                                    }
+                                });
+
+                                if (!assetResponse.ok) {
+                                    throw new Error(`${assetResponse.status} ${assetResponse.statusText}`)
+                                }
+                    
+                                
                                 const asset = await assetResponse.json();
                                 
                                 assetNames[mapping.entityId] = asset.error? {typeId: "error occured retrieving asset information for", name: mapping.entityId} : asset;
@@ -442,16 +484,42 @@ msg._error; // The timestamped error message</pre>
                         });
                    
                     } catch (err) {
-                            alert(err);
+                        $("#infoDialog-content").hide();
+                        $("#infoDialog-error").show();
+                        $("#infoDialog-error-text").text(err);
                     }
             }
 
 
+            function getAuth () {
+                let auth = undefined;
+
+                if (window.localStorage.getItem("auth-tokens")) {
+                    auth = `Bearer ${JSON.parse(window.localStorage.getItem("auth-tokens")).access_token}`
+                }
+
+                return auth;
+            }
             
             async function bindAssetList(nodeId, filter) {
                     try {
-                    const infoRequest = await fetch (`mindconnect/asset/${nodeId}/${filter}`);
+                    const infoRequest = await fetch (`mindconnect/asset/${nodeId}/${filter}`, {
+                        method: "get",
+                        headers: {
+                            Authorization: getAuth(),
+                            accept: "application/json"
+                        }
+                    });
+
+                    if (!infoRequest.ok) {
+                        throw new Error(`${infoRequest.status} ${infoRequest.statusText}`)
+                    }
                     const result = await infoRequest.json();
+                    
+                    if (result.error) {
+                                throw (new Error(result.error));
+                    }
+
                     
                     const assetList = $("#configDialog-assetList");
                     assetList.empty();
@@ -464,28 +532,46 @@ msg._error; // The timestamped error message</pre>
                             
                                 if (window.confirm("Are you sure? Any previous configuration or mappings will be deleted.")) {
 
-                                    const result = await fetch(`mindconnect/assets/${nodeId}/${element.assetId}`, {method:"post", body: JSON.stringify({})});
-                                    if (!result.error) {
-                                        listItem.html(`<i class="fa fa-check-circle" style='color:#65C728'></i> <a class="diagLink ghostLink" style='color:#65C728' title="Start Automatic Configuration for this Asset"> [${element.typeId}]<span style="color:#65C728"> ${element.name}</span><a>`);
+                                    listItem.html(`<i class="fa fa-spin fa-spinner"></i> <a class="diagLink ghostLink" title="Start Automatic Configuration for this Asset"> [${element.typeId}]<span style="color:#354C80"> ${element.name}</span>- Please wait, configuring....<a>`);
+                                    try{
+
+                                        let auth = undefined;
+
+                                        if (window.localStorage.getItem("auth-tokens")) {
+                                            auth = `Bearer ${JSON.parse(window.localStorage.getItem("auth-tokens")).access_token}`
+                                        }
+
+                                        const response = await fetch(`mindconnect/assets/${nodeId}/${element.assetId}`, {
+                                            headers: {
+                                                accept:"application/json",
+                                                Authorization: auth
+                                            }, 
+                                            method:"post", 
+                                            body: JSON.stringify({})});
+                                        if (!response.ok) {
+                                            throw new Error (`${response.status} ${response.statusText}`);
+                                        }
+                                        const result = await response.json();
+                                        if (result.error) {
+                                            throw (new Error(result.error));
+                                        }
+                                        listItem.html(`<i class='fa fa-check-circle' style='color:#65C728'></i> <a class="diagLink ghostLink" title="Start Automatic Configuration for this Asset"> [${element.typeId}]<span style="color:#65C728"> ${element.name}</span><a>`);
+
+                                    } catch (err) {
+                                        listItem.html(`<i class="fa fa-exclamation-triangle" style="color:#af235f"></i> <a class="diagLink ghostLink" title="Start Automatic Configuration for this Asset"> [${element.typeId}]<span style="color:#af235f"> ${element.name}- ${err}</span><a>`);
                                     }
+                                    
                                     return false;
                                 }
                                 
                             });
                             assetList.append(listItem);
-                            
-                            // const list = $('<ul/>').appendTo("#infoDialog-infoList");
-                            // list.css("list-style", "none");
-
-                            // element.dataPoints.forEach((dataPoint) => {
-                            //     list.append(
-                            //     `<li><i class="fa fa-long-arrow-right"></i> DataPointId: <span style="color:#354C80">${dataPoint.id}</span> Name: <span style="color:#354C80">${dataPoint.name}</span> Type: <span style="color:#354C80">${dataPoint.type}</span> Unit: <span style="color:#354C80">${dataPoint.unit}</span></li>`
-                            //     );   
-                            // });
                         });
 
                     } catch (err) {
-                            alert(err);
+                        $("#configDialog-content").hide();
+                        $("#configDialog-error").show();
+                        $("#configDialog-error-text").text(err);
                     }
             }
            
@@ -507,6 +593,7 @@ msg._error; // The timestamped error message</pre>
                     `${agentConfig.content.tenant}-assetmanager`
                 )}/entity/`;
 
+                $("#configDialog-configLink").attr("href", target);
                 $("#configLink").attr("href", target);
                 $("#diagLink").attr("href", diag);
                 $("#idLink").text(`.mc/${agentConfig.content.clientId}.json`);
