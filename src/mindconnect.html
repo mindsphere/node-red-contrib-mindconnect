@@ -71,7 +71,7 @@
 
     <div id="configDialog" style="display:none">
         <div id="configDialog-content">
-            <b><i class="fa fa-cogs"></i> Automatic Data Source Configuration:</b>
+            <b><i class="fa fa-cogs"></i> Automatic Data Source Configuration</b>(Node Id <span id="configDialog-nodeId"></span>):
             <br/><br/>
             The data source configuration will automatically create the data source and data mappings for selected asset. If you want to use
             a more complex configuration (e.g. if you want to map the agent to multiple assets and/or aspects) please use the
@@ -79,7 +79,7 @@
             <br/><br/>
             <i class="fa fa-info-circle"></i> The automatic data source configuration will delete all previously configured data sources and mappings.
             <br/><br/>
-            <b>Filter Asset List:</b> <input id="configDialog-filter"></input> <a id="configDialog-filterLink" class="ghostLink diagLink" title="Filter AssetList"><i class="fa fa-filter"></i> Filter Assets</a>
+            <b>Filter Asset List:</b><form><input id="configDialog-filter" name="configDialog-filter"></input></form> <a id="configDialog-filterLink" class="ghostLink diagLink" title="Filter AssetList"><i class="fa fa-filter"></i> Filter Assets</a>
             <br/><br/>
             <ul id="configDialog-assetList" style="list-style:none"></ul>
         </div>
@@ -501,8 +501,12 @@ msg._error; // The timestamped error message</pre>
                 return auth;
             }
             
-            async function bindAssetList(nodeId, filter) {
+            async function bindAssetList(nodeId) {
                     try {
+                    filter = $("#configDialog-filter").val();
+                    if (!filter || filter === "") {
+                            filter = "root";
+                    }
                     const infoRequest = await fetch (`mindconnect/asset/${nodeId}/${filter}`, {
                         method: "get",
                         headers: {
@@ -517,7 +521,7 @@ msg._error; // The timestamped error message</pre>
                     const result = await infoRequest.json();
                     
                     if (result.error) {
-                                throw (new Error(result.error));
+                        throw (new Error(result.error));
                     }
 
                     
@@ -526,13 +530,16 @@ msg._error; // The timestamped error message</pre>
 
                         
                         result._embedded.assets.forEach(element => {
-                            const listItem = $('<li/>');
-                            listItem.html(`<i class="fa fa-long-arrow-right"></i> <a class="diagLink ghostLink" title="Start Automatic Configuration for this Asset"> [${element.typeId}]<span style="color:#354C80"> ${element.name}</span><a>`);
-                            listItem.click(async ()=>{
+                            const listItem = $("<li/>");
+                            listItem.html(`<i class="fa fa-long-arrow-right"></i>`);
+                            const button = $("<a/>");
+                            button.html(`<a class="diagLink ghostLink" title="Start Automatic Configuration for this Asset"> [${element.typeId}]<span style="color:#354C80"> ${element.name}</span></a>`)
+                            listItem.append(button);
+                            button.click(async ()=>{
                             
                                 if (window.confirm("Are you sure? Any previous configuration or mappings will be deleted.")) {
 
-                                    listItem.html(`<i class="fa fa-spin fa-spinner"></i> <a class="diagLink ghostLink" title="Start Automatic Configuration for this Asset"> [${element.typeId}]<span style="color:#354C80"> ${element.name}</span>- Please wait, configuring....<a>`);
+                                    button.html(`<i class="fa fa-spin fa-spinner"></i> <a class="diagLink ghostLink" title="Start Automatic Configuration for this Asset"> [${element.typeId}]<span style="color:#354C80"> ${element.name}</span>- Please wait, configuring....</a>`);
                                     try{
 
                                         let auth = undefined;
@@ -555,10 +562,10 @@ msg._error; // The timestamped error message</pre>
                                         if (result.error) {
                                             throw (new Error(result.error));
                                         }
-                                        listItem.html(`<i class='fa fa-check-circle' style='color:#65C728'></i> <a class="diagLink ghostLink" title="Start Automatic Configuration for this Asset"> [${element.typeId}]<span style="color:#65C728"> ${element.name}</span><a>`);
+                                        button.html(`<i class='fa fa-check-circle' style='color:#65C728'></i> <a class="diagLink ghostLink" title="Start Automatic Configuration for this Asset"> [${element.typeId}]<span style="color:#65C728"> ${element.name}</span></a>`);
 
                                     } catch (err) {
-                                        listItem.html(`<i class="fa fa-exclamation-triangle" style="color:#af235f"></i> <a class="diagLink ghostLink" title="Start Automatic Configuration for this Asset"> [${element.typeId}]<span style="color:#af235f"> ${element.name}- ${err}</span><a>`);
+                                        button.html(`<i class="fa fa-exclamation-triangle" style="color:#af235f"></i> <a class="diagLink ghostLink" title="Start Automatic Configuration for this Asset"> [${element.typeId}]<span style="color:#af235f"> ${element.name}- ${err}</span></a>`);
                                     }
                                     
                                     return false;
@@ -626,8 +633,9 @@ msg._error; // The timestamped error message</pre>
 
                 $("#localInfoLink").click(async () => {
 
+                    await bindInfoDialog(this.id, fleetManagerUrlTemplate);
+
                     $("#infoDialog").dialog({
-                        open: await bindInfoDialog(this.id, fleetManagerUrlTemplate),
                         modal: true,
                         title: "Agent Information",
                         width: 800,
@@ -645,9 +653,12 @@ msg._error; // The timestamped error message</pre>
 
                 $("#localConfigLink").click(async () => {
 
-                    $("#configDialog-filterLink").click(()=>bindAssetList(this.id, $('#configDialog-filter').val()|| "root"));
+                    $("#configDialog-nodeId").text(this.id);
+                    $("#configDialog-filter").val("");
+                    await bindAssetList(this.id);
+
+                    $("#configDialog-filterLink").click(()=>bindAssetList(this.id));
                     $("#configDialog").dialog({
-                        open: await bindAssetList(this.id, "root"),
                         modal: true,
                         title: "Agent Configuration",
                         width: 800,
