@@ -47,7 +47,7 @@
             <span id="linkSpan" style="margin-top: 5px">
                 <a id="localConfigLink" class="ghostLink diagLink" title="Agent Configuration"><i class="fa fa-cogs"></i> Agent Configuration</a>
                 <a id="localInfoLink" class="ghostLink diagLink" title="Agent Configuration Info"><i class="fa fa-info-circle"></i> Agent Information</a>
-                <a id="configLink" class="ghostLink diagLink" target="_new" title="Agent Configuration in the MindSphere"><i class="fa fa-wrench"></i> </a> 
+                <a id="configLink" class="ghostLink diagLink" target="_new" title="Agent Configuration in the MindSphere"><i class="fa fa-wrench"></i> </a>
                 <a id="diagLink" class="ghostLink diagLink" target="_new" title="Agent Diagnostic in MindSphere"><i class="fa fa-stethoscope" aria-hidden="true"></i> </a>
                 <a id="resetLink" class="ghostLink deleteLink"  title="Delete local agent configuration."><i class="fa fa-trash"></i></a>
             </span>
@@ -95,7 +95,7 @@
 
     <template id="infoDialogTemplate" style="display:none">
             <div id="infoDialog-content">
-                <b><i class="fa fa-cogs"></i> Data Source Configuration:</b> 
+                <b><i class="fa fa-cogs"></i> Data Source Configuration:</b>
                 <a id="infoDialog-copyLink" class="ghostLink diagLink" title="Copy Time Series Template to Clipboard"><i class="fa fa-clipboard"></i> TimeSeries Template</a>
                 <a id="infoDialog-copyBulkLink" class="ghostLink diagLink" title="Copy Bulk TimeSeries Template to Clipboard"><i class="fa fa-clipboard"></i> Bulk TimeSeries Template</a>
                 <br/>
@@ -169,16 +169,19 @@
 </script>
 
 <script type="text/x-red" data-help-name="mindconnect">
-                <p><b>Node connecting the flow to MindSphere.</b><br/>
-                    This node can send time series data points (single or bulk), events and files to MindSphere.
-                    The node can also be used to generate MindSphere authentication tokens if you want to call your own APIs.
-                </p>
+        <p>
+            <b>Node connecting the flow to MindSphere.</b>
+            <br/>
+            This node can send time series data points (single or bulk), events and files to MindSphere.
+            The node can also be used to generate MindSphere authentication tokens if you want to call your own APIs.
+        </p>
 
-                <p><i class="fa fa-info-circle"></i> <b>Data Points:</b><br/>
-                    Use the following message template in the msg.payload (e.g. from a function node) to send data points to MindSphere.
-                    <i>(you have to change dataPointIds to fit your MindSphere Data Configuration)</i>
-                    </p>
-                    <pre>
+        <p>
+            <i class="fa fa-info-circle"></i><b>Data Points:</b><br/>
+            Use the following message template in the msg.payload (e.g. from a function node) to send data points to MindSphere.
+            <i>(you have to change dataPointIds to fit your MindSphere Data Configuration)</i>
+        </p>
+        <pre>
 const values = [
     {
         "dataPointId": "100000000",
@@ -194,12 +197,14 @@ const values = [
 
 msg._time = new Date();
 msg.payload = values;
-return msg;</pre>
-                <p><i class="fa fa-info-circle"></i> <b>Data Points (bulk):</b><br/>
-                    Use the following message template in the msg.payload (e.g. from a function node) to send data points to MindSphere.
-                    <i>(you have to change dataPointIds to fit your MindSphere Data Configuration)</i>
-                    </p>
-                <pre>
+return msg;
+    </pre>
+    <p>
+        <i class="fa fa-info-circle"></i> <b>Data Points (bulk):</b><br/>
+        Use the following message template in the msg.payload (e.g. from a function node) to send data points to MindSphere.
+        <i>(you have to change dataPointIds to fit your MindSphere Data Configuration)</i>
+    </p>
+    <pre>
 const values = [
     {
         "timestamp":"2018-11-09T02:17:17.171Z",
@@ -218,12 +223,14 @@ const values = [
 ];
 
 msg.payload = values;
-return msg;</pre>
-                <p><i class="fa fa-info-circle"></i> <b>Events:</b><br/>
-                    Send an event to MindSphere by passing the event message in the payload. You can send events to all assets you have access to in your tenant. Pass the
-                    assetid in the entity id property.
-                    </p>
-                <pre>
+return msg;
+    </pre>
+    <p>
+        <i class="fa fa-info-circle"></i> <b>Events:</b><br/>
+        Send an event to MindSphere by passing the event message in the payload. You can send events to all assets you have access to in your tenant. Pass the
+        assetid in the entity id property.
+    </p>
+    <pre>
 msg.payload = {
     "entityId": "1234567890abcdef1234567890abcdef", // use assetid if you want to send event somewhere else :)
     "sourceType": "Agent",
@@ -234,15 +241,19 @@ msg.payload = {
     "timestamp": new Date().toISOString(), // you have to set the timestamp here
     "additionalProperty" : ""
 };
-return msg;</pre>
-                <p>If you are using Custom Events instead of MindSphereStandardEvents please include the _customEvent switch in the message.</p>
-                <pre>
-msg._customEvent=true;</pre>
-
-                <p><i class="fa fa-info-circle"></i> <b>File Upload:</b><br/>
-                    You have to pass the object with file information in the message:
-                    </p>
-                <pre>
+return msg;
+    </pre>
+    <p>
+        If you are using Custom Events instead of MindSphereStandardEvents please include the _customEvent switch in the message.
+    </p>
+    <pre>
+msg._customEvent=true;
+    </pre>
+    <p>
+        <i class="fa fa-info-circle"></i> <b>File Upload:</b><br/>
+        You have to pass the object with file information in the message:
+    </p>
+    <pre>
 msg.payload = {
     entityId: "1234567890abcdef1234567890abcdef", //optional
     fileName : "digitaltwin.png", // you can also pass a Buffer object instead
@@ -250,57 +261,60 @@ msg.payload = {
     filePath : "images/digitaltwin.png",
     description: "image uploaded with node-red-contrib-mindconnect"
 }
-return msg;</pre>
+return msg;
+    </pre>
 
-                <p><i class="fa fa-info-circle"></i> <b>File Upload:</b><br/>
-
-                    You can force the onboarding or the retrival of the agent configuration by setting
-                    the following parameters on the message. (This should be used for debugging only!)
-                </p>
-                <pre>
+    <p>
+        <i class="fa fa-info-circle"></i> <b>File Upload:</b><br/>
+        You can force the onboarding or the retrival of the agent configuration by setting
+        the following parameters on the message. (This should be used for debugging only!)
+    </p>
+    <pre>
 msg._forceOnBoard=true;
-msg._forceGetConfig=true;</pre>
-                <p>
-                    <i class="fa fa-info-circle"></i> <b>JWT Token Generation:</b><br/>
-                </p>
-
-                <p>
-                    The node can be used to generate authentication tokens which you can use to call your own custom southbound APIs.
-                    The msg.headers will have a Mindsphere Authorization JWT.
-                </p>
-                <pre>
-msg._includeMindSphereToken=true;</pre>
-            <p>if you just want to get the token without sending any data to MindSphere </p>
-            <pre>
-msg._ignorePayload=true;</pre>
-                <p>
-                    Treat the tokens as you would treat any other type of credentials.
-                </p>
-                <p>
-                    <i class="fa fa-info-circle"></i> <b>Error Handling:</b><br/>
-                </p>
-                <p>
-                The following two properties can be used to create more complex error flows:
-                </p>
-                <pre>
+msg._forceGetConfig=true;
+    </pre>
+    <p>
+        <i class="fa fa-info-circle"></i> <b>JWT Token Generation:</b><br/>
+    </p>
+    <p>
+        The node can be used to generate authentication tokens which you can use to call your own custom southbound APIs.
+        The msg.headers will have a Mindsphere Authorization JWT.
+    </p>
+    <pre>
+msg._includeMindSphereToken=true;
+    </pre>
+    <p>
+        if you just want to get the token without sending any data to MindSphere
+    </p>
+    <pre>
+msg._ignorePayload=true;
+    </pre>
+    <p>
+        Treat the tokens as you would treat any other type of credentials.
+    </p>
+    <p>
+        <i class="fa fa-info-circle"></i> <b>Error Handling:</b><br/>
+    </p>
+    <p>
+        The following two properties can be used to create more complex error flows:
+    </p>
+    <pre>
 msg._mindsphereStatus; // OK on success othervise error
-msg._error; // The timestamped error message</pre>
+msg._error; // The timestamped error message
+    </pre>
+    <p>
+        More Documentation:
+        <ul>
+            <li> <a href="https://opensource.mindsphere.io" target="_new"><i class="fa fa-external-link"></i> MindSphere Open Source Tools and Libraries</a></li>
+            <li> <a href="https://developer.mindsphere.io" target="_new"><i class="fa fa-external-link"></i> MindSphere Developer Documentation</a></li>
 
-                <p>
-                    More Documentation:
-                    <ul>
-                        <li> <a href="https://opensource.mindsphere.io" target="_new"><i class="fa fa-external-link"></i> MindSphere Open Source Tools and Libraries</a></li>
-                        <li> <a href="https://developer.mindsphere.io" target="_new"><i class="fa fa-external-link"></i> MindSphere Developer Documentation</a></li>
+            <li><a href="https://community.plm.automation.siemens.com/t5/Developer-Space/bd-p/MindSphere-platform-forum" target="_new" title="Community"><i class="fa fa-external-link"></i> MindSphere Developer Forum</a> </li>
 
-                        <li><a href="https://community.plm.automation.siemens.com/t5/Developer-Space/bd-p/MindSphere-platform-forum" target="_new" title="Community"><i class="fa fa-external-link"></i> MindSphere Developer Forum</a> </li>
-
-                    </ul>
-                </p>
+        </ul>
+    </p>
 </script>
 
-
 <script type="text/javascript">
-    
     RED.nodes.registerType("mindconnect", {
         category: "mindsphere",
         color: "#41aaaa",
@@ -322,7 +336,258 @@ msg._error; // The timestamped error message</pre>
                         }
 
                         // generated json schema for validation if the data type is indeed configuration object
-                        function configValidator(){"use strict";var e=function e(r,t,a,i,s){if(!r||"object"!=typeof r||Array.isArray(r))return e.errors=[{keyword:"type",dataPath:(t||"")+"",schemaPath:"#/type",params:{type:"object"},message:"should be object"}],!1;var n=r.content;if(void 0===n)return e.errors=[{keyword:"required",dataPath:(t||"")+"",schemaPath:"#/required",params:{missingProperty:"content"},message:"should have required property 'content'"}],!1;var o=0;if(!n||"object"!=typeof n||Array.isArray(n))return e.errors=[{keyword:"type",dataPath:(t||"")+".content",schemaPath:"#/properties/content/type",params:{type:"object"},message:"should be object"}],!1;if(void 0===n.baseUrl)return e.errors=[{keyword:"required",dataPath:(t||"")+".content",schemaPath:"#/properties/content/required",params:{missingProperty:"baseUrl"},message:"should have required property 'baseUrl'"}],!1;var p=0;if("string"!=typeof n.baseUrl)return e.errors=[{keyword:"type",dataPath:(t||"")+".content.baseUrl",schemaPath:"#/properties/content/properties/baseUrl/type",params:{type:"string"},message:"should be string"}],!1;if(0===p){if(void 0===n.iat)return e.errors=[{keyword:"required",dataPath:(t||"")+".content",schemaPath:"#/properties/content/required",params:{missingProperty:"iat"},message:"should have required property 'iat'"}],!1;if(p=0,"string"!=typeof n.iat)return e.errors=[{keyword:"type",dataPath:(t||"")+".content.iat",schemaPath:"#/properties/content/properties/iat/type",params:{type:"string"},message:"should be string"}],!1;if(0===p){var d=n.clientCredentialProfile;if(void 0===d)return e.errors=[{keyword:"required",dataPath:(t||"")+".content",schemaPath:"#/properties/content/required",params:{missingProperty:"clientCredentialProfile"},message:"should have required property 'clientCredentialProfile'"}],!1;if(p=0,!Array.isArray(d))return e.errors=[{keyword:"type",dataPath:(t||"")+".content.clientCredentialProfile",schemaPath:"#/properties/content/properties/clientCredentialProfile/type",params:{type:"array"},message:"should be array"}],!1;for(var y=0;y<d.length;y++)if("string"!=typeof d[y])return e.errors=[{keyword:"type",dataPath:(t||"")+".content.clientCredentialProfile["+y+"]",schemaPath:"#/properties/content/properties/clientCredentialProfile/items/type",params:{type:"string"},message:"should be string"}],!1;if(0===p){if(void 0===n.clientId)return e.errors=[{keyword:"required",dataPath:(t||"")+".content",schemaPath:"#/properties/content/required",params:{missingProperty:"clientId"},message:"should have required property 'clientId'"}],!1;if(p=0,"string"!=typeof n.clientId)return e.errors=[{keyword:"type",dataPath:(t||"")+".content.clientId",schemaPath:"#/properties/content/properties/clientId/type",params:{type:"string"},message:"should be string"}],!1;if(0===p){if(void 0===n.tenant)return e.errors=[{keyword:"required",dataPath:(t||"")+".content",schemaPath:"#/properties/content/required",params:{missingProperty:"tenant"},message:"should have required property 'tenant'"}],!1;if(p=0,"string"!=typeof n.tenant)return e.errors=[{keyword:"type",dataPath:(t||"")+".content.tenant",schemaPath:"#/properties/content/properties/tenant/type",params:{type:"string"},message:"should be string"}],!1}}}}if(0===o)if(void 0===r.expiration);else if(o=0,"string"!=typeof r.expiration)return e.errors=[{keyword:"type",dataPath:(t||"")+".expiration",schemaPath:"#/properties/expiration/type",params:{type:"string"},message:"should be string"}],!1;return e.errors=null,!0};return e.schema={type:"object",required:["content"],properties:{content:{type:"object",required:["baseUrl","iat","clientCredentialProfile","clientId","tenant"],properties:{baseUrl:{type:"string"},iat:{type:"string"},clientCredentialProfile:{type:"array",items:{type:"string"}},clientId:{type:"string"},tenant:{type:"string"}}},expiration:{type:"string"}}},e.errors=null,e}; // lgtm [js/useless-assignment-to-local]
+                        function configValidator() {
+                            "use strict";
+                            var e = function e(r, t, a, i, s) {
+                                if (!r || "object" != typeof r || Array.isArray(r))
+                                    return (
+                                        (e.errors = [
+                                            {
+                                                keyword: "type",
+                                                dataPath: (t || "") + "",
+                                                schemaPath: "#/type",
+                                                params: { type: "object" },
+                                                message: "should be object",
+                                            },
+                                        ]),
+                                        !1
+                                    );
+                                var n = r.content;
+                                if (void 0 === n)
+                                    return (
+                                        (e.errors = [
+                                            {
+                                                keyword: "required",
+                                                dataPath: (t || "") + "",
+                                                schemaPath: "#/required",
+                                                params: { missingProperty: "content" },
+                                                message: "should have required property 'content'",
+                                            },
+                                        ]),
+                                        !1
+                                    );
+                                var o = 0;
+                                if (!n || "object" != typeof n || Array.isArray(n))
+                                    return (
+                                        (e.errors = [
+                                            {
+                                                keyword: "type",
+                                                dataPath: (t || "") + ".content",
+                                                schemaPath: "#/properties/content/type",
+                                                params: { type: "object" },
+                                                message: "should be object",
+                                            },
+                                        ]),
+                                        !1
+                                    );
+                                if (void 0 === n.baseUrl)
+                                    return (
+                                        (e.errors = [
+                                            {
+                                                keyword: "required",
+                                                dataPath: (t || "") + ".content",
+                                                schemaPath: "#/properties/content/required",
+                                                params: { missingProperty: "baseUrl" },
+                                                message: "should have required property 'baseUrl'",
+                                            },
+                                        ]),
+                                        !1
+                                    );
+                                var p = 0;
+                                if ("string" != typeof n.baseUrl)
+                                    return (
+                                        (e.errors = [
+                                            {
+                                                keyword: "type",
+                                                dataPath: (t || "") + ".content.baseUrl",
+                                                schemaPath: "#/properties/content/properties/baseUrl/type",
+                                                params: { type: "string" },
+                                                message: "should be string",
+                                            },
+                                        ]),
+                                        !1
+                                    );
+                                if (0 === p) {
+                                    if (void 0 === n.iat)
+                                        return (
+                                            (e.errors = [
+                                                {
+                                                    keyword: "required",
+                                                    dataPath: (t || "") + ".content",
+                                                    schemaPath: "#/properties/content/required",
+                                                    params: { missingProperty: "iat" },
+                                                    message: "should have required property 'iat'",
+                                                },
+                                            ]),
+                                            !1
+                                        );
+                                    if (((p = 0), "string" != typeof n.iat))
+                                        return (
+                                            (e.errors = [
+                                                {
+                                                    keyword: "type",
+                                                    dataPath: (t || "") + ".content.iat",
+                                                    schemaPath: "#/properties/content/properties/iat/type",
+                                                    params: { type: "string" },
+                                                    message: "should be string",
+                                                },
+                                            ]),
+                                            !1
+                                        );
+                                    if (0 === p) {
+                                        var d = n.clientCredentialProfile;
+                                        if (void 0 === d)
+                                            return (
+                                                (e.errors = [
+                                                    {
+                                                        keyword: "required",
+                                                        dataPath: (t || "") + ".content",
+                                                        schemaPath: "#/properties/content/required",
+                                                        params: { missingProperty: "clientCredentialProfile" },
+                                                        message:
+                                                            "should have required property 'clientCredentialProfile'",
+                                                    },
+                                                ]),
+                                                !1
+                                            );
+                                        if (((p = 0), !Array.isArray(d)))
+                                            return (
+                                                (e.errors = [
+                                                    {
+                                                        keyword: "type",
+                                                        dataPath: (t || "") + ".content.clientCredentialProfile",
+                                                        schemaPath:
+                                                            "#/properties/content/properties/clientCredentialProfile/type",
+                                                        params: { type: "array" },
+                                                        message: "should be array",
+                                                    },
+                                                ]),
+                                                !1
+                                            );
+                                        for (var y = 0; y < d.length; y++)
+                                            if ("string" != typeof d[y])
+                                                return (
+                                                    (e.errors = [
+                                                        {
+                                                            keyword: "type",
+                                                            dataPath:
+                                                                (t || "") +
+                                                                ".content.clientCredentialProfile[" +
+                                                                y +
+                                                                "]",
+                                                            schemaPath:
+                                                                "#/properties/content/properties/clientCredentialProfile/items/type",
+                                                            params: { type: "string" },
+                                                            message: "should be string",
+                                                        },
+                                                    ]),
+                                                    !1
+                                                );
+                                        if (0 === p) {
+                                            if (void 0 === n.clientId)
+                                                return (
+                                                    (e.errors = [
+                                                        {
+                                                            keyword: "required",
+                                                            dataPath: (t || "") + ".content",
+                                                            schemaPath: "#/properties/content/required",
+                                                            params: { missingProperty: "clientId" },
+                                                            message: "should have required property 'clientId'",
+                                                        },
+                                                    ]),
+                                                    !1
+                                                );
+                                            if (((p = 0), "string" != typeof n.clientId))
+                                                return (
+                                                    (e.errors = [
+                                                        {
+                                                            keyword: "type",
+                                                            dataPath: (t || "") + ".content.clientId",
+                                                            schemaPath: "#/properties/content/properties/clientId/type",
+                                                            params: { type: "string" },
+                                                            message: "should be string",
+                                                        },
+                                                    ]),
+                                                    !1
+                                                );
+                                            if (0 === p) {
+                                                if (void 0 === n.tenant)
+                                                    return (
+                                                        (e.errors = [
+                                                            {
+                                                                keyword: "required",
+                                                                dataPath: (t || "") + ".content",
+                                                                schemaPath: "#/properties/content/required",
+                                                                params: { missingProperty: "tenant" },
+                                                                message: "should have required property 'tenant'",
+                                                            },
+                                                        ]),
+                                                        !1
+                                                    );
+                                                if (((p = 0), "string" != typeof n.tenant))
+                                                    return (
+                                                        (e.errors = [
+                                                            {
+                                                                keyword: "type",
+                                                                dataPath: (t || "") + ".content.tenant",
+                                                                schemaPath:
+                                                                    "#/properties/content/properties/tenant/type",
+                                                                params: { type: "string" },
+                                                                message: "should be string",
+                                                            },
+                                                        ]),
+                                                        !1
+                                                    );
+                                            }
+                                        }
+                                    }
+                                }
+                                if (0 === o)
+                                    if (void 0 === r.expiration);
+                                    else if (((o = 0), "string" != typeof r.expiration))
+                                        return (
+                                            (e.errors = [
+                                                {
+                                                    keyword: "type",
+                                                    dataPath: (t || "") + ".expiration",
+                                                    schemaPath: "#/properties/expiration/type",
+                                                    params: { type: "string" },
+                                                    message: "should be string",
+                                                },
+                                            ]),
+                                            !1
+                                        );
+                                return (e.errors = null), !0;
+                            };
+                            return (
+                                (e.schema = {
+                                    type: "object",
+                                    required: ["content"],
+                                    properties: {
+                                        content: {
+                                            type: "object",
+                                            required: [
+                                                "baseUrl",
+                                                "iat",
+                                                "clientCredentialProfile",
+                                                "clientId",
+                                                "tenant",
+                                            ],
+                                            properties: {
+                                                baseUrl: { type: "string" },
+                                                iat: { type: "string" },
+                                                clientCredentialProfile: { type: "array", items: { type: "string" } },
+                                                clientId: { type: "string" },
+                                                tenant: { type: "string" },
+                                            },
+                                        },
+                                        expiration: { type: "string" },
+                                    },
+                                }),
+                                (e.errors = null),
+                                e
+                            );
+                        } // lgtm [js/useless-assignment-to-local]
                         const validator = configValidator();
                         const result = validator(data);
                         return result;
@@ -394,95 +659,122 @@ msg._error; // The timestamped error message</pre>
         },
 
         oneditprepare: function () {
-
-            function copyLink (dataSourceConfig, option) {
-                const values = []
-                dataSourceConfig.forEach(dataSource => {
-                    
-                    dataSource.dataPoints.forEach(dataPoint => {
-                        values.push ({dataPointId: `${dataPoint.id}`, qualityCode:"0", value:`<${dataPoint.type}>`})
+            function copyLink(dataSourceConfig, option) {
+                const values = [];
+                dataSourceConfig.forEach((dataSource) => {
+                    dataSource.dataPoints.forEach((dataPoint) => {
+                        values.push({ dataPointId: `${dataPoint.id}`, qualityCode: "0", value: `<${dataPoint.type}>` });
                     });
-                    const bulk = [{timestamp: new Date().toISOString(), values: values}];
-                    const functionTemplate = `const values = ${JSON.stringify(values, null, 2)};\nmsg._time = new Date();\nmsg.payload=values;\nreturn msg;`;
-                    const bulkTemplate = `const bulkValues = ${JSON.stringify(bulk, null, 2)};\nmsg.payload=bulkValues;\nreturn msg;`;
+                    const bulk = [{ timestamp: new Date().toISOString(), values: values }];
+                    const functionTemplate = `const values = ${JSON.stringify(
+                        values,
+                        null,
+                        2
+                    )};\nmsg._time = new Date();\nmsg.payload=values;\nreturn msg;`;
+                    const bulkTemplate = `const bulkValues = ${JSON.stringify(
+                        bulk,
+                        null,
+                        2
+                    )};\nmsg.payload=bulkValues;\nreturn msg;`;
                     navigator.clipboard.writeText(option === "BULK" ? bulkTemplate : functionTemplate);
-                    $("#infoDialog-output").text(`Copied ${option === "BULK" ? "Bulk": ""} TimeSeries Template Data to Clipboard. (Paste to function node to use this template.)`);
+                    $("#infoDialog-output").text(
+                        `Copied ${
+                            option === "BULK" ? "Bulk" : ""
+                        } TimeSeries Template Data to Clipboard. (Paste to function node to use this template.)`
+                    );
                 });
                 return false;
             }
 
             async function bindInfoDialog(nodeId, urlTemplate) {
                 try {
-                    const infoRequest = await fetch (`mindconnect/agentinfo/${nodeId}`, {
+                    const infoRequest = await fetch(`mindconnect/agentinfo/${nodeId}`, {
                         method: "get",
                         headers: {
                             Authorization: getAuth(),
-                            accept: "application/json"
-                        }
+                            accept: "application/json",
+                        },
                     });
                     if (!infoRequest.ok) {
-                        throw new Error(`${infoRequest.status} ${infoRequest.statusText}`)
+                        throw new Error(`${infoRequest.status} ${infoRequest.statusText}`);
                     }
                     const result = await infoRequest.json();
-                    
+
                     if (result.error) {
-                                throw (new Error(result.error));
+                        throw new Error(result.error);
                     }
-                    
+
                     $("#infoDialog-infoList").empty();
 
-                    $("#infoDialog-copyLink").click( ()=>copyLink(result.configuration.dataSources));
-                    $("#infoDialog-copyBulkLink").click(()=>copyLink(result.configuration.dataSources, "BULK"));
+                    $("#infoDialog-copyLink").click(() => copyLink(result.configuration.dataSources));
+                    $("#infoDialog-copyBulkLink").click(() => copyLink(result.configuration.dataSources, "BULK"));
 
-                    result.configuration.dataSources.forEach(element => {
-                    $("#infoDialog-infoList").append(
-                        `<li><i class="fa fa-database"></i> Data Source: <span style="color:#354C80">${element.name}</span> DataPoints: <span style="color:#354C80">(${element.dataPoints.length})</span></li>`
-                    )
-                            
-                    const list = $('<ul/>').appendTo("#infoDialog-infoList");
-                    list.css("list-style", "none");
+                    result.configuration.dataSources.forEach((element) => {
+                        $("#infoDialog-infoList").append(
+                            `<li><i class="fa fa-database"></i> Data Source: <span style="color:#354C80">${element.name}</span> DataPoints: <span style="color:#354C80">(${element.dataPoints.length})</span></li>`
+                        );
 
-                    element.dataPoints.forEach((dataPoint) => {
-                        list.append(
-                        `<li><i class="fa fa-long-arrow-right"></i> DataPointId: <span style="color:#354C80">${dataPoint.id}</span> Name: <span style="color:#354C80">${dataPoint.name}</span> Type: <span style="color:#354C80">${dataPoint.type}</span> Unit: <span style="color:#354C80">${dataPoint.unit}</span></li>`
-                        );});
+                        const list = $("<ul/>").appendTo("#infoDialog-infoList");
+                        list.css("list-style", "none");
+
+                        element.dataPoints.forEach((dataPoint) => {
+                            list.append(
+                                `<li><i class="fa fa-long-arrow-right"></i> DataPointId: <span style="color:#354C80">${dataPoint.id}</span> Name: <span style="color:#354C80">${dataPoint.name}</span> Type: <span style="color:#354C80">${dataPoint.type}</span> Unit: <span style="color:#354C80">${dataPoint.unit}</span></li>`
+                            );
+                        });
                     });
 
                     const mappingList = $("#infoDialog-mappingList");
                     mappingList.empty();
 
-                    const sortedMappings=result.mappings.sort((x,y)=>{return (x.dataPointId < y.dataPointId)? -1: (x.dataPointId > y.dataPointId)?1:0});
+                    const sortedMappings = result.mappings.sort((x, y) => {
+                        return x.dataPointId < y.dataPointId ? -1 : x.dataPointId > y.dataPointId ? 1 : 0;
+                    });
                     const assetNames = {};
 
                     for (let index = 0; index < sortedMappings.length; index++) {
                         const mapping = sortedMappings[index];
 
                         if (!assetNames[mapping.entityId]) {
-                            const assetResponse = await fetch (`mindconnect/assets/${nodeId}/${mapping.entityId}`,{
+                            const assetResponse = await fetch(`mindconnect/assets/${nodeId}/${mapping.entityId}`, {
                                 method: "get",
                                 headers: {
                                     Authorization: getAuth(),
-                                    accept: "application/json"
-                                }
+                                    accept: "application/json",
+                                },
                             });
 
                             if (!assetResponse.ok) {
-                                throw new Error(`${assetResponse.status} ${assetResponse.statusText}`)
+                                throw new Error(`${assetResponse.status} ${assetResponse.statusText}`);
                             }
-                
-                            
+
                             const asset = await assetResponse.json();
-                            
-                            assetNames[mapping.entityId] = asset.error? {typeId: "error occured retrieving asset information for", name: mapping.entityId} : asset;
+
+                            assetNames[mapping.entityId] = asset.error
+                                ? { typeId: "error occured retrieving asset information for", name: mapping.entityId }
+                                : asset;
                         }
-                        mapping.assetName = ` [${assetNames[mapping.entityId].typeId}] ${assetNames[mapping.entityId].name}`;
+                        mapping.assetName = ` [${assetNames[mapping.entityId].typeId}] ${
+                            assetNames[mapping.entityId].name
+                        }`;
                     }
 
                     sortedMappings.forEach((mapping) => {
                         url = `<a class="ghostLink diagLink" href="${urlTemplate}${mapping.entityId}/details" target="_new" title="Open Asset in MindSphere Asset Manager"><i class="fa fa-external-link"></i> `;
-                        mappingList.append(`<li>${mapping?.validity?.status ==="VALID" ? "<i class='fa fa-check-circle' style='color:#65C728' title='VALID'></i>" : "<i class='fa fa-exclamation-triangle' style='color:#F62447' title='NOT VALID'></i>"} <span style="color:#354C80">${mapping.dataPointId}</span> <i class="fa fa-arrows-h"></i> ${url} ${mapping.assetName} </a> <i class="fa fa-long-arrow-right"></i> ${mapping.propertySetName} <i class="fa fa-long-arrow-right"></i> ${mapping.propertyName}</li>`)
+                        mappingList.append(
+                            `<li>${
+                                mapping?.validity?.status === "VALID"
+                                    ? "<i class='fa fa-check-circle' style='color:#65C728' title='VALID'></i>"
+                                    : "<i class='fa fa-exclamation-triangle' style='color:#F62447' title='NOT VALID'></i>"
+                            } <span style="color:#354C80">${
+                                mapping.dataPointId
+                            }</span> <i class="fa fa-arrows-h"></i> ${url} ${
+                                mapping.assetName
+                            } </a> <i class="fa fa-long-arrow-right"></i> ${
+                                mapping.propertySetName
+                            } <i class="fa fa-long-arrow-right"></i> ${mapping.propertyName}</li>`
+                        );
                     });
-                   
                 } catch (err) {
                     $("#infoDialog-content").hide();
                     $("#infoDialog-error").show();
@@ -490,103 +782,109 @@ msg._error; // The timestamped error message</pre>
                 }
             }
 
-
-            function getAuth () {
+            function getAuth() {
                 let auth = undefined;
 
                 if (window.localStorage.getItem("auth-tokens")) {
-                    auth = `Bearer ${JSON.parse(window.localStorage.getItem("auth-tokens")).access_token}`
+                    auth = `Bearer ${JSON.parse(window.localStorage.getItem("auth-tokens")).access_token}`;
                 }
 
                 return auth;
             }
-            
+
             async function bindAssetList(nodeId) {
-                    try {
+                try {
                     filter = $("#configDialog-filter").val();
                     if (!filter || filter === "") {
-                            filter = "root";
+                        filter = "root";
                     }
 
-                    $("#configDialog-output").text (filter === "root" ? "Showing all assets except core.* assets (like areas, sites, agents etc.)":`Showing all assets where typeid or name contain ${filter}`);
+                    $("#configDialog-output").text(
+                        filter === "root"
+                            ? "Showing all assets except core.* assets (like areas, sites, agents etc.)"
+                            : `Showing all assets where typeid or name contain ${filter}`
+                    );
 
-                    const infoRequest = await fetch (`mindconnect/asset/${nodeId}/${filter}`, {
+                    const infoRequest = await fetch(`mindconnect/asset/${nodeId}/${filter}`, {
                         method: "get",
                         headers: {
                             Authorization: getAuth(),
-                            accept: "application/json"
-                        }
+                            accept: "application/json",
+                        },
                     });
 
                     if (!infoRequest.ok) {
-                        throw new Error(`${infoRequest.status} ${infoRequest.statusText}`)
+                        throw new Error(`${infoRequest.status} ${infoRequest.statusText}`);
                     }
                     const result = await infoRequest.json();
-                    
+
                     if (result.error) {
-                        throw (new Error(result.error));
+                        throw new Error(result.error);
                     }
 
-                    
                     const assetList = $("#configDialog-assetList");
                     assetList.empty();
 
-                        
-                        result._embedded.assets.forEach(element => {
-                            const listItem = $("<li/>");
-                            listItem.html(`<i class="fa fa-long-arrow-right"></i>`);
-                            const button = $("<a/>");
-                            button.html(`<a class="diagLink ghostLink" title="Start Automatic Configuration for this Asset"> [${element.typeId}]<span style="color:#354C80"> ${element.name}</span></a>`)
-                            listItem.append(button);
-                            button.click(async ()=>{
-                            
-                                if (window.confirm("Are you sure? Any previous configuration or mappings will be deleted.")) {
+                    result._embedded.assets.forEach((element) => {
+                        const listItem = $("<li/>");
+                        listItem.html(`<i class="fa fa-long-arrow-right"></i>`);
+                        const button = $("<a/>");
+                        button.html(
+                            `<a class="diagLink ghostLink" title="Start Automatic Configuration for this Asset"> [${element.typeId}]<span style="color:#354C80"> ${element.name}</span></a>`
+                        );
+                        listItem.append(button);
+                        button.click(async () => {
+                            if (
+                                window.confirm("Are you sure? Any previous configuration or mappings will be deleted.")
+                            ) {
+                                button.html(
+                                    `<i class="fa fa-spin fa-spinner"></i> <a class="diagLink ghostLink" title="Start Automatic Configuration for this Asset"> [${element.typeId}]<span style="color:#354C80"> ${element.name}</span>- Please wait, configuring....</a>`
+                                );
+                                try {
+                                    let auth = undefined;
 
-                                    button.html(`<i class="fa fa-spin fa-spinner"></i> <a class="diagLink ghostLink" title="Start Automatic Configuration for this Asset"> [${element.typeId}]<span style="color:#354C80"> ${element.name}</span>- Please wait, configuring....</a>`);
-                                    try{
-
-                                        let auth = undefined;
-
-                                        if (window.localStorage.getItem("auth-tokens")) {
-                                            auth = `Bearer ${JSON.parse(window.localStorage.getItem("auth-tokens")).access_token}`
-                                        }
-
-                                        const response = await fetch(`mindconnect/assets/${nodeId}/${element.assetId}`, {
-                                            headers: {
-                                                accept:"application/json",
-                                                Authorization: auth
-                                            }, 
-                                            method:"post", 
-                                            body: JSON.stringify({})});
-                                        if (!response.ok) {
-                                            throw new Error (`${response.status} ${response.statusText}`);
-                                        }
-                                        const result = await response.json();
-                                        if (result.error) {
-                                            throw (new Error(result.error));
-                                        }
-                                        button.html(`<i class='fa fa-check-circle' style='color:#65C728'></i> <a class="diagLink ghostLink" title="Start Automatic Configuration for this Asset"> [${element.typeId}]<span style="color:#65C728"> ${element.name}</span></a>`);
-
-                                    } catch (err) {
-                                        button.html(`<i class="fa fa-exclamation-triangle" style="color:#af235f"></i> <a class="diagLink ghostLink" title="Start Automatic Configuration for this Asset"> [${element.typeId}]<span style="color:#af235f"> ${element.name}- ${err}</span></a>`);
+                                    if (window.localStorage.getItem("auth-tokens")) {
+                                        auth = `Bearer ${
+                                            JSON.parse(window.localStorage.getItem("auth-tokens")).access_token
+                                        }`;
                                     }
-                                    
-                                    return false;
+
+                                    const response = await fetch(`mindconnect/assets/${nodeId}/${element.assetId}`, {
+                                        headers: {
+                                            accept: "application/json",
+                                            Authorization: auth,
+                                        },
+                                        method: "post",
+                                        body: JSON.stringify({}),
+                                    });
+                                    if (!response.ok) {
+                                        throw new Error(`${response.status} ${response.statusText}`);
+                                    }
+                                    const result = await response.json();
+                                    if (result.error) {
+                                        throw new Error(result.error);
+                                    }
+                                    button.html(
+                                        `<i class='fa fa-check-circle' style='color:#65C728'></i> <a class="diagLink ghostLink" title="Start Automatic Configuration for this Asset"> [${element.typeId}]<span style="color:#65C728"> ${element.name}</span></a>`
+                                    );
+                                } catch (err) {
+                                    button.html(
+                                        `<i class="fa fa-exclamation-triangle" style="color:#af235f"></i> <a class="diagLink ghostLink" title="Start Automatic Configuration for this Asset"> [${element.typeId}]<span style="color:#af235f"> ${element.name}- ${err}</span></a>`
+                                    );
                                 }
-                                
-                            });
-                            assetList.append(listItem);
+
+                                return false;
+                            }
                         });
-
-                    } catch (err) {
-                        $("#configDialog-content").hide();
-                        $("#configDialog-error").show();
-                        $("#configDialog-error-text").text(err);
-                    }
+                        assetList.append(listItem);
+                    });
+                } catch (err) {
+                    $("#configDialog-content").hide();
+                    $("#configDialog-error").show();
+                    $("#configDialog-error-text").text(err);
+                }
             }
-           
 
-            
             $("#noLinkSpan").hide();
             try {
                 const agentConfig = JSON.parse(this.agentconfig);
@@ -607,8 +905,6 @@ msg._error; // The timestamped error message</pre>
                 $("#configLink").attr("href", target);
                 $("#diagLink").attr("href", diag);
                 $("#idLink").text(`.mc/${agentConfig.content.clientId}.json`);
-
-
 
                 $("#resetLink").click(() => {
                     $("#dialog").dialog({
@@ -635,9 +931,8 @@ msg._error; // The timestamped error message</pre>
                 });
 
                 $("#localInfoLink").click(async () => {
-
-                    contents = $('#infoDialogTemplate').html();
-                    infoDialog = $('<div></div>');
+                    contents = $("#infoDialogTemplate").html();
+                    infoDialog = $("<div></div>");
                     infoDialog.attr("id", "infoDialog");
 
                     $("body").append(infoDialog.append(contents));
@@ -648,60 +943,56 @@ msg._error; // The timestamped error message</pre>
                         modal: true,
                         title: "Agent Information",
                         width: 800,
-                        height:500,
-                        resizable: true,
-                        buttons: {
-                            Close: function () {
-                                $(this).dialog("close");
-                        }},
-                        close: function() {
-                            $(this).dialog("destroy").remove();
-                        }
-                    });
-                    return false;
-                });
-
-
-                $("#localConfigLink").click(async () => {
-
-
-                    const contents = $("#configDialogTemplate").html();
-                    const configDialog = $("<div></div>");
-                    configDialog.attr("id", "configDialog");
-
-                    $("body").append(configDialog.append(contents));
-
-
-                    $("#configDialog-nodeId").text(this.id);
-                    $("#configDialog-filter").empty();
-                    await bindAssetList(this.id);
-
-                    $("#configDialog-filter").on( "keypress", (e)=>{
-                        if (e.which === 13) {
-                            bindAssetList(this.id);
-                            return false;
-                        }
-                    });
-
-                    $("#configDialog-filterLink").click(()=>bindAssetList(this.id));
-                    $("#configDialog").dialog({
-                        modal: true,
-                        title: "Agent Configuration",
-                        width: 800,
-                        height:500,
+                        height: 500,
                         resizable: true,
                         buttons: {
                             Close: function () {
                                 $(this).dialog("close");
                             },
                         },
-                        close: function() {
+                        close: function () {
                             $(this).dialog("destroy").remove();
-                        }
+                        },
                     });
                     return false;
                 });
 
+                $("#localConfigLink").click(async () => {
+                    const contents = $("#configDialogTemplate").html();
+                    const configDialog = $("<div></div>");
+                    configDialog.attr("id", "configDialog");
+
+                    $("body").append(configDialog.append(contents));
+
+                    $("#configDialog-nodeId").text(this.id);
+                    $("#configDialog-filter").empty();
+                    await bindAssetList(this.id);
+
+                    $("#configDialog-filter").on("keypress", (e) => {
+                        if (e.which === 13) {
+                            bindAssetList(this.id);
+                            return false;
+                        }
+                    });
+
+                    $("#configDialog-filterLink").click(() => bindAssetList(this.id));
+                    $("#configDialog").dialog({
+                        modal: true,
+                        title: "Agent Configuration",
+                        width: 800,
+                        height: 500,
+                        resizable: true,
+                        buttons: {
+                            Close: function () {
+                                $(this).dialog("close");
+                            },
+                        },
+                        close: function () {
+                            $(this).dialog("destroy").remove();
+                        },
+                    });
+                    return false;
+                });
             } catch (err) {
                 $("#linkSpan").hide();
                 $("#noLinkSpan").show();

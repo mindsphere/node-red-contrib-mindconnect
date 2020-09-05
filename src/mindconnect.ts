@@ -12,7 +12,7 @@ import {
     IConfigurationInfo,
     IFileInfo,
     remoteConfigurationValidator,
-    timeSeriesValidator,
+    timeSeriesValidator
 } from "./mindconnect-schema";
 import {
     configureAgent,
@@ -20,7 +20,7 @@ import {
     handleError,
     reloadFlow,
     retryWithNodeLog,
-    sleep,
+    sleep
 } from "./mindconnect-utils";
 
 export = function (RED: any): void {
