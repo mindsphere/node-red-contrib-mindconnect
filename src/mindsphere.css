@@ -35,6 +35,29 @@
     height: 40px;
 }
 
+.ghostLink {
+    color: #235461;
+    background: #eeeeee;
+    border-radius: 7px;
+    font-size: 12px;
+    padding: 5px 10px;
+    font-weight: normal;
+    margin: 1px 0;
+    /* margin-right: 10px;
+    margin-bottom: 3px; */
+    display: inline-block;
+    text-decoration: none;
+    min-width: 12px;
+    transition: background-color 0.2s ease-out, color 0.2s ease-out;
+}
+
+.ghostLink:hover,
+.ghostLink:active {
+    background-color: #bbd0d7;
+    color: #000;
+    transition: background-color 0.3s ease-in, color 0.3s ease-in;
+}
+
 .headerLink {
     color: #ffffff !important;
     text-decoration: none !important;
@@ -49,15 +72,15 @@
 }
 
 .deleteLink:hover {
-    color: #af235f !important;
+    background-color: #fcd3d2 !important;
     text-decoration: none !important;
-    font-size: 150% !important;
+    /* font-size: 150% !important; */
     cursor: pointer !important;
 }
 
 .diagLink:hover {
     color: #009999 !important;
     text-decoration: none !important;
-    font-size: 150% !important;
+    /* font-size: 150% !important; */
     cursor: pointer !important;
 }

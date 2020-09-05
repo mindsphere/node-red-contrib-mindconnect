@@ -1,5 +1,16 @@
 # Changelog
 
+## 3.9.0 (Vienna Bobcats) - September 2020
+
+## New Features 3.9.0
+
+- Automatical Data Source Configuration and Mapping to a selected asset. (#89)
+- Configuration Information Dialog about current agent state.
+- Buttons to Copy syntactically correct timeseries-, bulk timeseries-, event- and file- templates to the clipboad.
+- New examples on <https://playground.mindconnect.rocks> for flows
+- Bumped all dependencies
+- New Logo <3
+
 ## 3.8.1 (Vienna Tigers) - July 2020
 
 ## Bugfix 3.8.1
