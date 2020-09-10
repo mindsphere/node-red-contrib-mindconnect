@@ -6,7 +6,7 @@
             &nbsp;&nbsp;<a href="https://opensource.mindsphere.io/docs/node-red-contrib-mindconnect/index.html" target="_new" class="headerLink" title="Documentation">
                 <i class="fa fa-globe"></i> MindConnect Node-RED Agent
             </a>
-        </span> <span style="color:#aaaaaa !important">v3.9.0-0 (alpha)</span>
+        </span> <span style="color:#aaaaaa !important">v3.9.0</span>
     </div>
 
     <div class="form-row">
@@ -45,11 +45,11 @@
                 <i class="fa fa-id-card"></i> Agent Configuration
             </span>
             <span id="linkSpan" style="margin-top: 5px">
-                <a id="localConfigLink" class="ghostLink diagLink" title="Automatically configure the agent for selected asset."><i class="fa fa-cogs"></i> Agent Configuration</a>
-                <a id="localInfoLink" class="ghostLink diagLink" title="Agent Configuration Info"><i class="fa fa-info-circle"></i> Agent Information</a>
-                <a id="configLink" class="ghostLink diagLink" target="_new" title="Agent Configuration in the MindSphere"><i class="fa fa-wrench"></i> </a>
-                <a id="diagLink" class="ghostLink diagLink" target="_new" title="Agent Diagnostic in MindSphere"><i class="fa fa-stethoscope" aria-hidden="true"></i> </a>
-                <a id="resetLink" class="ghostLink deleteLink"  title="Delete local agent configuration."><i class="fa fa-trash"></i></a>
+                <a id="mindconnect-localConfigLink" class="ghostLink diagLink" title="Automatically configure the agent for selected asset."><i class="fa fa-cogs"></i> Agent Configuration</a>
+                <a id="mindconnect-localInfoLink" class="ghostLink diagLink" title="View current agent configuration and input templates"><i class="fa fa-info-circle"></i> Agent Information</a>
+                <a id="mindconnect-configLink" class="ghostLink diagLink" target="_new" title="Agent Configuration in the MindSphere"><i class="fa fa-wrench"></i> </a>
+                <a id="mindconnect-diagLink" class="ghostLink diagLink" target="_new" title="Agent Diagnostic in MindSphere"><i class="fa fa-stethoscope" aria-hidden="true"></i> </a>
+                <a id="mindconnect-resetLink" class="ghostLink deleteLink"  title="Delete local agent configuration."><i class="fa fa-trash"></i></a>
             </span>
         </p>
         <p id="deleteConfig" style="color: #af235f !important; display:none">
@@ -59,7 +59,7 @@
             placeholder="Copy Authentication JSON from MindSphere (use MindConnectLib [core.mclib] asset type)"></textarea>
     </div>
 
-    <template id="confirmDialogTemplate" style="display:none">
+    <template id="mindconnect-confirmDialogTemplate" style="display:none">
         <div>
             <p>
                 <i class="fa fa-exclamation-triangle" style="float:left; color: #af235f !important; font-size: 300% !important; margin-right:20px" aria-hidden="true"></i>
@@ -68,63 +68,63 @@
         </div>
     </template>
 
-    <template id="deleteDialogTemplate" title="Delete local agent configuration?" style="display:none">
+    <template id="mindconnect-deleteDialogTemplate" title="Delete local agent configuration?" style="display:none">
         <div>
             <p>
                 <i class="fa fa-exclamation-triangle" style="float:left; color: #af235f !important; font-size: 300% !important; margin-right:20px" aria-hidden="true"></i>
-                The local agent configuration (including the data stored in <span style="color: #af235f !important" id="idLink"></span>)
+                The local agent configuration (including the data stored in <span style="color: #af235f !important" id="mindconnect-idLink"></span>)
                 will be deleted. Are you sure?
             </p>
         </div>
     </template>
 
-    <template id="configDialogTemplate" style="display:none">
-        <div id="configDialog-content">
-            <b><i class="fa fa-cogs"></i> Automatic Data Source Configuration</b>(Node Id <span id="configDialog-nodeId"></span>):
+    <template id="mindconnect-configDialogTemplate" style="display:none">
+        <div id="mindconnect-configDialog-content">
+            <b><i class="fa fa-cogs"></i> Automatic Data Source Configuration</b> (Node Id: <span id="mindconnect-configDialog-nodeId"></span>):
             <br/><br/>
             The data source configuration will automatically create the data source and data mappings for selected asset. If you want to use
             a more complex configuration (e.g. if you want to map the agent to multiple assets and/or aspects) please use the
-            <a id="configDialog-configLink" class="ghostLink diagLink" target="_new" title="Agent Configuration in the MindSphere"><i class="fa fa-wrench"></i> MindSphere Configuration Dialog</a> instead.
+            <a id="mindconnect-configDialog-configLink" class="ghostLink diagLink" target="_new" title="Agent Configuration in the MindSphere"><i class="fa fa-wrench"></i> MindSphere Configuration Dialog</a> instead.
             <br/><br/>
             <i class="fa fa-info-circle"></i> The automatic data source configuration will delete all previously configured data sources and mappings.
             <br/><br/>
-            <form><b>Filter Asset List:</b> <input id="configDialog-filter" name="configDialog-filter"></input><a id="configDialog-filterLink" class="ghostLink diagLink" title="Filter AssetList"><i class="fa fa-filter"></i> Filter Assets</a></form>
-            <span id="configDialog-output" style="color:#969696; font-size:12px"></span>
+            <form><b><i class="fa fa-filter"></i> Asset List:</b> <input id="mindconnect-configDialog-filter" name="mindconnect-configDialog-filter"></input><a id="mindconnect-configDialog-filterLink" class="ghostLink diagLink" title="Filter AssetList"><i class="fa fa-filter"></i> Filter Assets</a></form>
+            <span id="mindconnect-configDialog-output" style="color:#969696; font-size:12px"></span>
             <br/><br/>
-            <ul id="configDialog-assetList" style="list-style:none"></ul>
+            <ul id="mindconnect-configDialog-assetList" style="list-style:none"></ul>
         </div>
-        <div id="configDialog-error" style="display:none">
+        <div id="mindconnect-configDialog-error" style="display:none">
             <p>
                 <i class="fa fa-exclamation-triangle" style="float:left; color: #af235f !important; font-size: 300% !important; margin-right:20px" aria-hidden="true"></i>
-                <span id="configDialog-error-text"></span>
+                <span id="mindconnect-configDialog-error-text"></span>
             </p>
         </div>
     </template>
 
 
-    <template id="infoDialogTemplate" style="display:none">
-            <div id="infoDialog-content">
+    <template id="mindconnect-infoDialogTemplate" style="display:none">
+            <div id="mindconnect-infoDialog-content">
                 <b><i class="fa fa-file-code-o"></i> Templates for Input Function Nodes:</b>
                 <br/>
                 <br/>
-                <a id="infoDialog-copyLink" class="ghostLink diagLink" title="Copy Time Series Template to Clipboard"><i class="fa fa-clipboard"></i> TimeSeries Template</a>
-                <a id="infoDialog-copyBulkLink" class="ghostLink diagLink" title="Copy Bulk TimeSeries Template to Clipboard"><i class="fa fa-clipboard"></i> Bulk TimeSeries Template</a>
-                <a id="infoDialog-copyEventLink" class="ghostLink diagLink" title="Copy Event Template to Clipboard"><i class="fa fa-clipboard"></i> Event Template</a>
-                <a id="infoDialog-copyFileLink" class="ghostLink diagLink" title="Copy File Template to Clipboard"><i class="fa fa-clipboard"></i> File Template</a>
+                <a id="mindconnect-infoDialog-copyLink" class="ghostLink diagLink" title="Copy Time Series Template to Clipboard"><i class="fa fa-clipboard"></i> TimeSeries Template</a>
+                <a id="mindconnect-infoDialog-copyBulkLink" class="ghostLink diagLink" title="Copy Bulk TimeSeries Template to Clipboard"><i class="fa fa-clipboard"></i> Bulk TimeSeries Template</a>
+                <a id="mindconnect-infoDialog-copyEventLink" class="ghostLink diagLink" title="Copy Event Template to Clipboard"><i class="fa fa-clipboard"></i> Event Template</a>
+                <a id="mindconnect-infoDialog-copyFileLink" class="ghostLink diagLink" title="Copy File Template to Clipboard"><i class="fa fa-clipboard"></i> File Template</a>
                 <br/>
-                <span id="infoDialog-output" style="color:#969696; font-size:12px"></span>
+                <span id="mindconnect-infoDialog-output" style="color:#969696; font-size:12px"></span>
                 <br/><br/>
                 <b><i class="fa fa-cogs"></i> Data Source Configuration:</b>
                 <br/>
-                <ul id="infoDialog-infoList" style="list-style:none"></ul>
+                <ul id="mindconnect-infoDialog-infoList" style="list-style:none"></ul>
                 <br/>
                 <b><i class="fa fa-arrows-h"></i> Mappings</b>:
-                <ul id="infoDialog-mappingList" style="list-style:none"></ul>
+                <ul id="mindconnect-infoDialog-mappingList" style="list-style:none"></ul>
             </div>
-            <div id="infoDialog-error" style="display:none">
+            <div id="mindconnect-infoDialog-error" style="display:none">
                 <p>
                     <i class="fa fa-exclamation-triangle" style="float:left; color: #af235f !important; font-size: 300% !important; margin-right:20px" aria-hidden="true"></i>
-                    <span id="infoDialog-error-text"></span>
+                    <span id="mindconnect-infoDialog-error-text"></span>
                 </p>
             </div>
     </template>
@@ -198,27 +198,27 @@
             </p>
 
             <p>
-                <i class="fa fa-info-circle"></i><b>Data Points:</b><br/>
+                <i class="fa fa-info-circle"></i> <b>Data Points:</b><br/>
                 Use the following message template in the msg.payload (e.g. from a function node) to send data points to MindSphere.
                 <i>(you have to change dataPointIds to fit your MindSphere Data Configuration)</i>
             </p>
             <pre>
-    const values = [
-        {
-            "dataPointId": "100000000",
-            "qualityCode": "1",
-            "value": "42"
-        },
-        {
-            "dataPointId": "100000001",
-            "qualityCode": "1",
-            "value": "False"
-        }
-    ];
+const values = [
+    {
+        "dataPointId": "100000000",
+        "qualityCode": "1",
+        "value": "42"
+    },
+    {
+        "dataPointId": "100000001",
+        "qualityCode": "1",
+        "value": "False"
+    }
+];
 
-    msg._time = new Date();
-    msg.payload = values;
-    return msg;
+msg._time = new Date();
+msg.payload = values;
+return msg;
         </pre>
         <p>
             <i class="fa fa-info-circle"></i> <b>Data Points (bulk):</b><br/>
@@ -545,7 +545,7 @@ msg._error; // The timestamped error message
                                                         ]),
                                                         !1
                                                     );
-                                                if (((p = 0), "string" != typeof n.tenant))
+                                                if (((p = 0), "string" != typeof n.tenant)) //lgtm [js/useless-assignment-to-local]
                                                     return (
                                                         (e.errors = [
                                                             {
@@ -565,7 +565,7 @@ msg._error; // The timestamped error message
                                 }
                                 if (0 === o)
                                     if (void 0 === r.expiration);
-                                    else if (((o = 0), "string" != typeof r.expiration))
+                                    else if (((o = 0), "string" != typeof r.expiration)) // lgtm [js/useless-assignment-to-local]
                                         return (
                                             (e.errors = [
                                                 {
@@ -704,7 +704,7 @@ msg._error; // The timestamped error message
                             2
                         )};\nmsg.payload=bulkValues;\nreturn msg;`;
                         navigator.clipboard.writeText(option === "BULK" ? bulkTemplate : functionTemplate);
-                        $("#infoDialog-output").text(
+                        $("#mindconnect-infoDialog-output").text(
                             `Copied ${
                                 option === "BULK" ? "Bulk" : ""
                             } TimeSeries Template Data to Clipboard. (Paste this template to a function node)`
@@ -747,7 +747,7 @@ msg.payload=fileInfo;
 return msg;`;
 
                     navigator.clipboard.writeText(option === "EVENT" ? eventTemplate : fileTemplate);
-                    $("#infoDialog-output").text(
+                    $("#mindconnect-infoDialog-output").text(
                         `Copied ${
                             option === "EVENT" ? "Event" : "File"
                         } Template Data to Clipboard. (Paste this template to a function node.)`
@@ -774,19 +774,19 @@ return msg;`;
                         throw new Error(result.error);
                     }
 
-                    $("#infoDialog-infoList").empty();
+                    $("#mindconnect-infoDialog-infoList").empty();
 
-                    $("#infoDialog-copyLink").click(() => copyLink(result.configuration.dataSources, "TIMESERIES"));
-                    $("#infoDialog-copyBulkLink").click(() => copyLink(result.configuration.dataSources, "BULK"));
-                    $("#infoDialog-copyEventLink").click(() => copyLink(result.configuration.dataSources, "EVENT"));
-                    $("#infoDialog-copyFileLink").click(() => copyLink(result.configuration.dataSources, "FILE"));
+                    $("#mindconnect-infoDialog-copyLink").click(() => copyLink(result.configuration.dataSources, "TIMESERIES"));
+                    $("#mindconnect-infoDialog-copyBulkLink").click(() => copyLink(result.configuration.dataSources, "BULK"));
+                    $("#mindconnect-infoDialog-copyEventLink").click(() => copyLink(result.configuration.dataSources, "EVENT"));
+                    $("#mindconnect-infoDialog-copyFileLink").click(() => copyLink(result.configuration.dataSources, "FILE"));
 
                     result.configuration.dataSources.forEach((element) => {
-                        $("#infoDialog-infoList").append(
+                        $("#mindconnect-infoDialog-infoList").append(
                             `<li><i class="fa fa-database"></i> Data Source: <span style="color:#354C80">${element.name}</span> DataPoints: <span style="color:#354C80">(${element.dataPoints.length})</span></li>`
                         );
 
-                        const list = $("<ul/>").appendTo("#infoDialog-infoList");
+                        const list = $("<ul/>").appendTo("#mindconnect-infoDialog-infoList");
                         list.css("list-style", "none");
 
                         element.dataPoints.forEach((dataPoint) => {
@@ -796,7 +796,7 @@ return msg;`;
                         });
                     });
 
-                    const mappingList = $("#infoDialog-mappingList");
+                    const mappingList = $("#mindconnect-infoDialog-mappingList");
                     mappingList.empty();
 
                     const sortedMappings = result.mappings.sort((x, y) => {
@@ -832,7 +832,7 @@ return msg;`;
                     }
 
                     sortedMappings.forEach((mapping) => {
-                        url = `<a class="ghostLink diagLink" href="${urlTemplate}${mapping.entityId}/details" target="_new" title="Open Asset in MindSphere Asset Manager"><i class="fa fa-external-link"></i> `;
+                        const url = `<a class="ghostLink diagLink" href="${urlTemplate}${mapping.entityId}/details" target="_new" title="Open Asset in MindSphere Asset Manager"><i class="fa fa-external-link"></i> `;
                         mappingList.append(
                             `<li>${
                                 mapping?.validity?.status === "VALID"
@@ -848,9 +848,9 @@ return msg;`;
                         );
                     });
                 } catch (err) {
-                    $("#infoDialog-content").hide();
-                    $("#infoDialog-error").show();
-                    $("#infoDialog-error-text").text(err);
+                    $("#mindconnect-infoDialog-content").hide();
+                    $("#mindconnect-infoDialog-error").show();
+                    $("#mindconnect-infoDialog-error-text").text(err);
                 }
             }
 
@@ -866,12 +866,12 @@ return msg;`;
 
             async function bindAssetList(nodeId) {
                 try {
-                    filter = $("#configDialog-filter").val();
+                    let filter = $("#mindconnect-configDialog-filter").val();
                     if (!filter || filter === "") {
                         filter = "root";
                     }
 
-                    $("#configDialog-output").text(
+                    $("#mindconnect-configDialog-output").text(
                         filter === "root"
                             ? "Showing all assets except core.* assets (like areas, sites, agents etc.)"
                             : `Showing all assets where typeid or name contain ${filter}`
@@ -894,7 +894,7 @@ return msg;`;
                         throw new Error(result.error);
                     }
 
-                    const assetList = $("#configDialog-assetList");
+                    const assetList = $("#mindconnect-configDialog-assetList");
                     assetList.empty();
 
                     result._embedded.assets.forEach((element) => {
@@ -906,13 +906,13 @@ return msg;`;
                         );
                         listItem.append(button);
                         button.click(async () => {
-                            const contents = $("#confirmDialogTemplate").html();
+                            const contents = $("#mindconnect-confirmDialogTemplate").html();
                             const confirmDialog = $("<div></div>");
-                            confirmDialog.attr("id", "confirmDialog");
+                            confirmDialog.attr("id", "mindconnect-confirmDialog");
 
                             $("body").append(confirmDialog.append(contents));
 
-                            $("#confirmDialog").dialog({
+                            $("#mindconnect-confirmDialog").dialog({
                                 modal: true,
                                 title: "Are you sure?",
                                 width: 400,
@@ -972,9 +972,9 @@ return msg;`;
                         assetList.append(listItem);
                     });
                 } catch (err) {
-                    $("#configDialog-content").hide();
-                    $("#configDialog-error").show();
-                    $("#configDialog-error-text").text(err);
+                    $("#mindconnect-configDialog-content").hide();
+                    $("#mindconnect-configDialog-error").show();
+                    $("#mindconnect-configDialog-error-text").text(err);
                 }
             }
 
@@ -994,20 +994,18 @@ return msg;`;
                     `${agentConfig.content.tenant}-assetmanager`
                 )}/entity/`;
 
-                $("#configDialog-configLink").attr("href", target);
-                $("#configLink").attr("href", target);
-                $("#diagLink").attr("href", diag);
-                $("#idLink").text(`.mc/${agentConfig.content.clientId}.json`);
+                $("#mindconnect-configLink").attr("href", target);
+                $("#mindconnect-diagLink").attr("href", diag);
+                $("#mindconnect-resetLink").click(() => {
 
-                $("#resetLink").click(() => {
-
-                    const contents = $("#deleteDialogTemplate").html();
+                    const contents = $("#mindconnect-deleteDialogTemplate").html();
                     const deleteDialog = $("<div></div>");
-                    deleteDialog.attr("id", "deleteDialog");
-
+                    deleteDialog.attr("id", "mindconnect-deleteDialog");
+                    
                     $("body").append(deleteDialog.append(contents));
+                    $("#mindconnect-idLink").html(`.mc/${agentConfig.content.clientId}.json`);
 
-                    $("#deleteDialog").dialog({
+                    $("#mindconnect-deleteDialog").dialog({
                         modal: true,
                         width: 500,
                         resizable: false,
@@ -1033,16 +1031,16 @@ return msg;`;
                     return false;
                 });
 
-                $("#localInfoLink").click(async () => {
-                    const contents = $("#infoDialogTemplate").html();
+                $("#mindconnect-localInfoLink").click(async () => {
+                    const contents = $("#mindconnect-infoDialogTemplate").html();
                     const infoDialog = $("<div></div>");
-                    infoDialog.attr("id", "infoDialog");
+                    infoDialog.attr("id", "mindconnect-infoDialog");
 
                     $("body").append(infoDialog.append(contents));
 
                     await bindInfoDialog(this.id, fleetManagerUrlTemplate);
 
-                    $("#infoDialog").dialog({
+                    $("#mindconnect-infoDialog").dialog({
                         modal: true,
                         title: "Agent Information",
                         width: 800,
@@ -1060,26 +1058,27 @@ return msg;`;
                     return false;
                 });
 
-                $("#localConfigLink").click(async () => {
-                    const contents = $("#configDialogTemplate").html();
+                $("#mindconnect-localConfigLink").click(async () => {
+                    const contents = $("#mindconnect-configDialogTemplate").html();
                     const configDialog = $("<div></div>");
-                    configDialog.attr("id", "configDialog");
+                    configDialog.attr("id", "mindconnect-configDialog");
 
                     $("body").append(configDialog.append(contents));
 
-                    $("#configDialog-nodeId").text(this.id);
-                    $("#configDialog-filter").empty();
+                    $("#mindconnect-configDialog-configLink").attr("href", target);
+                    $("#mindconnect-configDialog-nodeId").text(this.id);
+                    $("#mindconnect-configDialog-filter").empty();
                     await bindAssetList(this.id);
 
-                    $("#configDialog-filter").on("keypress", (e) => {
+                    $("#mindconnect-configDialog-filter").on("keypress", (e) => {
                         if (e.which === 13) {
                             bindAssetList(this.id);
                             return false;
                         }
                     });
 
-                    $("#configDialog-filterLink").click(() => bindAssetList(this.id));
-                    $("#configDialog").dialog({
+                    $("#mindconnect-configDialog-filterLink").click(() => bindAssetList(this.id));
+                    $("#mindconnect-configDialog").dialog({
                         modal: true,
                         title: "Agent Configuration",
                         width: 800,

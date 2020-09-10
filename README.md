@@ -41,19 +41,14 @@ You can install the node also via the Manage palette feature in the Node-RED adm
 
 ## How to use the Node-RED node
 
-### Step 1: Create (at least) one asset, agent, configuration and mappings
+Since version 3.9.0 it is possible to completely configure the agent from Node-RED. You will only need the initial Boarding configuration from the MindSphere UI.
+
+### Step 0: Create (at least) one asset and one agent in MindSphere
 
 - Create an asset in Asset Manager for your data
 - Create an agent of the type MindConnectLib [core.mclib] and store the agent.
-- Create a new data configuration
 
-![configuration](images/dataconfig.png)
-
-- Create mappings to your asset.
-
-![mappings](images/datamappings.png)
-
-### Step 2: Get the initial agent configuration from Mindsphere Asset Manager
+### Step 1: Get the initial agent configuration from Mindsphere Asset Manager
 
 You can choose between:
 
@@ -68,11 +63,31 @@ openssl genrsa -out private.key 3072
 
 There is no additional configuration required for SHARED_SECRET security profile.
 
-### Step 3: Copy the agent configuration (and if necessary the private key to the node)
+![boarding configuration](images/boarding-configuration.png)
 
-![implementation](images/mindconnectagent-flow.png)
+### Step 2: Copy the agent onboarding information (and if necessary the RSA 3072 private key) to the node and deploy the flow
 
-### Step 4: Create and deploy the flow
+Copy the agent onboarding information and optionally the RSA_3072 private key to the node and deploy the flow.
+
+![implementation](images/configured-node.png)
+
+### Step 3: Press the agent configuration button and select the target asset
+
+The most common agent configuration setup is to have a 1:1 mapping between the Node-RED agent which is delivering the data and your target
+MindSphere Asset. If this type of configuration is sufficient for your use case you just have to click on the asset to which you want to map the data in the asset list. (you can use the filter asset listbox to quickly find your asset)
+
+![implementation](images/automatic-configuration.png)
+
+The node will automatically configure all necessary data sources and mapping for you. If you need a more complex setup, just click on the **MindSphere Configuration Dialog** button which will lead you to the configuration dialog in the MindSphere, where you can create more complex configurations and mappings.
+
+![implementation](images/mindsphere-configuration.png)
+
+### Step 4: Create and deploy the flow and send data
+
+You can use the node to send timeseries, bulk timeseries, events and files to MindSphere. The templates for the input messages are listed
+below, but you can also just use the **Agent Information** button which will let you copy the corresponding template to clipboard.
+
+![implementation](images/infodialog-templates.png)
 
 #### Send data points
 
