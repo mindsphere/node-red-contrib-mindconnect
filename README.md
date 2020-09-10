@@ -82,7 +82,6 @@ The node will automatically configure all necessary data sources and mapping for
 
 ![implementation](images/mindsphere-configuration.png)
 
-
 ### Step 4: Create and deploy the flow and send data
 
 You can use the node to send timeseries, bulk timeseries, events and files to MindSphere. The templates for the input messages are listed
