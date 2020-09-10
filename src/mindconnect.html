@@ -45,11 +45,11 @@
                 <i class="fa fa-id-card"></i> Agent Configuration
             </span>
             <span id="linkSpan" style="margin-top: 5px">
-                <a id="localConfigLink" class="ghostLink diagLink" title="Automatically configure the agent for selected asset."><i class="fa fa-cogs"></i> Agent Configuration</a>
-                <a id="localInfoLink" class="ghostLink diagLink" title="View current agent configuration and input templates"><i class="fa fa-info-circle"></i> Agent Information</a>
-                <a id="configLink" class="ghostLink diagLink" target="_new" title="Agent Configuration in the MindSphere"><i class="fa fa-wrench"></i> </a>
-                <a id="diagLink" class="ghostLink diagLink" target="_new" title="Agent Diagnostic in MindSphere"><i class="fa fa-stethoscope" aria-hidden="true"></i> </a>
-                <a id="resetLink" class="ghostLink deleteLink"  title="Delete local agent configuration."><i class="fa fa-trash"></i></a>
+                <a id="mindconnect-localConfigLink" class="ghostLink diagLink" title="Automatically configure the agent for selected asset."><i class="fa fa-cogs"></i> Agent Configuration</a>
+                <a id="mindconnect-localInfoLink" class="ghostLink diagLink" title="View current agent configuration and input templates"><i class="fa fa-info-circle"></i> Agent Information</a>
+                <a id="mindconnect-configLink" class="ghostLink diagLink" target="_new" title="Agent Configuration in the MindSphere"><i class="fa fa-wrench"></i> </a>
+                <a id="mindconnect-diagLink" class="ghostLink diagLink" target="_new" title="Agent Diagnostic in MindSphere"><i class="fa fa-stethoscope" aria-hidden="true"></i> </a>
+                <a id="mindconnect-resetLink" class="ghostLink deleteLink"  title="Delete local agent configuration."><i class="fa fa-trash"></i></a>
             </span>
         </p>
         <p id="deleteConfig" style="color: #af235f !important; display:none">
@@ -72,7 +72,7 @@
         <div>
             <p>
                 <i class="fa fa-exclamation-triangle" style="float:left; color: #af235f !important; font-size: 300% !important; margin-right:20px" aria-hidden="true"></i>
-                The local agent configuration (including the data stored in <span style="color: #af235f !important" id="idLink"></span>)
+                The local agent configuration (including the data stored in <span style="color: #af235f !important" id="mindconnect-idLink"></span>)
                 will be deleted. Are you sure?
             </p>
         </div>
@@ -198,27 +198,27 @@
             </p>
 
             <p>
-                <i class="fa fa-info-circle"></i><b>Data Points:</b><br/>
+                <i class="fa fa-info-circle"></i> <b>Data Points:</b><br/>
                 Use the following message template in the msg.payload (e.g. from a function node) to send data points to MindSphere.
                 <i>(you have to change dataPointIds to fit your MindSphere Data Configuration)</i>
             </p>
             <pre>
-    const values = [
-        {
-            "dataPointId": "100000000",
-            "qualityCode": "1",
-            "value": "42"
-        },
-        {
-            "dataPointId": "100000001",
-            "qualityCode": "1",
-            "value": "False"
-        }
-    ];
+const values = [
+    {
+        "dataPointId": "100000000",
+        "qualityCode": "1",
+        "value": "42"
+    },
+    {
+        "dataPointId": "100000001",
+        "qualityCode": "1",
+        "value": "False"
+    }
+];
 
-    msg._time = new Date();
-    msg.payload = values;
-    return msg;
+msg._time = new Date();
+msg.payload = values;
+return msg;
         </pre>
         <p>
             <i class="fa fa-info-circle"></i> <b>Data Points (bulk):</b><br/>
@@ -994,18 +994,16 @@ return msg;`;
                     `${agentConfig.content.tenant}-assetmanager`
                 )}/entity/`;
 
-                $("#mindconnect-configDialog-configLink").attr("href", target);
-                $("#configLink").attr("href", target);
-                $("#diagLink").attr("href", diag);
-                $("#idLink").text(`.mc/${agentConfig.content.clientId}.json`);
-
-                $("#resetLink").click(() => {
+                $("#mindconnect-configLink").attr("href", target);
+                $("#mindconnect-diagLink").attr("href", diag);
+                $("#mindconnect-resetLink").click(() => {
 
                     const contents = $("#mindconnect-deleteDialogTemplate").html();
                     const deleteDialog = $("<div></div>");
                     deleteDialog.attr("id", "mindconnect-deleteDialog");
-
+                    
                     $("body").append(deleteDialog.append(contents));
+                    $("#mindconnect-idLink").html(`.mc/${agentConfig.content.clientId}.json`);
 
                     $("#mindconnect-deleteDialog").dialog({
                         modal: true,
@@ -1033,7 +1031,7 @@ return msg;`;
                     return false;
                 });
 
-                $("#localInfoLink").click(async () => {
+                $("#mindconnect-localInfoLink").click(async () => {
                     const contents = $("#mindconnect-infoDialogTemplate").html();
                     const infoDialog = $("<div></div>");
                     infoDialog.attr("id", "mindconnect-infoDialog");
@@ -1060,13 +1058,14 @@ return msg;`;
                     return false;
                 });
 
-                $("#localConfigLink").click(async () => {
+                $("#mindconnect-localConfigLink").click(async () => {
                     const contents = $("#mindconnect-configDialogTemplate").html();
                     const configDialog = $("<div></div>");
                     configDialog.attr("id", "mindconnect-configDialog");
 
                     $("body").append(configDialog.append(contents));
 
+                    $("#mindconnect-configDialog-configLink").attr("href", target);
                     $("#mindconnect-configDialog-nodeId").text(this.id);
                     $("#mindconnect-configDialog-filter").empty();
                     await bindAssetList(this.id);

@@ -6,10 +6,10 @@
 
 - Automatical Data Source Configuration and Mapping to a selected asset. (#89)
 - Configuration Information Dialog about current agent state.
-- Buttons to Copy syntactically correct timeseries-, bulk timeseries-, event- and file- templates to the clipboad.
+- Buttons to copy timeseries-, bulk timeseries-, event- and file- templates to the clipboard.
 - New examples on <https://playground.mindconnect.rocks> for flows
+- MindSphere Start for Free suited example on <https://playground.mindconnect.rocks>
 - Bumped all dependencies
-- New Logo <3
 
 ## 3.8.1 (Vienna Tigers) - July 2020
 
