@@ -234,6 +234,18 @@ This application can be used without mindsphere credentials.
 
 This data is also used as an example for the KPI-Calculation and Trend prediction with help of MindSphere APIs. <https://github.com/mindsphere/analytics-examples>
 
+## Securing API Endpoints
+
+The corresponding API calls for reading the data source configuration and mappings in Agent Configuration and Agent Information dialog require that the user has:
+
+```mindconnect.read```
+
+permission. The automatic configuration requires
+
+```mindconnect.write```
+
+permission.
+
 ## Troubleshooting
 
 If you have problems with your agent:
