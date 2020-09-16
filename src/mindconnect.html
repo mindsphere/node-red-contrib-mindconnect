@@ -6,7 +6,7 @@
             &nbsp;&nbsp;<a href="https://opensource.mindsphere.io/docs/node-red-contrib-mindconnect/index.html" target="_new" class="headerLink" title="Documentation">
                 <i class="fa fa-globe"></i> MindConnect Node-RED Agent
             </a>
-        </span> <span style="color:#aaaaaa !important">v3.9.0</span>
+        </span> <span style="color:#aaaaaa !important">v3.9.1</span>
     </div>
 
     <div class="form-row">
@@ -680,6 +680,28 @@ msg._error; // The timestamped error message
         },
 
         oneditprepare: function () {
+
+            const copyToClipboard = str => {
+
+                const textarea = document.createElement('textarea');
+                textarea.textContent = str;
+                textarea.setAttribute('readonly', '');
+                textarea.style.position = 'absolute';
+                textarea.style.left = '-9999px';
+
+                document.body.appendChild(textarea);
+                var selection = document.getSelection();
+                var range = document.createRange();
+                range.selectNode(textarea);
+                selection.removeAllRanges();
+                selection.addRange(range);
+
+                const success = document.execCommand('copy');
+                selection.removeAllRanges();
+                document.body.removeChild(textarea);
+                return success;
+            };
+
             function copyLink(dataSourceConfig, option) {
                 if (option === "BULK" || option === "TIMESERIES") {
                     const values = [];
@@ -703,11 +725,12 @@ msg._error; // The timestamped error message
                             null,
                             2
                         )};\nmsg.payload=bulkValues;\nreturn msg;`;
-                        navigator.clipboard.writeText(option === "BULK" ? bulkTemplate : functionTemplate);
+                        const success = copyToClipboard(option === "BULK" ? bulkTemplate : functionTemplate);
                         $("#mindconnect-infoDialog-output").text(
-                            `Copied ${
+                            success ? `Copied ${
                                 option === "BULK" ? "Bulk" : ""
-                            } TimeSeries Template Data to Clipboard. (Paste this template to a function node)`
+                            } TimeSeries Template Data to Clipboard. (Paste this template to a function node)` : 
+                            "Couldn't copy the text to clipboard"
                         );
                     });
                 } else {
@@ -746,11 +769,12 @@ const fileInfo=${JSON.stringify(fileInfo, null, 2)};
 msg.payload=fileInfo;
 return msg;`;
 
-                    navigator.clipboard.writeText(option === "EVENT" ? eventTemplate : fileTemplate);
+                    const success = copyToClipboard(option === "EVENT" ? eventTemplate : fileTemplate);
                     $("#mindconnect-infoDialog-output").text(
-                        `Copied ${
+                        success ? `Copied ${
                             option === "EVENT" ? "Event" : "File"
-                        } Template Data to Clipboard. (Paste this template to a function node.)`
+                        } Template Data to Clipboard. (Paste this template to a function node.)` : 
+                        "Couldn't copy the text to clipboard"
                     );
                 }
                 return false;
@@ -835,7 +859,7 @@ return msg;`;
                         const url = `<a class="ghostLink diagLink" href="${urlTemplate}${mapping.entityId}/details" target="_new" title="Open Asset in MindSphere Asset Manager"><i class="fa fa-external-link"></i> `;
                         mappingList.append(
                             `<li>${
-                                mapping?.validity?.status === "VALID"
+                                (mapping && mapping.validity && mapping.validity.status && (mapping.validity.status === "VALID"))
                                     ? "<i class='fa fa-check-circle' style='color:#65C728' title='VALID'></i>"
                                     : "<i class='fa fa-exclamation-triangle' style='color:#F62447' title='NOT VALID'></i>"
                             } <span style="color:#354C80">${
