@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.9.1 (Vienna Bobcats) - September 2020
+
+## Bugfix 3.9.1
+
+- Node not loading on raspberry pi with chromium 79.0 (#103)
+- Copy to clipboard not working on raspberry pi with chromium 79.0 (#104)
+
 ## 3.9.0 (Vienna Bobcats) - September 2020
 
 ## New Features 3.9.0
