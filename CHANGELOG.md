@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.9.2 (Vienna Bobcats) - September 2020
+## 3.9.2 (Vienna Bobcats) - October 2020
 
 ## Bugfix 3.9.2
 
