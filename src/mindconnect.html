@@ -6,7 +6,7 @@
             &nbsp;&nbsp;<a href="https://opensource.mindsphere.io/docs/node-red-contrib-mindconnect/index.html" target="_new" class="headerLink" title="Documentation">
                 <i class="fa fa-globe"></i> MindConnect Node-RED Agent
             </a>
-        </span> <span style="color:#aaaaaa !important">v3.9.1</span>
+        </span> <span style="color:#aaaaaa !important">v3.9.2-0 (alpha)</span>
     </div>
 
     <div class="form-row">
@@ -943,46 +943,50 @@ return msg;`;
                                 height: 200,
                                 resizable: false,
                                 buttons: {
-                                    Confirm: async function () {
+                                    Confirm: function () {
                                         $(this).dialog("close");
                                         button.html(
                                             ` <a class="diagLink ghostLink" title="Start Automatic Configuration for this Asset"> [${element.typeId}]<span style="color:#354C80"> ${element.name}</span>- Please wait, configuring....</a> <i class="fa fa-spin fa-spinner"></i>`
                                         );
-                                        try {
-                                            let auth = undefined;
 
-                                            if (window.localStorage.getItem("auth-tokens")) {
-                                                auth = `Bearer ${
-                                                    JSON.parse(window.localStorage.getItem("auth-tokens")).access_token
-                                                }`;
-                                            }
+                                        (async()=>{
 
-                                            const response = await fetch(
-                                                `mindconnect/assets/${nodeId}/${element.assetId}`,
-                                                {
-                                                    headers: {
-                                                        accept: "application/json",
-                                                        Authorization: auth,
-                                                    },
-                                                    method: "post",
-                                                    body: JSON.stringify({}),
+                                            try {
+                                                let auth = undefined;
+
+                                                if (window.localStorage.getItem("auth-tokens")) {
+                                                    auth = `Bearer ${
+                                                        JSON.parse(window.localStorage.getItem("auth-tokens")).access_token
+                                                    }`;
                                                 }
-                                            );
-                                            if (!response.ok) {
-                                                throw new Error(`${response.status} ${response.statusText}`);
+
+                                                const response = await fetch(
+                                                    `mindconnect/assets/${nodeId}/${element.assetId}`,
+                                                    {
+                                                        headers: {
+                                                            accept: "application/json",
+                                                            Authorization: auth,
+                                                        },
+                                                        method: "post",
+                                                        body: JSON.stringify({}),
+                                                    }
+                                                );
+                                                if (!response.ok) {
+                                                    throw new Error(`${response.status} ${response.statusText}`);
+                                                }
+                                                const result = await response.json();
+                                                if (result.error) {
+                                                    throw new Error(result.error);
+                                                }
+                                                button.html(
+                                                    `<a class="diagLink ghostLink" title="Start Automatic Configuration for this Asset"> [${element.typeId}]<span style="color:#65C728"> ${element.name}</span></a> <i class='fa fa-check-circle' style='color:#65C728'></i>`
+                                                );
+                                            } catch (err) {
+                                                button.html(
+                                                    `<a class="diagLink ghostLink" title="Start Automatic Configuration for this Asset"> [${element.typeId}]<span style="color:#af235f"> ${element.name}- ${err}</span></a><i class="fa fa-exclamation-triangle" style="color:#af235f"></i>`
+                                                );
                                             }
-                                            const result = await response.json();
-                                            if (result.error) {
-                                                throw new Error(result.error);
-                                            }
-                                            button.html(
-                                                `<a class="diagLink ghostLink" title="Start Automatic Configuration for this Asset"> [${element.typeId}]<span style="color:#65C728"> ${element.name}</span></a> <i class='fa fa-check-circle' style='color:#65C728'></i>`
-                                            );
-                                        } catch (err) {
-                                            button.html(
-                                                `<a class="diagLink ghostLink" title="Start Automatic Configuration for this Asset"> [${element.typeId}]<span style="color:#af235f"> ${element.name}- ${err}</span></a><i class="fa fa-exclamation-triangle" style="color:#af235f"></i>`
-                                            );
-                                        }
+                                        })();
                                     },
                                     Cancel: function () {
                                         $(this).dialog("close");
