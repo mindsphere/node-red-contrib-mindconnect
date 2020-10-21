@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.9.2 (Vienna Bobcats) - October 2020
+
+## Bugfix 3.9.2
+
+- Node not working properly on IOT 2040 with Node-RED 0.20.7 (#107)
+
 ## 3.9.1 (Vienna Bobcats) - September 2020
 
 ## Bugfix 3.9.1
