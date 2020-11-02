@@ -715,12 +715,24 @@ msg._error; // The timestamped error message
                             });
                         });
                         const bulk = [{ timestamp: new Date().toISOString(), values: values }];
-                        const functionTemplate = `// take a look at the flow examples at https://playground.mindconnect.rocks\nconst values = ${JSON.stringify(
+                        const headertemplate = "// take a look at the flow examples at https://playground.mindconnect.rocks" +
+                        "\n//" + 
+                        "\n// - MindSphere expects all values to be encoded as strings" +
+                        "\n// - Integers must not have any decimal places" +
+                        "\n// - It is a good practice to use javascript literal notation" +
+                        "\n// " +
+                        "\n// * Examples: " +
+                        "\n// " +
+                        "\n//   - Random value between 0 and 100: `${Math.random()*100}` " +
+                        "\n//   - Variable (HUMIDITY) from input node : `${msg.payload.HUMIDITY}` " +
+                        "\n//   - Variable (SPEED) from input node with 0 as default: `${msg.payload.SPEED || 0}`\n";
+                        
+                        const functionTemplate = `${headertemplate}\nconst values = ${JSON.stringify(
                             values,
                             null,
                             2
                         )};\nmsg._time = new Date();\nmsg.payload=values;\nreturn msg;`;
-                        const bulkTemplate = `// take a look at the flow examples at https://playground.mindconnect.rocks\nconst bulkValues = ${JSON.stringify(
+                        const bulkTemplate = `${headertemplate}\nconst bulkValues = ${JSON.stringify(
                             bulk,
                             null,
                             2
