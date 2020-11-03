@@ -5,7 +5,7 @@ import fetch from "node-fetch";
 import { IConfigurationInfo } from "./mindconnect-schema";
 const log = debug("node-red-contrib-mindconnect");
 
-export const sleep = (ms: any) => new Promise(resolve => setTimeout(resolve, ms));
+export const sleep = (ms: any) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const retryWithNodeLog = async (n, func, operation, node) => {
     let error;
@@ -136,7 +136,7 @@ export const reloadFlow = async (node, settings, newConfig) => {
             const putResponse = await fetch(uri, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(flow)
+                body: JSON.stringify(flow),
             });
 
             if (!putResponse.ok || putResponse.status < 200 || putResponse.status > 299) {
@@ -148,7 +148,7 @@ export const reloadFlow = async (node, settings, newConfig) => {
             node.status({
                 fill: "green",
                 shape: "dot",
-                text: "the configuration was received and the flow was restarted. please reload your browser!"
+                text: "the configuration was received and the flow was restarted. please reload your browser!",
             });
         } else {
             throw new Error(`invalid response ${await response.text()}`);
@@ -162,13 +162,14 @@ export const reloadFlow = async (node, settings, newConfig) => {
 
 export const handleError = (
     node: IMindConnectNode,
-    msg: { _mindsphereStatus: string; _error: string },
+    msg: { _mindsphereStatus: string; _error: string; _errorObject: object },
     error: { message: any },
     sendMessage: boolean = true
 ) => {
     node.error(error);
     msg._mindsphereStatus = "Error";
-    msg._error = `${new Date().toISOString()} ${error.message}`;
+    msg._errorObject = error;
+    msg._error = `${new Date().toISOString()} ${error.message}}`;
     sendMessage && node.send(msg);
     const errortext = error.message || error;
     node.status({ fill: "red", shape: "dot", text: `${errortext}` });

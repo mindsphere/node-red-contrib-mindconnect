@@ -7,12 +7,14 @@ import * as allSettled from "promise.allsettled";
 import {
     actionSchemaValidator,
     bulkUploadValidator,
+    dataLakeFileInfoValidator,
     eventSchemaValidator,
     fileInfoValidator,
     IConfigurationInfo,
+    IDataLakeFileInfo,
     IFileInfo,
     remoteConfigurationValidator,
-    timeSeriesValidator
+    timeSeriesValidator,
 } from "./mindconnect-schema";
 import {
     configureAgent,
@@ -20,7 +22,7 @@ import {
     handleError,
     reloadFlow,
     retryWithNodeLog,
-    sleep
+    sleep,
 } from "./mindconnect-utils";
 
 export = function (RED: any): void {
@@ -100,6 +102,7 @@ export = function (RED: any): void {
                     const bulkValidator = bulkUploadValidator();
                     const tsValidator = timeSeriesValidator();
                     const actionValidator = actionSchemaValidator();
+                    const dataLakeValidator = dataLakeFileInfoValidator();
 
                     if (msg._includeMindSphereToken) {
                         msg.headers = { ...msg.headers, Authorization: `Bearer ${await agent.GetAgentToken()}` };
@@ -114,7 +117,6 @@ export = function (RED: any): void {
                             return;
                         }
                     }
-
                     if (await actionValidator(msg.payload)) {
                         if (msg.payload.action === "await") {
                             awaitPromises = true;
@@ -125,21 +127,24 @@ export = function (RED: any): void {
                         promises.push(sendEvent(msg, agent, timestamp));
                     } else if (await fileValidator(msg.payload)) {
                         promises.push(sendFile(msg, agent, timestamp));
+                    } else if (await dataLakeValidator(msg.payload)) {
+                        promises.push(sendFileToDataLake(msg, agent, timestamp));
                     } else if (await bulkValidator(msg.payload)) {
                         promises.push(sendBulkTimeSeriesData(msg, agent, timestamp));
                     } else if (await tsValidator(msg.payload)) {
                         promises.push(sendTimeSeriesData(msg, agent, timestamp));
                     } else {
-                        let errorString = extractErrorString(
+                        let errorObject = extractErrorString(
                             eventValidator,
                             fileValidator,
                             bulkValidator,
                             tsValidator,
                             rcValidator,
-                            actionValidator
+                            actionValidator,
+                            dataLakeValidator
                         );
 
-                        promises.push(handleInputError(msg, { message: errorString }, timestamp));
+                        promises.push(handleInputError(msg, errorObject, timestamp));
                     }
 
                     if (
@@ -214,7 +219,8 @@ export = function (RED: any): void {
             bulkValidator,
             tsValidator,
             rcValidator,
-            actionValidator
+            actionValidator,
+            dataLakeValidator
         ) {
             const eventErrors = eventValidator.errors || [];
             const fileErrors = fileValidator.errors || [];
@@ -222,22 +228,48 @@ export = function (RED: any): void {
             const timeSeriesErrors = tsValidator.errors || [];
             const rcValidatorErrors = rcValidator.errors || [];
             const actionErrors = actionValidator.errors || [];
-            let errorString =
-                "the payload was not recognized as an event, file or datapoints. See node help for proper msg.payload.formats";
+            const dataLakeErrors = dataLakeValidator.errors || [];
 
-            errorString += "Action Errors:\n";
-            errorString += JSON.stringify(actionErrors, null, 2);
-            errorString += "\nEvent Errors:\n";
-            errorString += JSON.stringify(eventErrors, null, 2);
-            errorString += "\nFile Errors:\n";
-            errorString += JSON.stringify(fileErrors, null, 2);
-            errorString += "\nBulk Errors:\n";
-            errorString += JSON.stringify(bulkErrors, null, 2);
-            errorString += "\nTimeSeries Errors:\n";
-            errorString += JSON.stringify(timeSeriesErrors, null, 2);
-            errorString += "Configuration Errors:\n";
-            errorString += JSON.stringify(rcValidatorErrors, null, 2);
-            return errorString;
+            const result = {
+                message:
+                    "the payload was not recognized as an event, file or datapoints. See node help for proper msg.payload.formats (see msg._errorObject for all errors)",
+                actionErrors: [],
+                eventErrors: [],
+                fileErrors: [],
+                dataLakeErrors: [],
+                bulkErrors: [],
+                timeSeriesErrors: [],
+                remoteConfigurationErrors: [],
+            };
+
+            actionErrors.forEach((element) => {
+                result.actionErrors.push(element.message);
+            });
+
+            eventErrors.forEach((element) => {
+                result.eventErrors.push(element.message);
+            });
+
+            fileErrors.forEach((element) => {
+                result.fileErrors.push(element.message);
+            });
+
+            dataLakeErrors.forEach((element) => {
+                result.dataLakeErrors.push(element.message);
+            });
+
+            bulkErrors.forEach((element) => {
+                result.bulkErrors.push(element.message);
+            });
+
+            timeSeriesErrors.forEach((element) => {
+                result.timeSeriesErrors.push(element.message);
+            });
+            rcValidatorErrors.forEach((element) => {
+                result.remoteConfigurationErrors.push(element.message);
+            });
+
+            return result;
         }
 
         async function handleInputError(msg: any, error, timestamp: Date) {
@@ -307,9 +339,47 @@ export = function (RED: any): void {
             return msg;
         }
 
+        async function sendFileToDataLake(msg: any, agent: MindConnectAgent, timestamp: Date) {
+            try {
+                const dataLakeClient = agent.Sdk().GetDataLakeClient();
+                const fileInfo = msg.payload as IDataLakeFileInfo;
+                const message = Buffer.isBuffer(fileInfo.dataLakeFileName) ? "Buffer" : fileInfo.dataLakeFileName;
+                node.status({ fill: "grey", shape: "dot", text: `recieved fileInfo ${message} at ${timestamp}` });
+
+                const url = await dataLakeClient.GenerateUploadObjectUrls({
+                    paths: [{ path: `/${agent.ClientId()}/${fileInfo.dataLakeFilePath}` }],
+                    subtenantId: fileInfo.subTenantId,
+                });
+
+                node.status({
+                    fill: "grey",
+                    shape: "dot",
+                    text: `generated upload URL : ${msg._ignorePayload ? "skipping upload" : "uploading file"}`,
+                });
+
+                msg._signedUrl = url.objectUrls[0].signedUrl;
+                msg._mindsphereStatus = "OK";
+
+                if (!msg.ignorePayload) {
+                    await dataLakeClient.PutFile(fileInfo.dataLakeFileName, url.objectUrls[0].signedUrl);
+                    const uploadTimeStamp = new Date();
+                    node.log(`Uploaded file at ${uploadTimeStamp} to Data Lake`);
+                    node.status({
+                        fill: "green",
+                        shape: "dot",
+                        text: `Uploaded file at ${uploadTimeStamp} to data lake.`,
+                    });
+                }
+                node.send(msg);
+            } catch (error) {
+                handleError(node, msg, error);
+            }
+            return msg;
+        }
+
         async function sendFile(msg: any, agent: MindConnectAgent, timestamp: Date) {
             try {
-                const fileInfo = <IFileInfo>msg.payload;
+                const fileInfo = msg.payload as IFileInfo;
                 const message = Buffer.isBuffer(fileInfo.fileName) ? "Buffer" : fileInfo.fileName;
                 node.status({ fill: "grey", shape: "dot", text: `recieved fileInfo ${message}` });
 
@@ -322,11 +392,16 @@ export = function (RED: any): void {
                 await retryWithNodeLog(
                     node.retry,
                     () =>
-                        agent.UploadFile(entityId, fileInfo.filePath || fileInfo.fileName, fileInfo.fileName, {
-                            chunk: node.chunk,
-                            parallelUploads: parallelUploads,
-                            type: fileInfo.fileType,
-                        }),
+                        agent.UploadFile(
+                            entityId,
+                            fileInfo.filePath || Buffer.isBuffer(fileInfo.fileName) ? "unknown" : fileInfo.fileName,
+                            fileInfo.fileName,
+                            {
+                                chunk: node.chunk,
+                                parallelUploads: parallelUploads,
+                                type: fileInfo.fileType,
+                            }
+                        ),
                     "FileUpload",
                     node
                 );

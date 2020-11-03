@@ -17,7 +17,7 @@ export const actionSchema = {
             title: "The Action Schema",
             default: "",
             examples: ["await"],
-            oneOf: [{ enum: ["await", "renew"] }]
+            oneOf: [{ enum: ["await", "renew"] }],
         },
         timestamp: {
             $id: "#/properties/timestamp",
@@ -25,9 +25,9 @@ export const actionSchema = {
             title: "The Timestamp Schema",
             default: "",
             examples: ["2020-02-25T09:31:01.493Z"],
-            pattern: "^(.*)$"
-        }
-    }
+            pattern: "^(.*)$",
+        },
+    },
 };
 
 export const eventSchema = {
@@ -42,7 +42,7 @@ export const eventSchema = {
             examples: ["12345678901234567890123456789012"],
             minLength: 32,
             maxLength: 32,
-            pattern: "^[A-Fa-f0-9]*$"
+            pattern: "^[A-Fa-f0-9]*$",
         },
         timestamp: {
             $id: "/properties/timestamp",
@@ -50,45 +50,71 @@ export const eventSchema = {
             format: "date-time",
             title: "The Timestamp Schema ",
             default: "",
-            examples: ["2018-06-16T18:38:07.293Z"]
+            examples: ["2018-06-16T18:38:07.293Z"],
         },
         sourceType: {
             $id: "/properties/sourceType",
             type: "string",
             title: "The Sourcetype Schema ",
             default: "",
-            examples: ["Event"]
+            examples: ["Event"],
         },
         sourceId: {
             $id: "/properties/sourceId",
             type: "string",
             title: "The Sourceid Schema ",
             default: "",
-            examples: ["application"]
+            examples: ["application"],
         },
         source: {
             $id: "/properties/source",
             type: "string",
             title: "The Source Schema ",
             default: "",
-            examples: ["Meowz"]
+            examples: ["Meowz"],
         },
         severity: {
             $id: "/properties/severity",
             type: "integer",
             title: "The Severity Schema ",
             default: 0,
-            examples: [20]
+            examples: [20],
         },
         description: {
             $id: "/properties/description",
             type: "string",
             title: "The Description Schema ",
             default: "",
-            examples: [""]
-        }
+            examples: [""],
+        },
     },
-    required: ["timestamp", "severity", "description", "source", "sourceId", "sourceType"]
+    required: ["timestamp", "severity", "description", "source", "sourceId", "sourceType"],
+};
+
+export const dataLakeFileInfoSchema = {
+    $id: "http://opensource.mindsphere.io/mindconnect/datalakefileinfo",
+    type: "object",
+    properties: {
+        dataLakeFileName: {
+            $id: "/properties/dataLakeFileName",
+            type: ["string", "object"],
+            title: "fileName ",
+            default: "",
+        },
+        dataLakeFilePath: {
+            $id: "/properties/dataLakeFilePath",
+            type: "string",
+            title: "filePath ",
+            default: "",
+        },
+        subTenantId: {
+            $id: "/properties/subTenantId",
+            type: "string",
+            title: "subTenantId ",
+            default: "",
+        },
+    },
+    required: ["dataLakeFileName", "dataLakeFilePath"],
 };
 
 export const fileInfoSchema = {
@@ -102,29 +128,29 @@ export const fileInfoSchema = {
             default: "",
             minLength: 32,
             maxLength: 32,
-            pattern: "^[A-Fa-f0-9]*$"
+            pattern: "^[A-Fa-f0-9]*$",
         },
         fileName: {
             $id: "/properties/sourceType",
             type: ["string", "object"],
             title: "The Sourcetype Schema ",
-            default: ""
+            default: "",
         },
         filePath: {
             $id: "/properties/sourceType",
             type: "string",
             title: "The filePath Schema ",
-            default: ""
+            default: "",
         },
         description: {
             $id: "/properties/description",
             type: "string",
             title: "The Description Schema ",
             default: "",
-            examples: [""]
-        }
+            examples: [""],
+        },
     },
-    required: ["fileName", "description"]
+    required: ["fileName", "description"],
 };
 
 export const bulkUploadSchema = {
@@ -135,7 +161,7 @@ export const bulkUploadSchema = {
         required: ["timestamp", "values"],
         properties: {
             timestamp: {
-                type: "string"
+                type: "string",
             },
             values: {
                 type: "array",
@@ -144,19 +170,19 @@ export const bulkUploadSchema = {
                     required: [],
                     properties: {
                         dataPointId: {
-                            type: "string"
+                            type: "string",
                         },
                         qualityCode: {
-                            type: "string"
+                            type: "string",
                         },
                         value: {
-                            type: "string"
-                        }
-                    }
-                }
-            }
-        }
-    }
+                            type: "string",
+                        },
+                    },
+                },
+            },
+        },
+    },
 };
 
 export const timeSeriesSchema = {
@@ -167,16 +193,16 @@ export const timeSeriesSchema = {
         required: ["dataPointId", "qualityCode", "value"],
         properties: {
             dataPointId: {
-                type: "string"
+                type: "string",
             },
             qualityCode: {
-                type: "string"
+                type: "string",
             },
             value: {
-                type: "string"
-            }
-        }
-    }
+                type: "string",
+            },
+        },
+    },
 };
 
 export const remoteConfigurationSchema = {
@@ -196,7 +222,7 @@ export const remoteConfigurationSchema = {
         "chunk",
         "disablekeepalive",
         "retry",
-        "asyncduration"
+        "asyncduration",
     ],
     properties: {
         name: {
@@ -205,7 +231,7 @@ export const remoteConfigurationSchema = {
             title: "The Name Schema",
             default: "",
             examples: ["Hello"],
-            pattern: "^(.*)$"
+            pattern: "^(.*)$",
         },
         configtype: {
             $id: "#/properties/configtype",
@@ -213,7 +239,7 @@ export const remoteConfigurationSchema = {
             title: "The Configtype Schema",
             default: "",
             examples: ["SHARED_SECRET"],
-            pattern: "^(.*)$"
+            pattern: "^(.*)$",
         },
         agentconfig: {
             $id: "#/properties/agentconfig",
@@ -233,7 +259,7 @@ export const remoteConfigurationSchema = {
                             title: "The Baseurl Schema",
                             default: "",
                             examples: ["https://southgate.eu1.mindsphere.io"],
-                            pattern: "^(.*)$"
+                            pattern: "^(.*)$",
                         },
                         iat: {
                             $id: "#/properties/agentconfig/properties/content/properties/iat",
@@ -241,7 +267,7 @@ export const remoteConfigurationSchema = {
                             title: "The Iat Schema",
                             default: "",
                             examples: ["eyJraW...a1"],
-                            pattern: "^(.*)$"
+                            pattern: "^(.*)$",
                         },
                         clientCredentialProfile: {
                             $id: "#/properties/agentconfig/properties/content/properties/clientCredentialProfile",
@@ -254,8 +280,8 @@ export const remoteConfigurationSchema = {
                                 title: "The Items Schema",
                                 default: "",
                                 examples: ["SHARED_SECRET"],
-                                pattern: "^(.*)$"
-                            }
+                                pattern: "^(.*)$",
+                            },
                         },
                         clientId: {
                             $id: "#/properties/agentconfig/properties/content/properties/clientId",
@@ -263,7 +289,7 @@ export const remoteConfigurationSchema = {
                             title: "The Clientid Schema",
                             default: "",
                             examples: ["d72262e71ea0470eb9f880176b888938"],
-                            pattern: "^(.*)$"
+                            pattern: "^(.*)$",
                         },
                         tenant: {
                             $id: "#/properties/agentconfig/properties/content/properties/tenant",
@@ -271,9 +297,9 @@ export const remoteConfigurationSchema = {
                             title: "The Tenant Schema",
                             default: "",
                             examples: ["castidev"],
-                            pattern: "^(.*)$"
-                        }
-                    }
+                            pattern: "^(.*)$",
+                        },
+                    },
                 },
                 expiration: {
                     $id: "#/properties/agentconfig/properties/expiration",
@@ -281,9 +307,9 @@ export const remoteConfigurationSchema = {
                     title: "The Expiration Schema",
                     default: "",
                     examples: ["2018-11-15T17:31:35.000Z"],
-                    pattern: "^(.*)$"
-                }
-            }
+                    pattern: "^(.*)$",
+                },
+            },
         },
         privatekey: {
             $id: "#/properties/privatekey",
@@ -291,7 +317,7 @@ export const remoteConfigurationSchema = {
             title: "The Privatekey Schema",
             default: "",
             examples: [""],
-            pattern: "^(.*)$"
+            pattern: "^(.*)$",
         },
         model: {
             $id: "#/properties/model",
@@ -299,35 +325,35 @@ export const remoteConfigurationSchema = {
             title: "The Model Schema",
             default: "",
             examples: [""],
-            pattern: "^(.*)$"
+            pattern: "^(.*)$",
         },
         validate: {
             $id: "#/properties/validate",
             type: "boolean",
             title: "The Validate Schema",
             default: false,
-            examples: [true]
+            examples: [true],
         },
         validateevent: {
             $id: "#/properties/validateevent",
             type: "boolean",
             title: "The Validateevent Schema",
             default: false,
-            examples: [false]
+            examples: [false],
         },
         chunk: {
             $id: "#/properties/chunk",
             type: "boolean",
             title: "The Chunk Schema",
             default: false,
-            examples: [true]
+            examples: [true],
         },
         disablekeepalive: {
             $id: "#/properties/disablekeepalive",
             type: "boolean",
             title: "The Disablekeepalive Schema",
             default: false,
-            examples: [true]
+            examples: [true],
         },
         retry: {
             $id: "#/properties/retry",
@@ -335,7 +361,7 @@ export const remoteConfigurationSchema = {
             title: "The Retry Schema",
             default: "",
             examples: ["7"],
-            pattern: "^([0-9]*)$"
+            pattern: "^([0-9]*)$",
         },
         asyncduration: {
             $id: "#/properties/asyncduration",
@@ -343,9 +369,9 @@ export const remoteConfigurationSchema = {
             title: "The asyncduration Schema",
             default: "",
             examples: ["7"],
-            pattern: "^([0-9]*)$"
-        }
-    }
+            pattern: "^([0-9]*)$",
+        },
+    },
 };
 
 export function actionSchemaValidator(): ajv.ValidateFunction {
@@ -363,6 +389,11 @@ export function eventSchemaValidator(): ajv.ValidateFunction {
     return schemaValidator.compile(eventSchema);
 }
 
+export function dataLakeFileInfoValidator(): ajv.ValidateFunction {
+    const schemaValidator = new ajv({ $data: true, allErrors: true });
+    return schemaValidator.compile(dataLakeFileInfoSchema);
+}
+
 export function fileInfoValidator(): ajv.ValidateFunction {
     const schemaValidator = new ajv({ $data: true, allErrors: true });
     return schemaValidator.compile(fileInfoSchema);
@@ -378,9 +409,15 @@ export function timeSeriesValidator(): ajv.ValidateFunction {
     return schemaValidator.compile(timeSeriesSchema);
 }
 
+export interface IDataLakeFileInfo {
+    dataLakeFileName: Buffer | string;
+    dataLakeFilePath: string;
+    subTenantId?: string;
+}
+
 export interface IFileInfo {
     entityId: string;
-    fileName: string;
+    fileName: Buffer | string;
     fileType: string;
     filePath?: string;
     description?: string;
