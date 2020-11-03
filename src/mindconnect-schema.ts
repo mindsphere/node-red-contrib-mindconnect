@@ -95,8 +95,8 @@ export const dataLakeFileInfoSchema = {
     $id: "http://opensource.mindsphere.io/mindconnect/datalakefileinfo",
     type: "object",
     properties: {
-        dataLakeFileName: {
-            $id: "/properties/dataLakeFileName",
+        dataLakeFile: {
+            $id: "/properties/dataLakeFile",
             type: ["string", "object"],
             title: "fileName ",
             default: "",
@@ -114,7 +114,7 @@ export const dataLakeFileInfoSchema = {
             default: "",
         },
     },
-    required: ["dataLakeFileName", "dataLakeFilePath"],
+    required: ["dataLakeFile", "dataLakeFilePath"],
 };
 
 export const fileInfoSchema = {
@@ -410,7 +410,7 @@ export function timeSeriesValidator(): ajv.ValidateFunction {
 }
 
 export interface IDataLakeFileInfo {
-    dataLakeFileName: Buffer | string;
+    dataLakeFile: Buffer | string;
     dataLakeFilePath: string;
     subTenantId?: string;
 }

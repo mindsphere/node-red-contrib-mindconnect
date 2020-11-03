@@ -6,7 +6,7 @@
             &nbsp;&nbsp;<a href="https://opensource.mindsphere.io/docs/node-red-contrib-mindconnect/index.html" target="_new" class="headerLink" title="Documentation">
                 <i class="fa fa-globe"></i> MindConnect Node-RED Agent
             </a>
-        </span> <span style="color:#aaaaaa !important">v3.9.2</span>
+        </span> <span style="color:#aaaaaa !important">v3.10.0</span>
     </div>
 
     <div class="form-row">
@@ -111,6 +111,7 @@
                 <a id="mindconnect-infoDialog-copyBulkLink" class="ghostLink diagLink" title="Copy Bulk TimeSeries Template to Clipboard"><i class="fa fa-clipboard"></i> Bulk TimeSeries Template</a>
                 <a id="mindconnect-infoDialog-copyEventLink" class="ghostLink diagLink" title="Copy Event Template to Clipboard"><i class="fa fa-clipboard"></i> Event Template</a>
                 <a id="mindconnect-infoDialog-copyFileLink" class="ghostLink diagLink" title="Copy File Template to Clipboard"><i class="fa fa-clipboard"></i> File Template</a>
+                <a id="mindconnect-infoDialog-copyDataLakeFileLink" class="ghostLink diagLink" title="Copy Data Lake Template to Clipboard"><i class="fa fa-clipboard"></i> DataLake Template</a>
                 <br/>
                 <span id="mindconnect-infoDialog-output" style="color:#969696; font-size:12px"></span>
                 <br/><br/>
@@ -195,6 +196,11 @@
                 <br/>
                 This node can send time series data points (single or bulk), events and files to MindSphere.
                 The node can also be used to generate MindSphere authentication tokens if you want to call your own APIs.
+                Once onboarded you can click on <b>Agent Information</b> button and generate the templates for the most common operations.
+                <br/>
+                <ul>
+                    <li> <a href="https://opensource.mindsphere.io/docs/node-red-contrib-mindconnect/index.html#tab1anchor3" target="_new"><i class="fa fa-file-video-o"></i> How to use this node (video) </a></li>
+                </ul>
             </p>
 
             <p>
@@ -284,6 +290,23 @@ msg.payload = {
 }
 return msg;
         </pre>
+
+        <p>
+            <i class="fa fa-info-circle"></i> <b>Data Lake File Upload:</b><br/>
+            You have to pass an object with data lake file information in the message.
+            <i>(Prerequisite: The data-lake has to be purchased and write-enabled.)</i>
+        </p>
+        <pre>
+msg.payload = {
+    dataLakeFile: "digitaltwin.png", // you can also pass a Buffer object instead
+    dataLakeFilePath : "images/digitaltwin.png",
+    // subTenantId :  "..."  - this is optional
+}
+return msg;
+        </pre>
+        <p>
+            If you just want to generate a signed upload URL without actually uploading the file you can pass <pre>msg._ignorePayload=true;</pre> to the node.
+        </p>
 
         <p>
             <i class="fa fa-info-circle"></i> <b>Forcing Onboarding Actions:</b><br/>
@@ -703,7 +726,32 @@ msg._error; // The timestamped error message
             };
 
             function copyLink(dataSourceConfig, option) {
-                if (option === "BULK" || option === "TIMESERIES") {
+                if (option === "DATALAKE") {
+
+                    const dataLakeTemplate = "" +
+                    "// take a look at the flow examples at https://playground.mindconnect.rocks " +
+                    "\n//" +
+                    "\n// Preconditions : data-lake is purchased and enabled for writing (see mc data-lake --mode write  CLI command)" +
+                    "\n//" +
+                    "\n// Agents can only upload files to a path which is prefixed with their agent id" +
+                    "\n// The MindConnect Node will apply this prefix automatically to the dataLakeFileUpload Path" +
+                    "\n// You can pass either a javascript buffer or path to file in the dataLakeFile property for upload" +
+                    "\n// The subTenantId can be optionally added to the messsage" +
+                    "\n" +
+                    "\nconst dataLakeFileInfo = " + JSON.stringify({dataLakeFile : "my/path/to/file.txt", dataLakeFilePath: "uploads/file.txt"}, null, 2) + ";" +
+                    "\n\n// Uncomment the next code line if you just want to generate an upload url (in msg._signedUrl) " + 
+                    "\n// without actually uploading the file" +
+                    "\n// msg._ignorePayload = true;" +
+                    "\n\nmsg.payload = dataLakeFileInfo;" +
+                    "\nreturn msg;";
+
+                    const success = copyToClipboard(dataLakeTemplate);
+                        $("#mindconnect-infoDialog-output").text(
+                            success ? `Copied Data Lake Template Data to Clipboard. (Paste this template to a function node)` : 
+                            "Couldn't copy the text to clipboard"
+                        );
+                }
+                else if (option === "BULK" || option === "TIMESERIES") {
                     const values = [];
 
                     dataSourceConfig.forEach((dataSource) => {
@@ -736,7 +784,7 @@ msg._error; // The timestamped error message
                             bulk,
                             null,
                             2
-                        )};\nmsg.payload=bulkValues;\nreturn msg;`;
+                        )};\nmsg.payload = bulkValues;\nreturn msg;`;
                         const success = copyToClipboard(option === "BULK" ? bulkTemplate : functionTemplate);
                         $("#mindconnect-infoDialog-output").text(
                             success ? `Copied ${
@@ -758,7 +806,7 @@ msg._error; // The timestamped error message
                     const eventTemplate = `
 // add entityId property if you want to create an event for a different asset
 // if you are using custom events instead of MindSphere standard events please include the _customEvent switch in der message
-// msg._customEvent=true;
+// msg._customEvent = true;
 // take a look at the flow examples at https://playground.mindconnect.rocks
 
 const event = ${JSON.stringify(event, null, 2)};
@@ -776,9 +824,8 @@ return msg;`;
 // you can also use a Buffer instance instead of fileName if your file is created in your Node-RED flow.
 // take a look at the flow examples at https://playground.mindconnect.rocks
 
-const fileInfo=${JSON.stringify(fileInfo, null, 2)};
-
-msg.payload=fileInfo;
+const fileInfo = ${JSON.stringify(fileInfo, null, 2)};
+msg.payload = fileInfo;
 return msg;`;
 
                     const success = copyToClipboard(option === "EVENT" ? eventTemplate : fileTemplate);
@@ -816,6 +863,7 @@ return msg;`;
                     $("#mindconnect-infoDialog-copyBulkLink").click(() => copyLink(result.configuration.dataSources, "BULK"));
                     $("#mindconnect-infoDialog-copyEventLink").click(() => copyLink(result.configuration.dataSources, "EVENT"));
                     $("#mindconnect-infoDialog-copyFileLink").click(() => copyLink(result.configuration.dataSources, "FILE"));
+                    $("#mindconnect-infoDialog-copyDataLakeFileLink").click(() => copyLink(result.configuration.dataSources, "DATALAKE"));
 
                     result.configuration.dataSources.forEach((element) => {
                         $("#mindconnect-infoDialog-infoList").append(

@@ -343,13 +343,19 @@ export = function (RED: any): void {
             try {
                 const dataLakeClient = agent.Sdk().GetDataLakeClient();
                 const fileInfo = msg.payload as IDataLakeFileInfo;
-                const message = Buffer.isBuffer(fileInfo.dataLakeFileName) ? "Buffer" : fileInfo.dataLakeFileName;
+                const message = Buffer.isBuffer(fileInfo.dataLakeFile) ? "Buffer" : fileInfo.dataLakeFile;
                 node.status({ fill: "grey", shape: "dot", text: `recieved fileInfo ${message} at ${timestamp}` });
 
-                const url = await dataLakeClient.GenerateUploadObjectUrls({
-                    paths: [{ path: `/${agent.ClientId()}/${fileInfo.dataLakeFilePath}` }],
-                    subtenantId: fileInfo.subTenantId,
-                });
+                const url = await retryWithNodeLog(
+                    node.retry,
+                    () =>
+                        dataLakeClient.GenerateUploadObjectUrls({
+                            paths: [{ path: `/${agent.ClientId()}/${fileInfo.dataLakeFilePath}` }],
+                            subtenantId: fileInfo.subTenantId,
+                        }),
+                    "GenerateUploadObjectUrl",
+                    node
+                );
 
                 node.status({
                     fill: "grey",
@@ -361,7 +367,12 @@ export = function (RED: any): void {
                 msg._mindsphereStatus = "OK";
 
                 if (!msg.ignorePayload) {
-                    await dataLakeClient.PutFile(fileInfo.dataLakeFileName, url.objectUrls[0].signedUrl);
+                    await retryWithNodeLog(
+                        node.retry,
+                        () => dataLakeClient.PutFile(fileInfo.dataLakeFile, url.objectUrls[0].signedUrl),
+                        "PutFileToDataLake",
+                        node
+                    );
                     const uploadTimeStamp = new Date();
                     node.log(`Uploaded file at ${uploadTimeStamp} to Data Lake`);
                     node.status({

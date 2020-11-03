@@ -179,6 +179,32 @@ return msg;
 
 If the experimental chunking feature is on, the files which are larger than 8MB will be uploaded in 8 MB Chunks.
 
+#### Data Lake File Upload
+
+Precondition for data lake upload is that [MindSphere Integrated Data Lake](https://www.dex.siemens.com/mindsphere/applications/integrated-data-lake) is purchased and write-enabled.
+The node requires json objects as input in following format (e.g. from a function node).
+
+```javascript
+const dataLakeFileInfo = {
+  "dataLakeFile": "my/path/to/file.txt",
+  "dataLakeFilePath": "uploads/file.txt"
+};
+
+// Uncomment the next code line if you just want to generate an upload url (in msg._signedUrl)
+// without actually uploading the file
+// msg._ignorePayload = true;
+
+msg.payload = dataLakeFileInfo;
+return msg;
+```
+
+Please note:
+
+- Agents can only upload files to a path which is prefixed with their agent id
+- The MindConnect Node will apply this prefix automatically to the dataLakeFileUpload Path
+- You can pass either a javascript buffer or path to file in the dataLakeFile property for upload
+- The subTenantId can be optionally added to the messsage
+
 #### Error handling in the flows
 
 The node can be configured to retry all mindsphere operations (1-10 times, with delay of time \* 300ms before the next try)

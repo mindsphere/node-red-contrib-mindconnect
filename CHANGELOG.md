@@ -1,5 +1,18 @@
 # Changelog
 
+## 3.10.0 (Vienna European Shorthair) - November 2020
+
+## New Features 3.10.0
+
+- Support for Generation of Signed Upload URLs
+- Data Lake File Upload Support
+- Better error messages when the node input is misconfigured
+- Bumped all dependencies
+
+## Bugfix 3.10.0
+
+- The node now handles long asset names correctly
+
 ## 3.9.2 (Vienna Bobcats) - October 2020
 
 ## Bugfix 3.9.2
