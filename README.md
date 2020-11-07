@@ -185,12 +185,21 @@ Precondition for data lake upload is that [MindSphere Integrated Data Lake](http
 The node requires json objects as input in following format (e.g. from a function node).
 
 ```javascript
+// take a look at the flow examples at https://playground.mindconnect.rocks 
+//
+// Preconditions : data-lake is purchased and enabled for writing (see mc data-lake --mode write  CLI command)
+//
+// Agents can only upload files to a path which is prefixed with their agent id
+// The MindConnect Node will apply this prefix automatically to the dataLakeFileUpload Path
+// You can pass either a javascript buffer or path to file in the dataLakeFile property for upload
+// The subTenantId can be optionally added to the messsage
+
 const dataLakeFileInfo = {
   "dataLakeFile": "my/path/to/file.txt",
   "dataLakeFilePath": "uploads/file.txt"
 };
 
-// Uncomment the next code line if you just want to generate an upload url (in msg._signedUrl)
+// Uncomment the next code line if you just want to generate an upload url (in msg._signedUrl) 
 // without actually uploading the file
 // msg._ignorePayload = true;
 
