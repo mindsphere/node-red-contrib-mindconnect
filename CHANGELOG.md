@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.11.0 (Vienna Jaguarundi) - January 2020
+
+## New Features 3.11.0
+
+- Bumped all dependencies
+
 ## 3.10.0 (Vienna European Shorthair) - November 2020
 
 ## New Features 3.10.0
