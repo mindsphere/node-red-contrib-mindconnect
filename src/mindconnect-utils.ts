@@ -176,6 +176,13 @@ export const handleError = (
 };
 
 export interface IMindConnectNode {
+    validateevent: boolean;
+    chunk: boolean;
+    parallel: number;
+    disablekeepalive: any;
+    retry(retry: any, arg1: () => Promise<boolean>, arg2: string, node: IMindConnectNode);
+    validate: boolean;
+    log(arg0: string);
     agent: MindConnectAgent;
     error: (arg0: any) => void;
     send: (arg0: any) => void;
