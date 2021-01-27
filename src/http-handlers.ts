@@ -2,11 +2,11 @@ import { MindConnectAgent } from "@mindconnect/mindconnect-nodejs";
 import * as path from "path";
 
 /**
- * Handles the registration of http handlers for CSS, agent information etc.
+ * Register the http handlers for the node configuration.
  *
  * @export
  * @param {*} RED
- * @param {any} nodeRedMindConnectAgent
+ * @param {(config: any) => void} nodeRedMindConnectAgent
  */
 export function RegisterHttpHandlers(RED: any, nodeRedMindConnectAgent: (config: any) => void) {
     RED.nodes.registerType("mindconnect", nodeRedMindConnectAgent);
