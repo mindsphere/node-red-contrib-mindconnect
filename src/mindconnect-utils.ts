@@ -188,3 +188,62 @@ export interface IMindConnectNode {
     send: (arg0: any) => void;
     status: (arg0: { fill: string; shape: string; text: string }) => void;
 }
+
+export const extractErrorString = (
+    eventValidator: { errors?: any[] },
+    fileValidator: { errors?: any[] },
+    bulkValidator: { errors?: any[] },
+    tsValidator: { errors?: any[] },
+    rcValidator: { errors?: any[] },
+    actionValidator: { errors?: any[] },
+    dataLakeValidator: { errors?: any[] }
+) => {
+    const eventErrors = eventValidator.errors || [];
+    const fileErrors = fileValidator.errors || [];
+    const bulkErrors = bulkValidator.errors || [];
+    const timeSeriesErrors = tsValidator.errors || [];
+    const rcValidatorErrors = rcValidator.errors || [];
+    const actionErrors = actionValidator.errors || [];
+    const dataLakeErrors = dataLakeValidator.errors || [];
+
+    const result = {
+        message:
+            "the payload was not recognized as an event, file or datapoints. See node help for proper msg.payload.formats (see msg._errorObject for all errors)",
+        actionErrors: [],
+        eventErrors: [],
+        fileErrors: [],
+        dataLakeErrors: [],
+        bulkErrors: [],
+        timeSeriesErrors: [],
+        remoteConfigurationErrors: [],
+    };
+
+    actionErrors.forEach((element) => {
+        result.actionErrors.push(element.message);
+    });
+
+    eventErrors.forEach((element) => {
+        result.eventErrors.push(element.message);
+    });
+
+    fileErrors.forEach((element) => {
+        result.fileErrors.push(element.message);
+    });
+
+    dataLakeErrors.forEach((element) => {
+        result.dataLakeErrors.push(element.message);
+    });
+
+    bulkErrors.forEach((element) => {
+        result.bulkErrors.push(element.message);
+    });
+
+    timeSeriesErrors.forEach((element) => {
+        result.timeSeriesErrors.push(element.message);
+    });
+    rcValidatorErrors.forEach((element) => {
+        result.remoteConfigurationErrors.push(element.message);
+    });
+
+    return result;
+};
