@@ -34,5 +34,11 @@ If applicable, add screenshots to help explain your problem.
  - Browser [e.g. stock browser, safari]
  - Version [e.g. 22]
 
+** MindSphere Plan **
+- start for free 
+- iot value plan 
+- developer plan
+- operator plan
+
 **Additional context**
 Add any other context about the problem here.
