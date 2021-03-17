@@ -363,6 +363,13 @@ export const remoteConfigurationSchema = {
             default: false,
             examples: [true],
         },
+        supressverbosity: {
+            $id: "#/properties/supressverbosity",
+            type: "boolean",
+            title: "The supressverbosity Schema",
+            default: false,
+            examples: [true],
+        },
         retry: {
             $id: "#/properties/retry",
             type: "string",

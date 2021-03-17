@@ -164,7 +164,13 @@
     <div class="form-row node-text-editor-row">
         <label for="node-input-emitcontrol"></label>
         <label for="node-input-emitcontrol" style="width:70%"  data-toggle="tooltip" data-placement="top" title="The node will emit the information messages about the current asynchronous requests on control topic.">
-        <input type="checkbox" id="node-input-emitcontrol" style="display:inline-block; width:22px; vertical-align:baseline;">Emit control message with info about async requests.</label>
+        <input type="checkbox" id="node-input-emitcontrol" style="display:inline-block; width:22px; vertical-align:baseline;">Emit control message.</label>
+    </div>
+
+    <div class="form-row node-text-editor-row">
+        <label for="node-input-supressverbosity"></label>
+        <label for="node-input-supressverbosity" style="width:70%"  data-toggle="tooltip" data-placement="top" title="The node will not show the status of every single message above the node anymore.">
+        <input type="checkbox" id="node-input-supressverbosity" style="display:inline-block; width:22px; vertical-align:baseline;">Disable per request node info.</label>
     </div>
 
 
@@ -191,8 +197,18 @@
         when the number of parallel requests is higher than this number.
         <br/><br/>
         <i class="fa fa-info-circle"></i> <b>Async duration:</b>
-        The node will display information about the current number of parallel requests every n, where n is the configured interval in seconds. Additionally, if the <i>emit control</i> setting is 
+        The node will display information about the current number of parallel requests every n seconds. Additionally, if the <i>emit control</i> setting is 
         on the node will emit the current number of messages on control topic too.
+        <br/><br/>
+        <i class="fa fa-info-circle"></i> <b>Emit Control:</b>
+        If switched on, the node will emit on control topic the current information about asynchronous requests. 
+        This information can be used to control the behavior of the flow (e.g. to queue the data if the node is under pressure)
+        See <a href="https://playground.mindconnect.rocks" target="_new">https://playground.mindconnect.rocks</a> for examples.
+        <br/><br/>
+        <i class="fa fa-info-circle"></i> <b>Disable per Request Info:</b>
+        If switched on, the node will not show the status of every single message below the node, but just the aggregate status. 
+        This setting can greatly reduce node verbosity.
+        <br/><br/>
     </div>
 </script>
 
@@ -689,6 +705,9 @@ msg._error; // The timestamped error message
                 value: false,
             }, 
             emitcontrol: {
+                value: false,
+            },
+            supressverbosity: {
                 value: false,
             },
             retry: {

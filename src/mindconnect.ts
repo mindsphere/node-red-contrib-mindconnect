@@ -179,12 +179,14 @@ export = function (RED: any): void {
                         const fullfilled = promises.filter((x) => x.isResolved()).length;
 
                         node.log(
-                            `Parallel requests status: ${fullfilled} finished with ${rejected} errors and ${pending} still pending at ${timestamp}`
+                            `${promises.length} requests, ${fullfilled} fullfilled with ${rejected} errors and ${pending} still pending`
                         );
                         node.status({
                             fill: rejected === 0 ? (pending === 0 ? "green" : "blue") : "red",
                             shape: "dot",
-                            text: `Parallel requests status: ${fullfilled} finished with ${rejected} errors and ${pending} pending at ${timestamp}`,
+                            text: `[${timestamp.toLocaleString()}] ${
+                                promises.length
+                            } requests ${fullfilled} fullfilled with ${rejected} errors and ${pending} still pending`,
                         });
 
                         promises = promises.filter((x) => x.isPending());

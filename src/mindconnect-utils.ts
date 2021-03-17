@@ -35,6 +35,7 @@ export const copyConfiguration = (node: IConfigurationInfo, config: IConfigurati
     node.chunk = config.chunk;
     node.disablekeepalive = config.disablekeepalive;
     node.emitcontrol = config.emitcontrol;
+    node.supressverbosity = config.supressverbosity;
     node.retry = config.retry;
     node.parallel = config.parallel;
     node.asyncduration = config.asyncduration;
@@ -60,6 +61,9 @@ export const configureAgent = (mcnode: IConfigurationInfo, newConfig?: IConfigur
         else startlogmessage += "keep-alive rotation: every hour";
         mcnode.emitcontrol = mcnode.emitcontrol || false;
         startlogmessage += ` control topic: ${mcnode.emitcontrol ? "enabled" : "disabled"}`;
+
+        mcnode.supressverbosity = mcnode.supressverbosity || false;
+        startlogmessage += ` verbose info: ${mcnode.supressverbosity ? "disabled" : "enabled"}`;
 
         mcnode.parallel = mcnode.parallel || "1";
         mcnode.asyncduration = mcnode.asyncduration || "10";
@@ -186,6 +190,7 @@ export interface IMindConnectNode {
     parallel: number;
     disablekeepalive: any;
     emitcontrol?: boolean;
+    supressverbosity?: boolean;
     retry: number;
     validate: boolean;
     log(arg0: string);
