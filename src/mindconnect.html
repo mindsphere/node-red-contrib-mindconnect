@@ -368,6 +368,24 @@ msg._ignorePayload=true;
 msg._mindsphereStatus; // OK on success othervise error
 msg._error; // The timestamped error message
         </pre>
+
+        <p>
+            <i class="fa fa-info-circle"></i> <b>Complex flow handling</b><br/>
+        </p>
+        <p>
+            If you switch on the <i>Emit Control</i> setting, the node will emit every n seconds (where n is the async duration setting) a message
+            on <b>control</b> topic with the current number and state of requests. This can be used in more complex flows to 
+            handle the pressure on the node.
+        </p>
+        <pre>
+// msg payload on control topic 
+// (msg.topic === "control")
+{
+  fullfilled: number,
+  pending: number,
+  errors: number
+}
+        </pre>
         <p>
             More Documentation:
             <ul>
