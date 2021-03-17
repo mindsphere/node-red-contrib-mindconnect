@@ -356,6 +356,13 @@ export const remoteConfigurationSchema = {
             default: false,
             examples: [true],
         },
+        emitcontrol: {
+            $id: "#/properties/emitcontrol",
+            type: "boolean",
+            title: "The emitcontrol Schema",
+            default: false,
+            examples: [true],
+        },
         retry: {
             $id: "#/properties/retry",
             type: "string",

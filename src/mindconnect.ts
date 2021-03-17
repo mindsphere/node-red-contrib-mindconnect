@@ -129,21 +129,21 @@ export = function (RED: any): void {
 
                     const requestCount = promises.length;
 
-                    if (await actionValidator(msg.payload)) {
+                    if (actionValidator(msg.payload)) {
                         if (msg.payload.action === "await") {
                             awaitPromises = true;
                         } else if (msg.payload.action === "renew") {
                             promises.push(q(renewToken({ msg, agent, timestamp, node, requestCount })));
                         }
-                    } else if ((await eventValidator(msg.payload)) || msg._customEvent === true) {
+                    } else if (eventValidator(msg.payload) || msg._customEvent === true) {
                         promises.push(q(sendEvent({ msg, agent, timestamp, node, requestCount })));
-                    } else if (await fileValidator(msg.payload)) {
+                    } else if (fileValidator(msg.payload)) {
                         promises.push(q(sendFile({ msg, agent, timestamp, node, requestCount })));
-                    } else if (await dataLakeValidator(msg.payload)) {
+                    } else if (dataLakeValidator(msg.payload)) {
                         promises.push(q(sendFileToDataLake({ msg, agent, timestamp, node, requestCount })));
-                    } else if (await bulkValidator(msg.payload)) {
+                    } else if (bulkValidator(msg.payload)) {
                         promises.push(q(sendBulkTimeSeriesData({ msg, agent, timestamp, node, requestCount })));
-                    } else if (await tsValidator(msg.payload)) {
+                    } else if (tsValidator(msg.payload)) {
                         promises.push(q(sendTimeSeriesData({ msg, agent, timestamp, node, requestCount })));
                     } else {
                         let errorObject = extractErrorString(
@@ -166,11 +166,13 @@ export = function (RED: any): void {
                             text: `awaiting ${promises.length} parallel requests...`,
                         });
 
-                        node.send({
-                            _mindsphereStatus: "OK",
-                            _mindsphereRequestCount: promises.length,
-                            topic: "control",
-                        });
+                        if (node.emitcontrol) {
+                            node.send({
+                                _mindsphereStatus: "OK",
+                                _mindsphereRequestCount: promises.length,
+                                topic: "control",
+                            });
+                        }
 
                         const pending = promises.filter((x) => x.isPending()).length;
                         const rejected = promises.filter((x) => x.isRejected()).length;

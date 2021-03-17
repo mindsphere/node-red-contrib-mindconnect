@@ -28,14 +28,14 @@
     </div>
 
     <div class="form-row node-text-editor-row">
-        <label for="" title="Maximum number of asynchronous requests."><i class="fa fa-arrow-circle-up"></i>
-            Max. Async Requests</span></label>
+        <label for="" title="The default number of parallel async requests the node will make to MindSphere."><i class="fa fa-arrow-circle-up"></i>
+            Async requests</span></label>
         <input id="node-input-parallel" class="ui-spinner-input" value="1" style="width:50px"/>
     </div>
 
     <div class="form-row node-text-editor-row">
-        <label for="" title="wait for all started requests to finish after x seconds"><i class="fa fa-arrow-circle-down"></i>
-            Async Duration </span></label>
+        <label for="" title="The node will emit information with the current number of async requests after n seconds."><i class="fa fa-arrow-circle-down"></i>
+            Async duration </span></label>
         <input id="node-input-asyncduration" class="ui-spinner-input" value="1" style="width:50px"/> (in seconds)
     </div>
 
@@ -161,6 +161,12 @@
         <input type="checkbox" id="node-input-disablekeepalive" style="display:inline-block; width:22px; vertical-align:baseline;">Disable keep alive. </label>
     </div>
 
+    <div class="form-row node-text-editor-row">
+        <label for="node-input-emitcontrol"></label>
+        <label for="node-input-emitcontrol" style="width:70%"  data-toggle="tooltip" data-placement="top" title="The node will emit the information messages about the current asynchronous requests on control topic.">
+        <input type="checkbox" id="node-input-emitcontrol" style="display:inline-block; width:22px; vertical-align:baseline;">Emit control message with info about async requests.</label>
+    </div>
+
 
     <div class="form-tips">
         <i class="fa fa-info-circle"></i> <b>Tip:</b>
@@ -179,14 +185,14 @@
         The node will check/renew the communication token every hour even when there is no data sent.
         The recommended setting is to leave the keep alive enabled.
         <br/><br/>
-        <i class="fa fa-info-circle"></i> <b>Max async requests:</b>
-        If this setting is &gt; 1 the node will not wait for every request to finish running
-        before continuing with the next request. The setting also determines the maximal number of
-        parallel multipart uploads.
+        <i class="fa fa-info-circle"></i> <b>Async requests:</b>
+        This setting controls the default number of asynchronous requests the node is doing in parallel. If the node is under pressure
+        the number of requests can increase. If the <i>emit control</i> setting is on, the node will emit the message with the current number of parallel requests 
+        when the number of parallel requests is higher than this number.
         <br/><br/>
         <i class="fa fa-info-circle"></i> <b>Async duration:</b>
-        The node will wait for started requests to finish after configured number of seconds independent of
-        the maximum number of configured parallel requests.
+        The node will display information about the current number of parallel requests every n, where n is the configured interval in seconds. Additionally, if the <i>emit control</i> setting is 
+        on the node will emit the current number of messages on control topic too.
     </div>
 </script>
 
@@ -680,6 +686,9 @@ msg._error; // The timestamped error message
                 value: false,
             },
             disablekeepalive: {
+                value: false,
+            }, 
+            emitcontrol: {
                 value: false,
             },
             retry: {
