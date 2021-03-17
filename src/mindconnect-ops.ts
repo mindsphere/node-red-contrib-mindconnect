@@ -4,17 +4,16 @@ import { BaseEvent, MindConnectAgent } from "@mindconnect/mindconnect-nodejs";
 import { IDataLakeFileInfo, IFileInfo } from "./mindconnect-schema";
 import { handleError, IMindConnectNode, retryWithNodeLog } from "./mindconnect-utils";
 
-export async function renewToken({
-    msg,
-    agent,
-    timestamp,
-    node,
-}: {
+export interface OperationParameters {
     msg: any;
     agent: MindConnectAgent;
     timestamp: Date;
     node: IMindConnectNode;
-}) {
+    requestCount: number;
+    send?: (value: object) => void;
+}
+
+export async function renewToken({ msg, agent, timestamp, node, requestCount }: OperationParameters) {
     if (node.disablekeepalive) {
         node.log("Keep alive for this agent is disabled");
         return;
@@ -26,27 +25,16 @@ export async function renewToken({
         node.log(`Last keep alive key rotation at ${timestamp}`);
         node.status({ fill: "green", shape: "dot", text: `Last keep alive key rotation at ${timestamp}` });
         msg._mindsphereStatus = "OK";
+        msg._mindsphereRequestCount = requestCount;
         // this is a control message, we are not sending the mesage further
     } catch (error) {
         // this is a control message, we are not sending the mesage further
-        handleError(node, msg, error, false);
+        handleError(node, msg, error, requestCount, false);
     }
     return msg;
 }
 
-export async function sendTimeSeriesData({
-    msg,
-    agent,
-    timestamp,
-    node,
-    send,
-}: {
-    msg: any;
-    agent: MindConnectAgent;
-    timestamp: Date;
-    node: IMindConnectNode;
-    send?: (value: object) => void;
-}) {
+export async function sendTimeSeriesData({ msg, agent, timestamp, node, requestCount, send }: OperationParameters) {
     try {
         node.status({ fill: "grey", shape: "dot", text: `recieved data points` });
         await retryWithNodeLog(
@@ -58,26 +46,15 @@ export async function sendTimeSeriesData({
         node.log(`Posted last message at ${timestamp}`);
         node.status({ fill: "green", shape: "dot", text: `Posted last message at ${timestamp}` });
         msg._mindsphereStatus = "OK";
+        msg._mindsphereRequestCount = requestCount;
         node.send(msg);
     } catch (error) {
-        handleError(node, msg, error);
+        handleError(node, msg, error, requestCount);
     }
     return msg;
 }
 
-export async function sendBulkTimeSeriesData({
-    msg,
-    agent,
-    timestamp,
-    node,
-    send,
-}: {
-    msg: any;
-    agent: MindConnectAgent;
-    timestamp: Date;
-    node: IMindConnectNode;
-    send?: (value: object) => void;
-}) {
+export async function sendBulkTimeSeriesData({ msg, agent, timestamp, node, requestCount, send }: OperationParameters) {
     try {
         node.status({
             fill: "grey",
@@ -88,26 +65,15 @@ export async function sendBulkTimeSeriesData({
         node.log(`Posted last bulk message at ${timestamp}`);
         node.status({ fill: "green", shape: "dot", text: `Posted last bulk message at ${timestamp}` });
         msg._mindsphereStatus = "OK";
+        msg._mindsphereRequestCount = requestCount;
         node.send(msg);
     } catch (error) {
-        handleError(node, msg, error);
+        handleError(node, msg, error, requestCount);
     }
     return msg;
 }
 
-export async function sendFileToDataLake({
-    msg,
-    agent,
-    timestamp,
-    node,
-    send,
-}: {
-    msg: any;
-    agent: MindConnectAgent;
-    timestamp: Date;
-    node: IMindConnectNode;
-    send?: (value: object) => void;
-}) {
+export async function sendFileToDataLake({ msg, agent, timestamp, node, requestCount, send }: OperationParameters) {
     try {
         const dataLakeClient = agent.Sdk().GetDataLakeClient();
         const fileInfo = msg.payload as IDataLakeFileInfo;
@@ -133,6 +99,7 @@ export async function sendFileToDataLake({
 
         msg._signedUrl = url.objectUrls[0].signedUrl;
         msg._mindsphereStatus = "OK";
+        msg._mindsphereRequestCount = requestCount;
 
         if (!msg.ignorePayload) {
             await retryWithNodeLog(
@@ -151,24 +118,12 @@ export async function sendFileToDataLake({
         }
         node.send(msg);
     } catch (error) {
-        handleError(node, msg, error);
+        handleError(node, msg, error, requestCount);
     }
     return msg;
 }
 
-export async function sendFile({
-    msg,
-    agent,
-    timestamp,
-    node,
-    send,
-}: {
-    msg: any;
-    agent: MindConnectAgent;
-    timestamp: Date;
-    node: IMindConnectNode;
-    send?: (value: object) => void;
-}) {
+export async function sendFile({ msg, agent, timestamp, node, requestCount, send }: OperationParameters) {
     try {
         const fileInfo = msg.payload as IFileInfo;
         const message = Buffer.isBuffer(fileInfo.fileName) ? "Buffer" : fileInfo.fileName;
@@ -199,26 +154,15 @@ export async function sendFile({
         node.log(`Uploaded file at ${timestamp}`);
         node.status({ fill: "green", shape: "dot", text: `Uploaded file at ${timestamp}` });
         msg._mindsphereStatus = "OK";
+        msg._mindsphereRequestCount = requestCount;
         node.send(msg);
     } catch (error) {
-        handleError(node, msg, error);
+        handleError(node, msg, error, requestCount);
     }
     return msg;
 }
 
-export async function sendEvent({
-    msg,
-    agent,
-    timestamp,
-    node,
-    send,
-}: {
-    msg: any;
-    agent: MindConnectAgent;
-    timestamp: Date;
-    node: IMindConnectNode;
-    send?: (value: object) => void;
-}) {
+export async function sendEvent({ msg, agent, timestamp, node, requestCount, send }: OperationParameters) {
     try {
         node.status({ fill: "grey", shape: "dot", text: `recieved event` });
         const event = <BaseEvent>msg.payload;
@@ -234,9 +178,10 @@ export async function sendEvent({
         node.log(`Posted last event at ${timestamp}`);
         node.status({ fill: "green", shape: "dot", text: `Posted last event at ${timestamp}` });
         msg._mindsphereStatus = result ? "OK" : "Error";
+        msg._mindsphereRequestCount = requestCount;
         node.send(msg);
     } catch (error) {
-        handleError(node, msg, error);
+        handleError(node, msg, error, requestCount);
     }
     return msg;
 }

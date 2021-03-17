@@ -125,22 +125,25 @@ export = function (RED: any): void {
                             return;
                         }
                     }
+
+                    const requestCount = promises.length;
+
                     if (await actionValidator(msg.payload)) {
                         if (msg.payload.action === "await") {
                             awaitPromises = true;
                         } else if (msg.payload.action === "renew") {
-                            promises.push(renewToken({ msg, agent, timestamp, node }));
+                            promises.push(renewToken({ msg, agent, timestamp, node, requestCount }));
                         }
                     } else if ((await eventValidator(msg.payload)) || msg._customEvent === true) {
-                        promises.push(sendEvent({ msg, agent, timestamp, node }));
+                        promises.push(sendEvent({ msg, agent, timestamp, node, requestCount }));
                     } else if (await fileValidator(msg.payload)) {
-                        promises.push(sendFile({ msg, agent, timestamp, node }));
+                        promises.push(sendFile({ msg, agent, timestamp, node, requestCount }));
                     } else if (await dataLakeValidator(msg.payload)) {
-                        promises.push(sendFileToDataLake({ msg, agent, timestamp, node }));
+                        promises.push(sendFileToDataLake({ msg, agent, timestamp, node, requestCount }));
                     } else if (await bulkValidator(msg.payload)) {
-                        promises.push(sendBulkTimeSeriesData({ msg, agent, timestamp, node }));
+                        promises.push(sendBulkTimeSeriesData({ msg, agent, timestamp, node, requestCount }));
                     } else if (await tsValidator(msg.payload)) {
-                        promises.push(sendTimeSeriesData({ msg, agent, timestamp, node }));
+                        promises.push(sendTimeSeriesData({ msg, agent, timestamp, node, requestCount }));
                     } else {
                         let errorObject = extractErrorString(
                             eventValidator,
@@ -152,7 +155,7 @@ export = function (RED: any): void {
                             dataLakeValidator
                         );
 
-                        promises.push(handleInputError(msg, errorObject, timestamp));
+                        promises.push(handleInputError(msg, errorObject, timestamp, promises.length));
                     }
 
                     if (
@@ -182,7 +185,7 @@ export = function (RED: any): void {
                         awaitPromises = false;
                     }
                 } catch (error) {
-                    handleError(node, msg, error);
+                    handleError(node, msg, error, promises.length);
                     promises = [];
                     awaitPromises = false;
                 }
@@ -221,8 +224,8 @@ export = function (RED: any): void {
             return msg;
         }
 
-        async function handleInputError(msg: any, error, timestamp: Date) {
-            handleError(node, msg, error);
+        async function handleInputError(msg: any, error, timestamp: Date, requestCount: number) {
+            handleError(node, msg, error, requestCount);
             return msg;
         }
     }
