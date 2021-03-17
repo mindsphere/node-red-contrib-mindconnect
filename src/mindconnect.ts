@@ -4,6 +4,7 @@ import { MindConnectAgent } from "@mindconnect/mindconnect-nodejs";
 import * as fs from "fs";
 import * as path from "path";
 import * as allSettled from "promise.allsettled";
+import * as q from "queryable-promise";
 import { RegisterHttpHandlers } from "./http-handlers";
 import {
     renewToken,
@@ -132,18 +133,18 @@ export = function (RED: any): void {
                         if (msg.payload.action === "await") {
                             awaitPromises = true;
                         } else if (msg.payload.action === "renew") {
-                            promises.push(renewToken({ msg, agent, timestamp, node, requestCount }));
+                            promises.push(q(renewToken({ msg, agent, timestamp, node, requestCount })));
                         }
                     } else if ((await eventValidator(msg.payload)) || msg._customEvent === true) {
-                        promises.push(sendEvent({ msg, agent, timestamp, node, requestCount }));
+                        promises.push(q(sendEvent({ msg, agent, timestamp, node, requestCount })));
                     } else if (await fileValidator(msg.payload)) {
-                        promises.push(sendFile({ msg, agent, timestamp, node, requestCount }));
+                        promises.push(q(sendFile({ msg, agent, timestamp, node, requestCount })));
                     } else if (await dataLakeValidator(msg.payload)) {
-                        promises.push(sendFileToDataLake({ msg, agent, timestamp, node, requestCount }));
+                        promises.push(q(sendFileToDataLake({ msg, agent, timestamp, node, requestCount })));
                     } else if (await bulkValidator(msg.payload)) {
-                        promises.push(sendBulkTimeSeriesData({ msg, agent, timestamp, node, requestCount }));
+                        promises.push(q(sendBulkTimeSeriesData({ msg, agent, timestamp, node, requestCount })));
                     } else if (await tsValidator(msg.payload)) {
-                        promises.push(sendTimeSeriesData({ msg, agent, timestamp, node, requestCount }));
+                        promises.push(q(sendTimeSeriesData({ msg, agent, timestamp, node, requestCount })));
                     } else {
                         let errorObject = extractErrorString(
                             eventValidator,
@@ -155,37 +156,40 @@ export = function (RED: any): void {
                             dataLakeValidator
                         );
 
-                        promises.push(handleInputError(msg, errorObject, timestamp, promises.length));
+                        promises.push(q(handleInputError(msg, errorObject, timestamp, promises.length)));
                     }
 
-                    if (
-                        (promises.length % node.parallel === 0 && promises.length > 0) ||
-                        (promises.length > 0 && awaitPromises)
-                    ) {
+                    if ((promises.length % node.parallel === 0 && promises.length > 0) || awaitPromises) {
                         node.status({
                             fill: "blue",
                             shape: "dot",
                             text: `awaiting ${promises.length} parallel requests...`,
                         });
-                        const results = (await allSettled(promises)) || [];
 
-                        const fullfilled = results.length;
-                        const rejected = results.filter((pr: any) => pr.value._mindsphereStatus === "Error").length;
-
-                        node.log(
-                            `Parallel requests status: ${fullfilled} finished with ${rejected} errors at ${timestamp}`
-                        );
-                        node.status({
-                            fill: rejected === 0 ? "green" : "red",
-                            shape: "dot",
-                            text: `Parallel requests status: ${fullfilled} finished with ${rejected} errors at ${timestamp}`,
+                        node.send({
+                            _mindsphereStatus: "OK",
+                            _mindsphereRequestCount: promises.length,
+                            topic: "control",
                         });
 
-                        promises = [];
+                        const pending = promises.filter((x) => x.isPending()).length;
+                        const rejected = promises.filter((x) => x.isRejected()).length;
+                        const fullfilled = promises.filter((x) => x.isResolved()).length;
+
+                        node.log(
+                            `Parallel requests status: ${fullfilled} finished with ${rejected} errors and ${pending} still pending at ${timestamp}`
+                        );
+                        node.status({
+                            fill: rejected === 0 ? (pending === 0 ? "green" : "blue") : "red",
+                            shape: "dot",
+                            text: `Parallel requests status: ${fullfilled} finished with ${rejected} errors and ${pending} pending at ${timestamp}`,
+                        });
+
+                        promises = promises.filter((x) => x.isPending());
                         awaitPromises = false;
                     }
                 } catch (error) {
-                    handleError(node, msg, error, promises.length);
+                    handleError(node, msg, error, 0);
                     promises = [];
                     awaitPromises = false;
                 }

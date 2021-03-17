@@ -182,7 +182,7 @@ export interface IMindConnectNode {
     chunk: boolean;
     parallel: number;
     disablekeepalive: any;
-    retry(retry: any, arg1: () => Promise<boolean>, arg2: string, node: IMindConnectNode);
+    retry: number;
     validate: boolean;
     log(arg0: string);
     agent: MindConnectAgent;

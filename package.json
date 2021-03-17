@@ -63,6 +63,7 @@
         "ajv-formats": "^1.5.1",
         "debug": "^4.3.1",
         "node-fetch": "^2.6.1",
-        "promise.allsettled": "^1.0.4"
+        "promise.allsettled": "^1.0.4",
+        "queryable-promise": "^1.0.0"
     }
 }

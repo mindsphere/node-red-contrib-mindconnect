@@ -135,22 +135,18 @@ export async function sendFile({ msg, agent, timestamp, node, requestCount, send
             throw Error("you have to provide the filePath when using Buffer as the payload");
         }
 
-        await retryWithNodeLog(
-            node.retry,
-            () =>
-                agent.UploadFile(
-                    entityId,
-                    fileInfo.filePath || Buffer.isBuffer(fileInfo.fileName) ? "unknown" : fileInfo.fileName,
-                    fileInfo.fileName,
-                    {
-                        chunk: node.chunk,
-                        parallelUploads: parallelUploads,
-                        type: fileInfo.fileType,
-                    }
-                ),
-            "FileUpload",
-            node
+        await agent.UploadFile(
+            entityId,
+            fileInfo.filePath || (Buffer.isBuffer(fileInfo.fileName) ? "unknown" : fileInfo.fileName),
+            fileInfo.fileName,
+            {
+                chunk: node.chunk,
+                parallelUploads: parallelUploads,
+                type: fileInfo.fileType,
+                retry: node.retry,
+            }
         );
+
         node.log(`Uploaded file at ${timestamp}`);
         node.status({ fill: "green", shape: "dot", text: `Uploaded file at ${timestamp}` });
         msg._mindsphereStatus = "OK";
