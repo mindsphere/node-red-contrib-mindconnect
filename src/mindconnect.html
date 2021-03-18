@@ -169,7 +169,7 @@
 
     <div class="form-row node-text-editor-row">
         <label for="node-input-supressverbosity"></label>
-        <label for="node-input-supressverbosity" style="width:70%"  data-toggle="tooltip" data-placement="top" title="The node will not show the status of every single message above the node anymore.">
+        <label for="node-input-supressverbosity" style="width:70%"  data-toggle="tooltip" data-placement="top" title="The node will not show the status of every single message below the node anymore.">
         <input type="checkbox" id="node-input-supressverbosity" style="display:inline-block; width:22px; vertical-align:baseline;">Disable per request node info.</label>
     </div>
 
@@ -381,10 +381,10 @@ msg._error; // The timestamped error message
 // msg payload on control topic 
 // (msg.topic === "control")
 {
-  requests: number,  
-  fullfilled: number,
-  pending: number,
-  errors: number
+    requests: number;
+    success: number;
+    pending: number;
+    errors: number;
 }
         </pre>
         <p>

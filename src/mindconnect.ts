@@ -3,7 +3,6 @@
 import { MindConnectAgent } from "@mindconnect/mindconnect-nodejs";
 import * as fs from "fs";
 import * as path from "path";
-import * as q from "queryable-promise";
 import { RegisterHttpHandlers } from "./http-handlers";
 import {
     renewToken,
@@ -28,6 +27,8 @@ import {
     copyConfiguration,
     extractErrorString,
     handleError,
+    IQuerablePromise,
+    queryablePromise,
     reloadFlow,
     retryWithNodeLog,
     sleep,
@@ -49,7 +50,7 @@ export = function (RED: any): void {
 
         configureAgent(node);
 
-        let promises = [];
+        let promises: IQuerablePromise[] = [];
         let awaitPromises = false;
 
         this.on("close", () => {
@@ -128,18 +129,18 @@ export = function (RED: any): void {
                         if (msg.payload.action === "await") {
                             awaitPromises = true;
                         } else if (msg.payload.action === "renew") {
-                            promises.push(q(renewToken({ msg, agent, timestamp, node })));
+                            promises.push(queryablePromise(renewToken({ msg, agent, timestamp, node })));
                         }
                     } else if (eventValidator(msg.payload) || msg._customEvent === true) {
-                        promises.push(q(sendEvent({ msg, agent, timestamp, node })));
+                        promises.push(queryablePromise(sendEvent({ msg, agent, timestamp, node })));
                     } else if (fileValidator(msg.payload)) {
-                        promises.push(q(sendFile({ msg, agent, timestamp, node })));
+                        promises.push(queryablePromise(sendFile({ msg, agent, timestamp, node })));
                     } else if (dataLakeValidator(msg.payload)) {
-                        promises.push(q(sendFileToDataLake({ msg, agent, timestamp, node })));
+                        promises.push(queryablePromise(sendFileToDataLake({ msg, agent, timestamp, node })));
                     } else if (bulkValidator(msg.payload)) {
-                        promises.push(q(sendBulkTimeSeriesData({ msg, agent, timestamp, node })));
+                        promises.push(queryablePromise(sendBulkTimeSeriesData({ msg, agent, timestamp, node })));
                     } else if (tsValidator(msg.payload)) {
-                        promises.push(q(sendTimeSeriesData({ msg, agent, timestamp, node })));
+                        promises.push(queryablePromise(sendTimeSeriesData({ msg, agent, timestamp, node })));
                     } else {
                         let errorObject = extractErrorString(
                             eventValidator,
@@ -151,35 +152,38 @@ export = function (RED: any): void {
                             dataLakeValidator
                         );
 
-                        promises.push(q(handleInputError(msg, errorObject, timestamp)));
+                        promises.push(queryablePromise(handleInputError(msg, errorObject, timestamp)));
                     }
 
                     if ((promises.length % node.parallel === 0 && promises.length > 0) || awaitPromises) {
                         const pending = promises.filter((x) => x.isPending()).length;
                         const rejected = promises.filter((x) => x.isRejected()).length;
-                        const fullfilled = promises.filter((x) => x.isResolved()).length;
+                        const fullfilled = promises.filter((x) => x.isFulfilled()).length;
+                        const errorneous = promises.filter((x) => x.isErrorneous()).length;
+
+                        const info = {
+                            requests: promises.length,
+                            success: fullfilled - errorneous,
+                            pending: pending,
+                            errors: rejected + errorneous,
+                        };
 
                         if (node.emitcontrol) {
                             node.send({
                                 topic: "control",
-                                payload: {
-                                    requests: promises.length,
-                                    fullfilled: fullfilled,
-                                    pending: pending,
-                                    rejected: rejected,
-                                },
+                                payload: info,
                             });
                         }
 
                         node.log(
-                            `${promises.length} requests, ${fullfilled} fullfilled with ${rejected} errors and ${pending} still pending`
+                            `${info.requests} requests, ${info.success} successful with ${info.errors} errors and ${info.pending} still pending`
                         );
                         node.status({
-                            fill: rejected === 0 ? (pending === 0 ? "green" : "blue") : "red",
+                            fill: info.errors === 0 ? (info.pending === 0 ? "green" : "blue") : "red",
                             shape: "dot",
-                            text: `[${timestamp.toLocaleString()}] ${
-                                promises.length
-                            } requests ${fullfilled} fullfilled with ${rejected} errors and ${pending} still pending`,
+                            text: `[${timestamp.toLocaleString()}] ${info.requests} requests, ${
+                                info.success
+                            } successful with ${info.errors} errors and ${info.pending} still pending`,
                         });
 
                         promises = promises.filter((x) => x.isPending());

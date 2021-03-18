@@ -48,7 +48,7 @@ export async function sendTimeSeriesData({ msg, agent, timestamp, node, send }: 
         msg._mindsphereStatus = "OK";
         node.send(msg);
     } catch (error) {
-        handleError(node, msg, error, !node.supressverbosity);
+        handleError(node, msg, error);
     }
     return msg;
 }
@@ -68,7 +68,7 @@ export async function sendBulkTimeSeriesData({ msg, agent, timestamp, node, send
         msg._mindsphereStatus = "OK";
         node.send(msg);
     } catch (error) {
-        handleError(node, msg, error, !node.supressverbosity);
+        handleError(node, msg, error);
     }
     return msg;
 }
@@ -120,7 +120,7 @@ export async function sendFileToDataLake({ msg, agent, timestamp, node, send }: 
         }
         node.send(msg);
     } catch (error) {
-        handleError(node, msg, error, !node.supressverbosity);
+        handleError(node, msg, error);
     }
     return msg;
 }
@@ -154,7 +154,7 @@ export async function sendFile({ msg, agent, timestamp, node, send }: OperationP
         msg._mindsphereStatus = "OK";
         node.send(msg);
     } catch (error) {
-        handleError(node, msg, error, !node.supressverbosity);
+        handleError(node, msg, error);
     }
     return msg;
 }
@@ -178,7 +178,7 @@ export async function sendEvent({ msg, agent, timestamp, node, send }: Operation
         msg._mindsphereStatus = result ? "OK" : "Error";
         node.send(msg);
     } catch (error) {
-        handleError(node, msg, error, !node.supressverbosity);
+        handleError(node, msg, error);
     }
     return msg;
 }

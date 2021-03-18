@@ -12,7 +12,8 @@ export const retryWithNodeLog = async (n, func, operation, node) => {
     for (let i = 0; i < n; i++) {
         try {
             if (i > 0) {
-                node.status({ fill: "yellow", shape: "ring", text: `${operation}: retrying ${i + 1} of ${n}` });
+                !node.supressverbosity &&
+                    node.status({ fill: "yellow", shape: "ring", text: `${operation}: retrying ${i + 1} of ${n}` });
                 node.log(`${operation}: retrying ${i + 1} of ${n}`);
                 await sleep(i * 300);
             }
@@ -179,7 +180,7 @@ export const handleError = (
     msg._error = `${new Date().toISOString()} ${error.message}}`;
     sendMessage && node.send(msg);
     const errortext = error.message || error;
-    node.status({ fill: "red", shape: "dot", text: `${errortext}` });
+    !node.supressverbosity && node.status({ fill: "red", shape: "dot", text: `${errortext}` });
 };
 
 export interface IMindConnectNode {
@@ -256,3 +257,47 @@ export const extractErrorString = (
 
     return result;
 };
+
+export interface IQuerablePromise {
+    isFulfilled(): boolean;
+    isPending(): boolean;
+    isRejected(): boolean;
+    isErrorneous(): boolean;
+}
+
+export function queryablePromise(promise): IQuerablePromise {
+    if (promise.isResolved) return promise;
+
+    let isPending = true;
+    let isRejected = false;
+    let isFulfilled = false;
+    let isErrorneus = false;
+
+    let result = promise.then(
+        function (value: { _mindsphereStatus: string }) {
+            isFulfilled = true;
+            isPending = false;
+            isErrorneus = value._mindsphereStatus === "Error";
+            return value;
+        },
+        function (error: any) {
+            isRejected = true;
+            isPending = false;
+            throw error;
+        }
+    );
+
+    result.isFulfilled = function () {
+        return isFulfilled;
+    };
+    result.isPending = function () {
+        return isPending;
+    };
+    result.isRejected = function () {
+        return isRejected;
+    };
+    result.isErrorneous = function () {
+        return isErrorneus;
+    };
+    return result;
+}
