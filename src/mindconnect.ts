@@ -127,24 +127,22 @@ export = function (RED: any): void {
                         }
                     }
 
-                    const requestCount = promises.length;
-
                     if (actionValidator(msg.payload)) {
                         if (msg.payload.action === "await") {
                             awaitPromises = true;
                         } else if (msg.payload.action === "renew") {
-                            promises.push(q(renewToken({ msg, agent, timestamp, node, requestCount })));
+                            promises.push(q(renewToken({ msg, agent, timestamp, node })));
                         }
                     } else if (eventValidator(msg.payload) || msg._customEvent === true) {
-                        promises.push(q(sendEvent({ msg, agent, timestamp, node, requestCount })));
+                        promises.push(q(sendEvent({ msg, agent, timestamp, node })));
                     } else if (fileValidator(msg.payload)) {
-                        promises.push(q(sendFile({ msg, agent, timestamp, node, requestCount })));
+                        promises.push(q(sendFile({ msg, agent, timestamp, node })));
                     } else if (dataLakeValidator(msg.payload)) {
-                        promises.push(q(sendFileToDataLake({ msg, agent, timestamp, node, requestCount })));
+                        promises.push(q(sendFileToDataLake({ msg, agent, timestamp, node })));
                     } else if (bulkValidator(msg.payload)) {
-                        promises.push(q(sendBulkTimeSeriesData({ msg, agent, timestamp, node, requestCount })));
+                        promises.push(q(sendBulkTimeSeriesData({ msg, agent, timestamp, node })));
                     } else if (tsValidator(msg.payload)) {
-                        promises.push(q(sendTimeSeriesData({ msg, agent, timestamp, node, requestCount })));
+                        promises.push(q(sendTimeSeriesData({ msg, agent, timestamp, node })));
                     } else {
                         let errorObject = extractErrorString(
                             eventValidator,
@@ -156,16 +154,10 @@ export = function (RED: any): void {
                             dataLakeValidator
                         );
 
-                        promises.push(q(handleInputError(msg, errorObject, timestamp, promises.length)));
+                        promises.push(q(handleInputError(msg, errorObject, timestamp)));
                     }
 
                     if ((promises.length % node.parallel === 0 && promises.length > 0) || awaitPromises) {
-                        node.status({
-                            fill: "blue",
-                            shape: "dot",
-                            text: `awaiting ${promises.length} parallel requests...`,
-                        });
-
                         if (node.emitcontrol) {
                             node.send({
                                 _mindsphereStatus: "OK",
@@ -193,7 +185,7 @@ export = function (RED: any): void {
                         awaitPromises = false;
                     }
                 } catch (error) {
-                    handleError(node, msg, error, 0);
+                    handleError(node, msg, error);
                     promises = [];
                     awaitPromises = false;
                 }
@@ -232,8 +224,8 @@ export = function (RED: any): void {
             return msg;
         }
 
-        async function handleInputError(msg: any, error, timestamp: Date, requestCount: number) {
-            handleError(node, msg, error, requestCount);
+        async function handleInputError(msg: any, error, timestamp: Date) {
+            handleError(node, msg, error);
             return msg;
         }
     }
