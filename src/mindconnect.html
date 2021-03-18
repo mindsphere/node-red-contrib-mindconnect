@@ -6,7 +6,7 @@
             &nbsp;&nbsp;<a href="https://opensource.mindsphere.io/docs/node-red-contrib-mindconnect/index.html" target="_new" class="headerLink" title="Documentation">
                 <i class="fa fa-globe"></i> MindConnect Node-RED Agent
             </a>
-        </span> <span style="color:#aaaaaa !important">v3.10.0</span>
+        </span> <span style="color:#aaaaaa !important">v3.11.0 (alpha)</span>
     </div>
 
     <div class="form-row">
@@ -28,14 +28,14 @@
     </div>
 
     <div class="form-row node-text-editor-row">
-        <label for="" title="Maximum number of asynchronous requests."><i class="fa fa-arrow-circle-up"></i>
-            Max. Async Requests</span></label>
+        <label for="" title="The default number of parallel async requests the node will make to MindSphere."><i class="fa fa-arrow-circle-up"></i>
+            Async requests</span></label>
         <input id="node-input-parallel" class="ui-spinner-input" value="1" style="width:50px"/>
     </div>
 
     <div class="form-row node-text-editor-row">
-        <label for="" title="wait for all started requests to finish after x seconds"><i class="fa fa-arrow-circle-down"></i>
-            Async Duration </span></label>
+        <label for="" title="The node will emit information with the current number of async requests after n seconds."><i class="fa fa-arrow-circle-down"></i>
+            Async duration </span></label>
         <input id="node-input-asyncduration" class="ui-spinner-input" value="1" style="width:50px"/> (in seconds)
     </div>
 
@@ -161,6 +161,18 @@
         <input type="checkbox" id="node-input-disablekeepalive" style="display:inline-block; width:22px; vertical-align:baseline;">Disable keep alive. </label>
     </div>
 
+    <div class="form-row node-text-editor-row">
+        <label for="node-input-emitcontrol"></label>
+        <label for="node-input-emitcontrol" style="width:70%"  data-toggle="tooltip" data-placement="top" title="The node will emit the information messages about the current asynchronous requests on control topic.">
+        <input type="checkbox" id="node-input-emitcontrol" style="display:inline-block; width:22px; vertical-align:baseline;">Emit control message.</label>
+    </div>
+
+    <div class="form-row node-text-editor-row">
+        <label for="node-input-supressverbosity"></label>
+        <label for="node-input-supressverbosity" style="width:70%"  data-toggle="tooltip" data-placement="top" title="The node will not show the status of every single message below the node anymore.">
+        <input type="checkbox" id="node-input-supressverbosity" style="display:inline-block; width:22px; vertical-align:baseline;">Disable per request node info.</label>
+    </div>
+
 
     <div class="form-tips">
         <i class="fa fa-info-circle"></i> <b>Tip:</b>
@@ -179,14 +191,24 @@
         The node will check/renew the communication token every hour even when there is no data sent.
         The recommended setting is to leave the keep alive enabled.
         <br/><br/>
-        <i class="fa fa-info-circle"></i> <b>Max async requests:</b>
-        If this setting is &gt; 1 the node will not wait for every request to finish running
-        before continuing with the next request. The setting also determines the maximal number of
-        parallel multipart uploads.
+        <i class="fa fa-info-circle"></i> <b>Async requests:</b>
+        This setting controls the default number of asynchronous requests the node is doing in parallel. If the node is under pressure
+        the number of requests can increase. If the <i>emit control</i> setting is on, the node will emit the message with the current number of parallel requests 
+        when the number of parallel requests is higher than this number.
         <br/><br/>
         <i class="fa fa-info-circle"></i> <b>Async duration:</b>
-        The node will wait for started requests to finish after configured number of seconds independent of
-        the maximum number of configured parallel requests.
+        The node will display information about the current number of parallel requests every n seconds. Additionally, if the <i>emit control</i> setting is 
+        on the node will emit the current number of messages on control topic too.
+        <br/><br/>
+        <i class="fa fa-info-circle"></i> <b>Emit Control:</b>
+        If switched on, the node will emit on control topic the current information about asynchronous requests. 
+        This information can be used to control the behavior of the flow (e.g. to queue the data if the node is under pressure)
+        See <a href="https://playground.mindconnect.rocks" target="_new">https://playground.mindconnect.rocks</a> for examples.
+        <br/><br/>
+        <i class="fa fa-info-circle"></i> <b>Disable per Request Info:</b>
+        If switched on, the node will not show the status of every single message below the node, but just the aggregate status. 
+        This setting can greatly reduce node verbosity.
+        <br/><br/>
     </div>
 </script>
 
@@ -345,6 +367,25 @@ msg._ignorePayload=true;
         <pre>
 msg._mindsphereStatus; // OK on success othervise error
 msg._error; // The timestamped error message
+        </pre>
+
+        <p>
+            <i class="fa fa-info-circle"></i> <b>Complex flow handling</b><br/>
+        </p>
+        <p>
+            If you switch on the <i>Emit Control</i> setting, the node will emit every n seconds (where n is the async duration setting) a message
+            on <b>control</b> topic with the current number and state of requests. This can be used in more complex flows to 
+            handle the pressure on the node.
+        </p>
+        <pre>
+// msg payload on control topic 
+// (msg.topic === "control")
+{
+    requests: number;
+    success: number;
+    pending: number;
+    errors: number;
+}
         </pre>
         <p>
             More Documentation:
@@ -680,6 +721,12 @@ msg._error; // The timestamped error message
                 value: false,
             },
             disablekeepalive: {
+                value: false,
+            }, 
+            emitcontrol: {
+                value: false,
+            },
+            supressverbosity: {
                 value: false,
             },
             retry: {

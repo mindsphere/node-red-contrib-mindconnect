@@ -1,5 +1,16 @@
 # Changelog
 
+## 3.11.0 (Vienna Jaguarundi) - March 2020
+
+## New Features 3.11.0
+
+- New example flows on [https://playgound.mindconnect.rocks](https://playgound.mindconnect.rocks) - queing the messages, handling ingest pressure
+- Node now emits control messages which can be used to control the behavior of your data ingestion flow
+- New switch to reduce the node verbosity
+- Bumped all dependencies
+- Restructured files for better readability
+- Upgraded json schema definitions for ajv v7 reqirements
+
 ## 3.10.0 (Vienna European Shorthair) - November 2020
 
 ## New Features 3.10.0

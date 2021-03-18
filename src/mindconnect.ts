@@ -1,9 +1,17 @@
 // Copyright Siemens AG, 2017
 
-import { BaseEvent, MindConnectAgent } from "@mindconnect/mindconnect-nodejs";
+import { MindConnectAgent } from "@mindconnect/mindconnect-nodejs";
 import * as fs from "fs";
 import * as path from "path";
-import * as allSettled from "promise.allsettled";
+import { RegisterHttpHandlers } from "./http-handlers";
+import {
+    renewToken,
+    sendBulkTimeSeriesData,
+    sendEvent,
+    sendFile,
+    sendFileToDataLake,
+    sendTimeSeriesData,
+} from "./mindconnect-ops";
 import {
     actionSchemaValidator,
     bulkUploadValidator,
@@ -11,15 +19,16 @@ import {
     eventSchemaValidator,
     fileInfoValidator,
     IConfigurationInfo,
-    IDataLakeFileInfo,
-    IFileInfo,
     remoteConfigurationValidator,
     timeSeriesValidator,
 } from "./mindconnect-schema";
 import {
     configureAgent,
     copyConfiguration,
+    extractErrorString,
     handleError,
+    IQuerablePromise,
+    queryablePromise,
     reloadFlow,
     retryWithNodeLog,
     sleep,
@@ -41,10 +50,8 @@ export = function (RED: any): void {
 
         configureAgent(node);
 
-        let promises = [];
+        let promises: IQuerablePromise[] = [];
         let awaitPromises = false;
-
-        allSettled.shim();
 
         this.on("close", () => {
             clearInterval(node.interval_id);
@@ -58,7 +65,7 @@ export = function (RED: any): void {
                 try {
                     const agent = <MindConnectAgent>node.agent;
                     const rcValidator = remoteConfigurationValidator();
-                    if (await rcValidator(msg.payload)) {
+                    if (rcValidator(msg.payload)) {
                         return await reconfigureNode(msg);
                     }
 
@@ -117,22 +124,23 @@ export = function (RED: any): void {
                             return;
                         }
                     }
-                    if (await actionValidator(msg.payload)) {
+
+                    if (actionValidator(msg.payload)) {
                         if (msg.payload.action === "await") {
                             awaitPromises = true;
                         } else if (msg.payload.action === "renew") {
-                            promises.push(renewToken(msg, agent, timestamp));
+                            promises.push(queryablePromise(renewToken({ msg, agent, timestamp, node })));
                         }
-                    } else if ((await eventValidator(msg.payload)) || msg._customEvent === true) {
-                        promises.push(sendEvent(msg, agent, timestamp));
-                    } else if (await fileValidator(msg.payload)) {
-                        promises.push(sendFile(msg, agent, timestamp));
-                    } else if (await dataLakeValidator(msg.payload)) {
-                        promises.push(sendFileToDataLake(msg, agent, timestamp));
-                    } else if (await bulkValidator(msg.payload)) {
-                        promises.push(sendBulkTimeSeriesData(msg, agent, timestamp));
-                    } else if (await tsValidator(msg.payload)) {
-                        promises.push(sendTimeSeriesData(msg, agent, timestamp));
+                    } else if (eventValidator(msg.payload) || msg._customEvent === true) {
+                        promises.push(queryablePromise(sendEvent({ msg, agent, timestamp, node })));
+                    } else if (fileValidator(msg.payload)) {
+                        promises.push(queryablePromise(sendFile({ msg, agent, timestamp, node })));
+                    } else if (dataLakeValidator(msg.payload)) {
+                        promises.push(queryablePromise(sendFileToDataLake({ msg, agent, timestamp, node })));
+                    } else if (bulkValidator(msg.payload)) {
+                        promises.push(queryablePromise(sendBulkTimeSeriesData({ msg, agent, timestamp, node })));
+                    } else if (tsValidator(msg.payload)) {
+                        promises.push(queryablePromise(sendTimeSeriesData({ msg, agent, timestamp, node })));
                     } else {
                         let errorObject = extractErrorString(
                             eventValidator,
@@ -144,33 +152,41 @@ export = function (RED: any): void {
                             dataLakeValidator
                         );
 
-                        promises.push(handleInputError(msg, errorObject, timestamp));
+                        promises.push(queryablePromise(handleInputError(msg, errorObject, timestamp)));
                     }
 
-                    if (
-                        (promises.length % node.parallel === 0 && promises.length > 0) ||
-                        (promises.length > 0 && awaitPromises)
-                    ) {
-                        node.status({
-                            fill: "blue",
-                            shape: "dot",
-                            text: `awaiting ${promises.length} parallel requests...`,
-                        });
-                        const results = (await allSettled(promises)) || [];
+                    if ((promises.length % node.parallel === 0 && promises.length > 0) || awaitPromises) {
+                        const pending = promises.filter((x) => x.isPending()).length;
+                        const rejected = promises.filter((x) => x.isRejected()).length;
+                        const fullfilled = promises.filter((x) => x.isFulfilled()).length;
+                        const errorneous = promises.filter((x) => x.isErrorneous()).length;
 
-                        const fullfilled = results.length;
-                        const rejected = results.filter((pr: any) => pr.value._mindsphereStatus === "Error").length;
+                        const info = {
+                            requests: promises.length,
+                            success: fullfilled - errorneous,
+                            pending: pending,
+                            errors: rejected + errorneous,
+                        };
+
+                        if (node.emitcontrol) {
+                            node.send({
+                                topic: "control",
+                                payload: info,
+                            });
+                        }
 
                         node.log(
-                            `Parallel requests status: ${fullfilled} finished with ${rejected} errors at ${timestamp}`
+                            `${info.requests} requests, ${info.success} successful with ${info.errors} errors and ${info.pending} still pending`
                         );
                         node.status({
-                            fill: rejected === 0 ? "green" : "red",
+                            fill: info.errors === 0 ? (info.pending === 0 ? "green" : "blue") : "red",
                             shape: "dot",
-                            text: `Parallel requests status: ${fullfilled} finished with ${rejected} errors at ${timestamp}`,
+                            text: `[${timestamp.toLocaleString()}] ${info.requests} requests, ${
+                                info.success
+                            } successful with ${info.errors} errors and ${info.pending} still pending`,
                         });
 
-                        promises = [];
+                        promises = promises.filter((x) => x.isPending());
                         awaitPromises = false;
                     }
                 } catch (error) {
@@ -213,405 +229,11 @@ export = function (RED: any): void {
             return msg;
         }
 
-        function extractErrorString(
-            eventValidator,
-            fileValidator,
-            bulkValidator,
-            tsValidator,
-            rcValidator,
-            actionValidator,
-            dataLakeValidator
-        ) {
-            const eventErrors = eventValidator.errors || [];
-            const fileErrors = fileValidator.errors || [];
-            const bulkErrors = bulkValidator.errors || [];
-            const timeSeriesErrors = tsValidator.errors || [];
-            const rcValidatorErrors = rcValidator.errors || [];
-            const actionErrors = actionValidator.errors || [];
-            const dataLakeErrors = dataLakeValidator.errors || [];
-
-            const result = {
-                message:
-                    "the payload was not recognized as an event, file or datapoints. See node help for proper msg.payload.formats (see msg._errorObject for all errors)",
-                actionErrors: [],
-                eventErrors: [],
-                fileErrors: [],
-                dataLakeErrors: [],
-                bulkErrors: [],
-                timeSeriesErrors: [],
-                remoteConfigurationErrors: [],
-            };
-
-            actionErrors.forEach((element) => {
-                result.actionErrors.push(element.message);
-            });
-
-            eventErrors.forEach((element) => {
-                result.eventErrors.push(element.message);
-            });
-
-            fileErrors.forEach((element) => {
-                result.fileErrors.push(element.message);
-            });
-
-            dataLakeErrors.forEach((element) => {
-                result.dataLakeErrors.push(element.message);
-            });
-
-            bulkErrors.forEach((element) => {
-                result.bulkErrors.push(element.message);
-            });
-
-            timeSeriesErrors.forEach((element) => {
-                result.timeSeriesErrors.push(element.message);
-            });
-            rcValidatorErrors.forEach((element) => {
-                result.remoteConfigurationErrors.push(element.message);
-            });
-
-            return result;
-        }
-
         async function handleInputError(msg: any, error, timestamp: Date) {
             handleError(node, msg, error);
             return msg;
         }
-
-        async function renewToken(msg: any, agent: MindConnectAgent, timestamp: Date) {
-            if (node.disablekeepalive) {
-                node.log("Keep alive for this agent is disabled");
-                return;
-            }
-
-            try {
-                node.status({ fill: "grey", shape: "dot", text: `renewing agent token` });
-                await retryWithNodeLog(node.retry, () => agent.RenewToken(), "RenewToken", node);
-                node.log(`Last keep alive key rotation at ${timestamp}`);
-                node.status({ fill: "green", shape: "dot", text: `Last keep alive key rotation at ${timestamp}` });
-                msg._mindsphereStatus = "OK";
-                // this is a control message, we are not sending the mesage further
-            } catch (error) {
-                // this is a control message, we are not sending the mesage further
-                handleError(node, msg, error, false);
-            }
-            return msg;
-        }
-
-        async function sendTimeSeriesData(msg: any, agent: MindConnectAgent, timestamp: Date) {
-            try {
-                node.status({ fill: "grey", shape: "dot", text: `recieved data points` });
-                await retryWithNodeLog(
-                    node.retry,
-                    () => agent.PostData(msg.payload, timestamp, node.validate),
-                    "PostData",
-                    node
-                );
-                node.log(`Posted last message at ${timestamp}`);
-                node.status({ fill: "green", shape: "dot", text: `Posted last message at ${timestamp}` });
-                msg._mindsphereStatus = "OK";
-                node.send(msg);
-            } catch (error) {
-                handleError(node, msg, error);
-            }
-            return msg;
-        }
-
-        async function sendBulkTimeSeriesData(msg: any, agent: MindConnectAgent, timestamp: Date) {
-            try {
-                node.status({
-                    fill: "grey",
-                    shape: "dot",
-                    text: `recieved ${msg.payload.length} data points for bulk upload `,
-                });
-                await retryWithNodeLog(
-                    node.retry,
-                    () => agent.BulkPostData(msg.payload, node.validate),
-                    "BulkPost",
-                    node
-                );
-                node.log(`Posted last bulk message at ${timestamp}`);
-                node.status({ fill: "green", shape: "dot", text: `Posted last bulk message at ${timestamp}` });
-                msg._mindsphereStatus = "OK";
-                node.send(msg);
-            } catch (error) {
-                handleError(node, msg, error);
-            }
-            return msg;
-        }
-
-        async function sendFileToDataLake(msg: any, agent: MindConnectAgent, timestamp: Date) {
-            try {
-                const dataLakeClient = agent.Sdk().GetDataLakeClient();
-                const fileInfo = msg.payload as IDataLakeFileInfo;
-                const message = Buffer.isBuffer(fileInfo.dataLakeFile) ? "Buffer" : fileInfo.dataLakeFile;
-                node.status({ fill: "grey", shape: "dot", text: `recieved fileInfo ${message} at ${timestamp}` });
-
-                const url = await retryWithNodeLog(
-                    node.retry,
-                    () =>
-                        dataLakeClient.GenerateUploadObjectUrls({
-                            paths: [{ path: `/${agent.ClientId()}/${fileInfo.dataLakeFilePath}` }],
-                            subtenantId: fileInfo.subTenantId,
-                        }),
-                    "GenerateUploadObjectUrl",
-                    node
-                );
-
-                node.status({
-                    fill: "grey",
-                    shape: "dot",
-                    text: `generated upload URL : ${msg._ignorePayload ? "skipping upload" : "uploading file"}`,
-                });
-
-                msg._signedUrl = url.objectUrls[0].signedUrl;
-                msg._mindsphereStatus = "OK";
-
-                if (!msg.ignorePayload) {
-                    await retryWithNodeLog(
-                        node.retry,
-                        () => dataLakeClient.PutFile(fileInfo.dataLakeFile, url.objectUrls[0].signedUrl),
-                        "PutFileToDataLake",
-                        node
-                    );
-                    const uploadTimeStamp = new Date();
-                    node.log(`Uploaded file at ${uploadTimeStamp} to Data Lake`);
-                    node.status({
-                        fill: "green",
-                        shape: "dot",
-                        text: `Uploaded file at ${uploadTimeStamp} to data lake.`,
-                    });
-                }
-                node.send(msg);
-            } catch (error) {
-                handleError(node, msg, error);
-            }
-            return msg;
-        }
-
-        async function sendFile(msg: any, agent: MindConnectAgent, timestamp: Date) {
-            try {
-                const fileInfo = msg.payload as IFileInfo;
-                const message = Buffer.isBuffer(fileInfo.fileName) ? "Buffer" : fileInfo.fileName;
-                node.status({ fill: "grey", shape: "dot", text: `recieved fileInfo ${message}` });
-
-                let parallelUploads = node.parallel || 1;
-                const entityId = fileInfo.entityId || agent.ClientId();
-                if (Buffer.isBuffer(fileInfo) && !fileInfo.filePath) {
-                    throw Error("you have to provide the filePath when using Buffer as the payload");
-                }
-
-                await retryWithNodeLog(
-                    node.retry,
-                    () =>
-                        agent.UploadFile(
-                            entityId,
-                            fileInfo.filePath || Buffer.isBuffer(fileInfo.fileName) ? "unknown" : fileInfo.fileName,
-                            fileInfo.fileName,
-                            {
-                                chunk: node.chunk,
-                                parallelUploads: parallelUploads,
-                                type: fileInfo.fileType,
-                            }
-                        ),
-                    "FileUpload",
-                    node
-                );
-                node.log(`Uploaded file at ${timestamp}`);
-                node.status({ fill: "green", shape: "dot", text: `Uploaded file at ${timestamp}` });
-                msg._mindsphereStatus = "OK";
-                node.send(msg);
-            } catch (error) {
-                handleError(node, msg, error);
-            }
-            return msg;
-        }
-
-        async function sendEvent(msg: any, agent: MindConnectAgent, timestamp: any) {
-            try {
-                node.status({ fill: "grey", shape: "dot", text: `recieved event` });
-                const event = <BaseEvent>msg.payload;
-                if (!event.entityId) {
-                    event.entityId = agent.ClientId();
-                }
-                const result = await retryWithNodeLog(
-                    node.retry,
-                    () => agent.PostEvent(event, timestamp, node.validateevent),
-                    "PostEvent",
-                    node
-                );
-                node.log(`Posted last event at ${timestamp}`);
-                node.status({ fill: "green", shape: "dot", text: `Posted last event at ${timestamp}` });
-                msg._mindsphereStatus = result ? "OK" : "Error";
-                node.send(msg);
-            } catch (error) {
-                handleError(node, msg, error);
-            }
-            return msg;
-        }
     }
 
-    RED.nodes.registerType("mindconnect", nodeRedMindConnectAgent);
-
-    RED.httpAdmin.get("/mindconnect/mindsphere.css", function (req, res) {
-        const filename = path.join(__dirname, "mindsphere.css");
-        res.sendFile(filename);
-    });
-
-    RED.httpAdmin.get("/mindconnect/agentinfo/:id", RED.auth.needsPermission("mindconnect.read"), async (req, res) => {
-        const node = RED.nodes.getNode(req.params.id);
-        try {
-            if (!node) {
-                throw new Error(`There is no node with id ${req.params.id}`);
-            }
-            const agent = node.agent as MindConnectAgent;
-
-            if (!agent) {
-                throw new Error(`There is no agent configured at node with id ${req.params.id}`);
-            }
-
-            if (!agent.IsOnBoarded()) {
-                await agent.OnBoard();
-            }
-            const configuration = await agent.GetDataSourceConfiguration();
-            const mappings = await agent.GetDataMappings();
-            res.send({
-                id: req.params.id,
-                clientid: agent.ClientId(),
-                isOnboarded: agent.IsOnBoarded(),
-                configuration: configuration,
-                mappings: mappings,
-            });
-        } catch (err) {
-            res.send({ error: `${err.message || JSON.stringify(err)}` });
-            node.status({
-                fill: "red",
-                shape: "dot",
-                text: `Error occured:  ${err.message || JSON.stringify(err)}`,
-            });
-        }
-    });
-
-    RED.httpAdmin.get(
-        "/mindconnect/assets/:id/:assetid",
-        RED.auth.needsPermission("mindconnect.read"),
-        async (req, res) => {
-            const node = RED.nodes.getNode(req.params.id);
-
-            try {
-                if (!node) {
-                    throw new Error(`There is no node with id ${req.params.id}`);
-                }
-                const agent = node.agent as MindConnectAgent;
-
-                if (!agent) {
-                    throw new Error(`There is no agent configured at node with id ${req.params.id}`);
-                }
-
-                if (!agent.IsOnBoarded()) {
-                    await agent.OnBoard();
-                }
-                const asset = await agent.Sdk().GetAssetManagementClient().GetAsset(req.params.assetid);
-                res.send(asset);
-            } catch (err) {
-                res.send({ error: `${err.message || JSON.stringify(err)}` });
-                node.status({
-                    fill: "red",
-                    shape: "dot",
-                    text: `Error occured:  ${err.message || JSON.stringify(err)}`,
-                });
-            }
-        }
-    );
-
-    RED.httpAdmin.get(
-        "/mindconnect/asset/:id/:filter",
-        RED.auth.needsPermission("mindconnect.read"),
-        async (req, res) => {
-            const node = RED.nodes.getNode(req.params.id);
-            try {
-                // console.log(req.params.id, node);
-                if (!node) {
-                    throw new Error(`There is no node with id ${req.params.id}`);
-                }
-                const agent = node.agent as MindConnectAgent;
-
-                if (!agent) {
-                    throw new Error(`There is no agent configured at node with id ${req.params.id}`);
-                }
-
-                if (!agent.IsOnBoarded()) {
-                    await agent.OnBoard();
-                }
-                const am = agent.Sdk().GetAssetManagementClient();
-                const filter =
-                    req.params.filter === "root"
-                        ? JSON.stringify({
-                              not: {
-                                  typeId: {
-                                      startsWith: "core",
-                                  },
-                              },
-                          })
-                        : JSON.stringify({
-                              or: {
-                                  typeId: {
-                                      contains: `${req.params.filter}`,
-                                  },
-                                  name: {
-                                      contains: `${req.params.filter}`,
-                                  },
-                              },
-                          });
-
-                const children = await am.GetAssets({
-                    size: 2000,
-                    filter: filter,
-                });
-                res.send(children);
-            } catch (err) {
-                res.send({ error: `${err.message || JSON.stringify(err)}` });
-                node.status({
-                    fill: "red",
-                    shape: "dot",
-                    text: `Error occured:  ${err.message || JSON.stringify(err)}`,
-                });
-            }
-        }
-    );
-
-    RED.httpAdmin.post(
-        "/mindconnect/assets/:id/:assetid",
-        RED.auth.needsPermission("mindconnect.write"),
-        async (req, res) => {
-            const node = RED.nodes.getNode(req.params.id);
-            // console.log(RED.auth.needsPermission("flows.write")());
-            try {
-                if (!node) {
-                    throw new Error(`There is no node with id ${req.params.id}`);
-                }
-                const agent = node.agent as MindConnectAgent;
-
-                if (!agent) {
-                    throw new Error(`There is no agent configured at node with id ${req.params.id}`);
-                }
-
-                await agent.DeleteAllMappings();
-                await agent.ConfigureAgentForAssetId(req.params.assetid);
-
-                node.status({
-                    fill: "green",
-                    shape: "dot",
-                    text: `successfully auto-configured agent for ${req.params.assetid}`,
-                });
-                res.send({ id: req.params.id, clientid: agent.ClientId(), isOnboarded: agent.IsOnBoarded() });
-            } catch (err) {
-                res.send({ error: `${err.message || JSON.stringify(err)}` });
-                node.status({
-                    fill: "red",
-                    shape: "dot",
-                    text: `Error occured:  ${err.message || JSON.stringify(err)}`,
-                });
-            }
-        }
-    );
+    RegisterHttpHandlers(RED, nodeRedMindConnectAgent);
 };

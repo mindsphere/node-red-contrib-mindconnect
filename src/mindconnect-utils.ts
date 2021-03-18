@@ -12,7 +12,8 @@ export const retryWithNodeLog = async (n, func, operation, node) => {
     for (let i = 0; i < n; i++) {
         try {
             if (i > 0) {
-                node.status({ fill: "yellow", shape: "ring", text: `${operation}: retrying ${i + 1} of ${n}` });
+                !node.supressverbosity &&
+                    node.status({ fill: "yellow", shape: "ring", text: `${operation}: retrying ${i + 1} of ${n}` });
                 node.log(`${operation}: retrying ${i + 1} of ${n}`);
                 await sleep(i * 300);
             }
@@ -34,6 +35,8 @@ export const copyConfiguration = (node: IConfigurationInfo, config: IConfigurati
     node.validateevent = config.validateevent;
     node.chunk = config.chunk;
     node.disablekeepalive = config.disablekeepalive;
+    node.emitcontrol = config.emitcontrol;
+    node.supressverbosity = config.supressverbosity;
     node.retry = config.retry;
     node.parallel = config.parallel;
     node.asyncduration = config.asyncduration;
@@ -57,6 +60,11 @@ export const configureAgent = (mcnode: IConfigurationInfo, newConfig?: IConfigur
         if (mcnode.chunk) startlogmessage += "chunked upload ";
         if (mcnode.disablekeepalive) startlogmessage += "disabled keep-alive";
         else startlogmessage += "keep-alive rotation: every hour";
+        mcnode.emitcontrol = mcnode.emitcontrol || false;
+        startlogmessage += ` control topic: ${mcnode.emitcontrol ? "enabled" : "disabled"}`;
+
+        mcnode.supressverbosity = mcnode.supressverbosity || false;
+        startlogmessage += ` verbose info: ${mcnode.supressverbosity ? "disabled" : "enabled"}`;
 
         mcnode.parallel = mcnode.parallel || "1";
         mcnode.asyncduration = mcnode.asyncduration || "10";
@@ -162,7 +170,7 @@ export const reloadFlow = async (node, settings, newConfig) => {
 
 export const handleError = (
     node: IMindConnectNode,
-    msg: { _mindsphereStatus: string; _error: string; _errorObject: object },
+    msg: { _mindsphereStatus: string; _error: string; _errorObject: object; _mindsphereRequestCount: number },
     error: { message: any },
     sendMessage: boolean = true
 ) => {
@@ -172,12 +180,124 @@ export const handleError = (
     msg._error = `${new Date().toISOString()} ${error.message}}`;
     sendMessage && node.send(msg);
     const errortext = error.message || error;
-    node.status({ fill: "red", shape: "dot", text: `${errortext}` });
+    !node.supressverbosity && node.status({ fill: "red", shape: "dot", text: `${errortext}` });
 };
 
 export interface IMindConnectNode {
+    validateevent: boolean;
+    chunk: boolean;
+    parallel: number;
+    disablekeepalive: any;
+    emitcontrol?: boolean;
+    supressverbosity?: boolean;
+    retry: number;
+    validate: boolean;
+    log(arg0: string);
     agent: MindConnectAgent;
     error: (arg0: any) => void;
     send: (arg0: any) => void;
     status: (arg0: { fill: string; shape: string; text: string }) => void;
+}
+
+export const extractErrorString = (
+    eventValidator: { errors?: any[] },
+    fileValidator: { errors?: any[] },
+    bulkValidator: { errors?: any[] },
+    tsValidator: { errors?: any[] },
+    rcValidator: { errors?: any[] },
+    actionValidator: { errors?: any[] },
+    dataLakeValidator: { errors?: any[] }
+) => {
+    const eventErrors = eventValidator.errors || [];
+    const fileErrors = fileValidator.errors || [];
+    const bulkErrors = bulkValidator.errors || [];
+    const timeSeriesErrors = tsValidator.errors || [];
+    const rcValidatorErrors = rcValidator.errors || [];
+    const actionErrors = actionValidator.errors || [];
+    const dataLakeErrors = dataLakeValidator.errors || [];
+
+    const result = {
+        message:
+            "the payload was not recognized as an event, file or datapoints. See node help for proper msg.payload.formats (see msg._errorObject for all errors)",
+        actionErrors: [],
+        eventErrors: [],
+        fileErrors: [],
+        dataLakeErrors: [],
+        bulkErrors: [],
+        timeSeriesErrors: [],
+        remoteConfigurationErrors: [],
+    };
+
+    actionErrors.forEach((element) => {
+        result.actionErrors.push(element.message);
+    });
+
+    eventErrors.forEach((element) => {
+        result.eventErrors.push(element.message);
+    });
+
+    fileErrors.forEach((element) => {
+        result.fileErrors.push(element.message);
+    });
+
+    dataLakeErrors.forEach((element) => {
+        result.dataLakeErrors.push(element.message);
+    });
+
+    bulkErrors.forEach((element) => {
+        result.bulkErrors.push(element.message);
+    });
+
+    timeSeriesErrors.forEach((element) => {
+        result.timeSeriesErrors.push(element.message);
+    });
+    rcValidatorErrors.forEach((element) => {
+        result.remoteConfigurationErrors.push(element.message);
+    });
+
+    return result;
+};
+
+export interface IQuerablePromise {
+    isFulfilled(): boolean;
+    isPending(): boolean;
+    isRejected(): boolean;
+    isErrorneous(): boolean;
+}
+
+export function queryablePromise(promise): IQuerablePromise {
+    if (promise.isResolved) return promise;
+
+    let isPending = true;
+    let isRejected = false;
+    let isFulfilled = false;
+    let isErrorneus = false;
+
+    let result = promise.then(
+        function (value: { _mindsphereStatus: string }) {
+            isFulfilled = true;
+            isPending = false;
+            isErrorneus = value._mindsphereStatus === "Error";
+            return value;
+        },
+        function (error: any) {
+            isRejected = true;
+            isPending = false;
+            throw error;
+        }
+    );
+
+    result.isFulfilled = function () {
+        return isFulfilled;
+    };
+    result.isPending = function () {
+        return isPending;
+    };
+    result.isRejected = function () {
+        return isRejected;
+    };
+    result.isErrorneous = function () {
+        return isErrorneus;
+    };
+    return result;
 }

@@ -42,9 +42,9 @@ describe("MindConnect Utils", () => {
                     iat: "...",
                     clientCredentialProfile: ["SHARED_SECRET"],
                     clientId: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-                    tenant: "castidev"
+                    tenant: "castidev",
                 },
-                expiration: new Date("2018-11-15T17:31:35.000Z")
+                expiration: new Date("2018-11-15T17:31:35.000Z"),
             },
             privatekey: "xx",
             model: "yy",
@@ -54,7 +54,9 @@ describe("MindConnect Utils", () => {
             disablekeepalive: true,
             retry: "2",
             parallel: "1",
-            asyncduration: "3"
+            asyncduration: "3",
+            emitcontrol: false,
+            supressverbosity: false,
         };
 
         const target = {} as IConfigurationInfo;
@@ -74,9 +76,9 @@ describe("MindConnect Utils", () => {
                     iat: "...",
                     clientCredentialProfile: ["SHARED_SECRET"],
                     clientId: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-                    tenant: "castidev"
+                    tenant: "castidev",
                 },
-                expiration: new Date("2018-11-15T17:31:35.000Z")
+                expiration: new Date("2018-11-15T17:31:35.000Z"),
             },
             privatekey: "xx",
             model: "yy",
@@ -86,7 +88,7 @@ describe("MindConnect Utils", () => {
             disablekeepalive: true,
             retry: "2",
             parallel: "1",
-            asyncduration: "3"
+            asyncduration: "3",
         };
 
         const mock = ({ log: () => {}, status: () => {} } as unknown) as IConfigurationInfo;
@@ -106,9 +108,9 @@ describe("MindConnect Utils", () => {
                     iat: "...",
                     clientCredentialProfile: ["RSA_3072"],
                     clientId: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-                    tenant: "castidev"
+                    tenant: "castidev",
                 },
-                expiration: new Date("2018-11-15T17:31:35.000Z")
+                expiration: new Date("2018-11-15T17:31:35.000Z"),
             },
             privatekey: "-----BEGIN RSA PRIVATE KEY----- -----END RSA PRIVATE KEY-----\n",
             model: "yy",
@@ -118,7 +120,7 @@ describe("MindConnect Utils", () => {
             disablekeepalive: false,
             retry: "2",
             parallel: "1",
-            asyncduration: "3"
+            asyncduration: "3",
         };
 
         let errorCalled = false;
@@ -130,10 +132,10 @@ describe("MindConnect Utils", () => {
                 logCalled = true;
             },
             status: () => {},
-            error: x => {
+            error: (x) => {
                 errors.push(x);
                 errorCalled = true;
-            }
+            },
         } as unknown) as IConfigurationInfo;
 
         configureAgent(mock, config);
@@ -155,9 +157,9 @@ describe("MindConnect Utils", () => {
                     iat: "...",
                     clientCredentialProfile: ["RSA_3072"],
                     clientId: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-                    tenant: "castidev"
+                    tenant: "castidev",
                 },
-                expiration: new Date("2018-11-15T17:31:35.000Z")
+                expiration: new Date("2018-11-15T17:31:35.000Z"),
             },
             privatekey: "-----BEGIN RSA PRIVATE KEY-----\n",
             model: "yy",
@@ -167,7 +169,7 @@ describe("MindConnect Utils", () => {
             disablekeepalive: true,
             retry: "2",
             parallel: "1",
-            asyncduration: "3"
+            asyncduration: "3",
         };
 
         let errorCalled = false;
@@ -176,10 +178,10 @@ describe("MindConnect Utils", () => {
         const mock = ({
             log: () => {},
             status: () => {},
-            error: x => {
+            error: (x) => {
                 errors.push(x);
                 errorCalled = true;
-            }
+            },
         } as unknown) as IConfigurationInfo;
 
         configureAgent(mock, config);

@@ -1,7 +1,8 @@
 // Copyright Siemens AG, 2019
 
-import ajv = require("ajv");
 import { IMindConnectConfiguration } from "@mindconnect/mindconnect-nodejs";
+import ajv, { ValidateFunction } from "ajv";
+import addFormats from "ajv-formats";
 
 export const actionSchema = {
     definitions: {},
@@ -131,13 +132,13 @@ export const fileInfoSchema = {
             pattern: "^[A-Fa-f0-9]*$",
         },
         fileName: {
-            $id: "/properties/sourceType",
+            $id: "/properties/fileName",
             type: ["string", "object"],
-            title: "The Sourcetype Schema ",
+            title: "The fileName Schema ",
             default: "",
         },
         filePath: {
-            $id: "/properties/sourceType",
+            $id: "/properties/filePath",
             type: "string",
             title: "The filePath Schema ",
             default: "",
@@ -355,6 +356,20 @@ export const remoteConfigurationSchema = {
             default: false,
             examples: [true],
         },
+        emitcontrol: {
+            $id: "#/properties/emitcontrol",
+            type: "boolean",
+            title: "The emitcontrol Schema",
+            default: false,
+            examples: [true],
+        },
+        supressverbosity: {
+            $id: "#/properties/supressverbosity",
+            type: "boolean",
+            title: "The supressverbosity Schema",
+            default: false,
+            examples: [true],
+        },
         retry: {
             $id: "#/properties/retry",
             type: "string",
@@ -374,38 +389,34 @@ export const remoteConfigurationSchema = {
     },
 };
 
-export function actionSchemaValidator(): ajv.ValidateFunction {
-    const schemaValidator = new ajv({ $data: true, allErrors: true });
+const schemaValidator = new ajv({ $data: true, allErrors: true, allowUnionTypes: true });
+addFormats(schemaValidator);
+
+export function actionSchemaValidator(): ValidateFunction {
     return schemaValidator.compile(actionSchema);
 }
 
-export function remoteConfigurationValidator(): ajv.ValidateFunction {
-    const schemaValidator = new ajv({ $data: true, allErrors: true });
+export function remoteConfigurationValidator(): ValidateFunction {
     return schemaValidator.compile(remoteConfigurationSchema);
 }
 
-export function eventSchemaValidator(): ajv.ValidateFunction {
-    const schemaValidator = new ajv({ $data: true, allErrors: true });
+export function eventSchemaValidator(): ValidateFunction {
     return schemaValidator.compile(eventSchema);
 }
 
-export function dataLakeFileInfoValidator(): ajv.ValidateFunction {
-    const schemaValidator = new ajv({ $data: true, allErrors: true });
+export function dataLakeFileInfoValidator(): ValidateFunction {
     return schemaValidator.compile(dataLakeFileInfoSchema);
 }
 
-export function fileInfoValidator(): ajv.ValidateFunction {
-    const schemaValidator = new ajv({ $data: true, allErrors: true });
+export function fileInfoValidator(): ValidateFunction {
     return schemaValidator.compile(fileInfoSchema);
 }
 
-export function bulkUploadValidator(): ajv.ValidateFunction {
-    const schemaValidator = new ajv({ $data: true, allErrors: true });
+export function bulkUploadValidator(): ValidateFunction {
     return schemaValidator.compile(bulkUploadSchema);
 }
 
-export function timeSeriesValidator(): ajv.ValidateFunction {
-    const schemaValidator = new ajv({ $data: true, allErrors: true });
+export function timeSeriesValidator(): ValidateFunction {
     return schemaValidator.compile(timeSeriesSchema);
 }
 
