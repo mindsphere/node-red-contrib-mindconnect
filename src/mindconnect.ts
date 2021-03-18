@@ -3,7 +3,6 @@
 import { MindConnectAgent } from "@mindconnect/mindconnect-nodejs";
 import * as fs from "fs";
 import * as path from "path";
-import * as allSettled from "promise.allsettled";
 import * as q from "queryable-promise";
 import { RegisterHttpHandlers } from "./http-handlers";
 import {
@@ -53,8 +52,6 @@ export = function (RED: any): void {
         let promises = [];
         let awaitPromises = false;
 
-        allSettled.shim();
-
         this.on("close", () => {
             clearInterval(node.interval_id);
             clearInterval(node.await_id);
@@ -67,7 +64,7 @@ export = function (RED: any): void {
                 try {
                     const agent = <MindConnectAgent>node.agent;
                     const rcValidator = remoteConfigurationValidator();
-                    if (await rcValidator(msg.payload)) {
+                    if (rcValidator(msg.payload)) {
                         return await reconfigureNode(msg);
                     }
 
