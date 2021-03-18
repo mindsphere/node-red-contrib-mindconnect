@@ -28,15 +28,15 @@
     </div>
 
     <div class="form-row node-text-editor-row">
-        <label for="" title="The default number of parallel async requests the node will make to MindSphere."><i class="fa fa-arrow-circle-up"></i>
+        <label for="" title="The default number of mindsphere requests node will run before displaying the status message."><i class="fa fa-arrow-circle-up"></i>
             Async requests</span></label>
-        <input id="node-input-parallel" class="ui-spinner-input" value="1" style="width:50px"/>
+        <input id="node-input-parallel" class="ui-spinner-input" value="1" style="width:50px"/> 
     </div>
 
     <div class="form-row node-text-editor-row">
-        <label for="" title="The node will emit information with the current number of async requests after n seconds."><i class="fa fa-arrow-circle-down"></i>
+        <label for="" title="The maximum time the node will wait before displaying the status message."><i class="fa fa-arrow-circle-down"></i>
             Async duration </span></label>
-        <input id="node-input-asyncduration" class="ui-spinner-input" value="1" style="width:50px"/> (in seconds)
+        <input id="node-input-asyncduration" class="ui-spinner-input" value="1" style="width:50px"/> (in seconds) 
     </div>
 
     <div class="form-row node-text-editor-row">
@@ -169,8 +169,8 @@
 
     <div class="form-row node-text-editor-row">
         <label for="node-input-supressverbosity"></label>
-        <label for="node-input-supressverbosity" style="width:70%"  data-toggle="tooltip" data-placement="top" title="The node will not show the status of every single message below the node anymore.">
-        <input type="checkbox" id="node-input-supressverbosity" style="display:inline-block; width:22px; vertical-align:baseline;">Disable per request node info.</label>
+        <label for="node-input-supressverbosity" style="width:70%"  data-toggle="tooltip" data-placement="top" title="The node will not show the status of every single request below the node anymore.">
+        <input type="checkbox" id="node-input-supressverbosity" style="display:inline-block; width:22px; vertical-align:baseline;">Hide request status information.</label>
     </div>
 
 
@@ -205,9 +205,9 @@
         This information can be used to control the behavior of the flow (e.g. to queue the data if the node is under pressure)
         See <a href="https://playground.mindconnect.rocks" target="_new">https://playground.mindconnect.rocks</a> for examples.
         <br/><br/>
-        <i class="fa fa-info-circle"></i> <b>Disable per Request Info:</b>
-        If switched on, the node will not show the status of every single message below the node, but just the aggregate status. 
-        This setting can greatly reduce node verbosity.
+        <i class="fa fa-info-circle"></i> <b>Hide Request Status Information:</b>
+        If switched on, the node will stop showing the status of every single message below the node.
+        This setting can greatly reduce node verbosity. It is recommended to turn this on if you are ingesting a lot of data at the same time.
         <br/><br/>
     </div>
 </script>

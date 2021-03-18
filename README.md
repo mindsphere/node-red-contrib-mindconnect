@@ -245,6 +245,31 @@ msg._ignorePayload=true;
 
 Treat tokens as you would any other credentials.
 
+## Control Topic and Status Messages
+
+The version 3.11.0 introduces two new features - the status message which is displayed on the node (and/or emited on the `control` topic dependent on the Emit Control topic) after either:
+
+- the maximal number of parallel requests (**Async Requests**) has been exceeded or
+- the maximal wait time (**Async Duration**) has been reached.
+
+The following image illustrates the function of the new settings:
+
+![image](./images/internal-array.png)
+
+The `payload` on the `control` topic with the status information looks like this:
+
+```javascript
+{
+    requests: number;
+    success: number;
+    pending: number;
+    errors: number;
+}
+```
+
+This information can be used to manage for example a queue node before the mindconnect node to regulate the flow of
+the messages. See example `#HighDataVolume` on [https://playground.mindconnect.rocks](https://playground.mindconnect.rocks)
+
 ## Demo flows
 
 [![Demo Flows](https://img.shields.io/badge/node--RED-playground-%23009999.svg)](https://playground.mindconnect.rocks)
