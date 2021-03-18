@@ -4,6 +4,9 @@
 
 ## New Features 3.11.0
 
+- New example flows on https://playgound.mindconnect.rocks - queing the messages, handling ingest pressure 
+- Node now emits control messages which can be used to control the behavior of your data ingestion flow
+- New switch to reduce the node verbosity 
 - Bumped all dependencies
 - Restructured files for better readability
 - Upgraded json schema definitions for ajv v7 reqirements
