@@ -155,17 +155,21 @@ export = function (RED: any): void {
                     }
 
                     if ((promises.length % node.parallel === 0 && promises.length > 0) || awaitPromises) {
-                        if (node.emitcontrol) {
-                            node.send({
-                                _mindsphereStatus: "OK",
-                                _mindsphereRequestCount: promises.length,
-                                topic: "control",
-                            });
-                        }
-
                         const pending = promises.filter((x) => x.isPending()).length;
                         const rejected = promises.filter((x) => x.isRejected()).length;
                         const fullfilled = promises.filter((x) => x.isResolved()).length;
+
+                        if (node.emitcontrol) {
+                            node.send({
+                                topic: "control",
+                                payload: {
+                                    requests: promises.length,
+                                    fullfilled: fullfilled,
+                                    pending: pending,
+                                    rejected: rejected,
+                                },
+                            });
+                        }
 
                         node.log(
                             `${promises.length} requests, ${fullfilled} fullfilled with ${rejected} errors and ${pending} still pending`
