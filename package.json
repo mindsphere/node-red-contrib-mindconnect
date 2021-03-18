@@ -61,7 +61,6 @@
         "ajv": "^7.2.1",
         "ajv-formats": "^1.5.1",
         "debug": "^4.3.1",
-        "node-fetch": "^2.6.1",
-        "queryable-promise": "^1.0.0"
+        "node-fetch": "^2.6.1"
     }
 }
