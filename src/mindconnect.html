@@ -6,7 +6,7 @@
             &nbsp;&nbsp;<a href="https://opensource.mindsphere.io/docs/node-red-contrib-mindconnect/index.html" target="_new" class="headerLink" title="Documentation">
                 <i class="fa fa-globe"></i> MindConnect Node-RED Agent
             </a>
-        </span> <span style="color:#aaaaaa !important">v3.11.0 (alpha)</span>
+        </span> <span style="color:#aaaaaa !important">v3.11.0</span>
     </div>
 
     <div class="form-row">
@@ -174,6 +174,13 @@
     </div>
 
 
+    <div class="form-row node-text-editor-row">
+        <label for="node-input-datalakeonly"></label>
+        <label for="node-input-datalakeonly" style="width:70%"  data-toggle="tooltip" data-placement="top" title="The node is only used to send data to data lake.">
+        <input type="checkbox" id="node-input-datalakeonly" style="display:inline-block; width:22px; vertical-align:baseline;">Data lake only.</label>
+    </div>
+
+
     <div class="form-tips">
         <i class="fa fa-info-circle"></i> <b>Tip:</b>
         Use Agent Configuration to automatically configure and map the agent to a selected asset or
@@ -208,6 +215,10 @@
         <i class="fa fa-info-circle"></i> <b>Hide Request Status Information:</b>
         If switched on, the node will stop showing the status of every single message below the node.
         This setting can greatly reduce node verbosity. It is recommended to turn this on if you are ingesting a lot of data at the same time.
+        <br/><br/>
+        <i class="fa fa-info-circle"></i> <b>Data Lake Only:</b>
+        If the node is marked as data lake only, it will not try to get the configuration from MindSphere. Use this
+        if you are only sending data to the MindSphere integrated data lake.
         <br/><br/>
     </div>
 </script>
@@ -725,6 +736,9 @@ msg._error; // The timestamped error message
             }, 
             emitcontrol: {
                 value: false,
+            },
+            datalakeonly: {
+                value:false,
             },
             supressverbosity: {
                 value: false,

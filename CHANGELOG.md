@@ -1,15 +1,23 @@
 # Changelog
 
-## 3.11.0 (Vienna Jaguarundi) - March 2020
+## 3.11.0 (Vienna Jaguarundi) - March 2021
 
 ## New Features 3.11.0
 
+- **Important** Bugfix for Unitless Mapping (see below)
+- Implemented Support for EU2 Data Lake
+- New setting: **Data Lake Only** - the node will not try to retrieve configuration if it only used for data lake
+- New setting: **Emit control message** - the node will emit a message which can be used to control the data ingest
+- New setting: **Hide request statatus information** - reduces the node verbosity
 - New example flows on [https://playgound.mindconnect.rocks](https://playgound.mindconnect.rocks) - queing the messages, handling ingest pressure
-- Node now emits control messages which can be used to control the behavior of your data ingestion flow
-- New switch to reduce the node verbosity
+- Documented how to manage the node configuration from the flow on playground.
 - Bumped all dependencies
 - Restructured files for better readability
 - Upgraded json schema definitions for ajv v7 reqirements
+
+## Bugfix 3.11.0
+
+- **Important** - There is now a new type of mapping in MindSphere (unitless mapping) which versions before 3.11.0 are not aware of and which was causing the node to create mappings with the *"null"* unit. (that is "null" as a string). This is fixed in version 3.11.0. It is **strongly recommended** to upgrade to 3.11.0 if you are using automatic mapping feature.
 
 ## 3.10.0 (Vienna European Shorthair) - November 2020
 
