@@ -36,6 +36,7 @@ export const copyConfiguration = (node: IConfigurationInfo, config: IConfigurati
     node.chunk = config.chunk;
     node.disablekeepalive = config.disablekeepalive;
     node.emitcontrol = config.emitcontrol;
+    node.datalakeonly = config.datalakeonly;
     node.supressverbosity = config.supressverbosity;
     node.retry = config.retry;
     node.parallel = config.parallel;
@@ -65,6 +66,9 @@ export const configureAgent = (mcnode: IConfigurationInfo, newConfig?: IConfigur
 
         mcnode.supressverbosity = mcnode.supressverbosity || false;
         startlogmessage += ` verbose info: ${mcnode.supressverbosity ? "disabled" : "enabled"}`;
+
+        mcnode.datalakeonly = mcnode.datalakeonly || false;
+        startlogmessage += ` data lake only: ${mcnode.datalakeonly}`;
 
         mcnode.parallel = mcnode.parallel || "1";
         mcnode.asyncduration = mcnode.asyncduration || "10";

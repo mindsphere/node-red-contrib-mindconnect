@@ -363,6 +363,13 @@ export const remoteConfigurationSchema = {
             default: false,
             examples: [true],
         },
+        datalakeonly: {
+            $id: "#/properties/datalakeonly",
+            type: "boolean",
+            title: "The datalakeonly Schema",
+            default: false,
+            examples: [true],
+        },
         supressverbosity: {
             $id: "#/properties/supressverbosity",
             type: "boolean",

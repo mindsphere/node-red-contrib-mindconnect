@@ -56,6 +56,7 @@ describe("MindConnect Utils", () => {
             parallel: "1",
             asyncduration: "3",
             emitcontrol: false,
+            datalakeonly: false,
             supressverbosity: false,
         };
 

@@ -82,14 +82,22 @@ export = function (RED: any): void {
                         await retryWithNodeLog(node.retry, () => agent.OnBoard(), "OnBoard", node);
                     }
 
-                    if (!agent.HasDataSourceConfiguration() || (msg._forceGetConfig && msg._forceGetConfig === true)) {
-                        node.status({ fill: "grey", shape: "dot", text: `getting configuration` });
-                        node.model = await retryWithNodeLog(
-                            node.retry,
-                            () => agent.GetDataSourceConfiguration(),
-                            "GetConfiguration",
-                            node
-                        );
+                    if (!node.datalakeonly) {
+                        if (
+                            !agent.HasDataSourceConfiguration() ||
+                            (msg._forceGetConfig && msg._forceGetConfig === true)
+                        ) {
+                            node.status({ fill: "grey", shape: "dot", text: `getting configuration` });
+                            node.model = await retryWithNodeLog(
+                                node.retry,
+                                () => agent.GetDataSourceConfiguration(),
+                                "GetConfiguration",
+                                node
+                            );
+                        }
+                    } else {
+                        !node.supressverbosity &&
+                            node.status({ fill: "green", shape: "dot", text: `Data lake communication only` });
                     }
 
                     let timestamp = msg._time ? msg._time : new Date();
