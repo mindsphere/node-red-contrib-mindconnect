@@ -1,0 +1,70 @@
+name: Build
+
+on: 
+  push:
+  pull_request:
+  schedule:
+    - cron: '0 14 * * *'
+
+jobs:
+  build:
+    environment: CI
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Setup Node.js environment
+      uses: actions/setup-node@v2.1.5
+
+    - name: Checkout Branch
+      uses: actions/checkout@v2
+
+    - uses: sn0wcat/ms-teams-deploy-card@master
+      if: always()
+      with:
+        github-token: ${{ github.token }}
+        webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
+
+    - name: setup the mindsphere authentication
+      run: |
+        mkdir ~/.mc
+        echo '${{ secrets.AUTH_JSON }}' >> ~/.mc/auth.json
+        echo '${{ secrets.PRIVATE_KEY }}' >> private.key
+        
+    - name: install dependencies
+      run: |
+        npm install
+
+    - name: build
+      run: |
+        npm run ts:build
+
+    - name: run mocha tests
+      env: 
+        MDSP_PASSKEY: ${{ secrets.MDSP_PASSKEY }}
+      run: |
+        npm run test-jenkins
+
+    - name: Test Report
+      uses: sn0wcat/test-reporter@v1
+      if: success() || failure()    
+      with:
+        name: Test Results            
+        path: report.xml            
+        reporter: jest-junit        
+
+    - name: license check
+      run: |
+        npm run license > license-checker.txt
+        npm run license:summary >> license-checker.txt
+
+    - name: package 
+      run: |
+        rm -rf dist/
+        npm pack
+
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v2.2.3
+      with:
+          path: |
+            *.tgz
+            license-checker.txt

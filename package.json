@@ -15,7 +15,7 @@
         "test:watch": "mocha --watch test/ --growl --reporter=spec --inspect --timeout=0",
         "doc": "compodoc -p tsconfig.json --output docs --name \"@mindconnect/node-red-contrib-mindconnect\" --theme material && cp -r images/ docs/ ",
         "test": "npm run ts:build && nyc mocha --colors --reporter spec  --timeout=5000 --exit",
-        "test-jenkins": "npm run ts:build && cross-env JUNIT_REPORT_PATH=./report.xml mocha --colors --reporter mocha-jenkins-reporter --timeout=15000 --exit ",
+        "test-jenkins": "npm run ts:build && cross-env JUNIT_REPORT_PATH=./report.xml mocha --colors --grep @ci --reporter mocha-jenkins-reporter --timeout=15000 --exit ",
         "license": "license-checker --csv --onlyAllow \"Apache-2.0; Apache*; BSD; BSD-2-Clause; BSD-3-Clause; ISC; MIT; Unlicense; WTFPL; CC-BY-3.0; CC0-1.0\" --production",
         "license:summary": "license-checker --summary --onlyAllow \"Apache-2.0; Apache*; BSD; BSD-2-Clause; BSD-3-Clause; ISC; MIT; Unlicense; WTFPL; CC-BY-3.0; CC0-1.0\" --production"
     },

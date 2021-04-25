@@ -9,12 +9,12 @@ import {
     eventSchemaValidator,
     fileInfoValidator,
     remoteConfigurationValidator,
-    timeSeriesValidator
+    timeSeriesValidator,
 } from "../src/mindconnect-schema";
 chai.should();
 
 describe("Schema Validators", () => {
-    it("should instantiate all validators", () => {
+    it("should instantiate all validators @ci", () => {
         const eventVal = eventSchemaValidator();
         eventVal.should.exist;
 
@@ -34,7 +34,7 @@ describe("Schema Validators", () => {
         actionVal.should.exist;
     });
 
-    it("should validate events", async () => {
+    it("should validate events @ci", async () => {
         const eventVal = eventSchemaValidator();
         eventVal.should.exist;
 
@@ -44,14 +44,14 @@ describe("Schema Validators", () => {
             source: "MindConnect Agent",
             severity: 80,
             description: "Event sent at " + new Date().toISOString(),
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
         };
         eventVal({ sourceType: "Agent" }).should.be.false;
         eventVal({ event }).should.be.false;
         eventVal(event).should.be.true;
     });
 
-    it("should validate fileInfos", async () => {
+    it("should validate fileInfos @ci", async () => {
         const fiVal = fileInfoValidator();
         fiVal.should.exist;
 
@@ -59,7 +59,7 @@ describe("Schema Validators", () => {
             entityId: "1234567890abcdef1234567890abcdef", // optional
             fileName: "package.json",
             fileType: "application/json", // optional
-            description: "testfile"
+            description: "testfile",
         };
 
         fiVal({}).should.be.false;
@@ -75,15 +75,15 @@ describe("Schema Validators", () => {
         fiVal(fileInfo).should.be.false;
     });
 
-    it("should validate timeseries", async () => {
+    it("should validate timeseries @ci", async () => {
         const tsVal = timeSeriesValidator();
         tsVal.should.exist;
         const values = [
             {
                 dataPointId: "1541718362027",
                 qualityCode: "1",
-                value: "47"
-            }
+                value: "47",
+            },
         ];
 
         tsVal({}).should.be.false;
@@ -99,15 +99,15 @@ describe("Schema Validators", () => {
         tsVal([{ xdataPointId: "123", qualityCode: "1", value: "33.5" }]).should.be.false;
     });
 
-    it("should validate bulk", async () => {
+    it("should validate bulk @ci", async () => {
         const buVal = bulkUploadValidator();
         buVal.should.exist;
         const values = [
             {
                 dataPointId: "1541718362027",
                 qualityCode: "1",
-                value: "47"
-            }
+                value: "47",
+            },
         ];
 
         buVal([{ timeSTAMP: new Date().toISOString(), values: values }]).should.be.false;
@@ -148,7 +148,7 @@ describe("Schema Validators", () => {
             model: "",
             chunk: false,
             disablekeepalive: false,
-            retry: "7"
+            retry: "7",
         }).should.be.false;
 
         rcVal({
@@ -162,7 +162,7 @@ describe("Schema Validators", () => {
             chunk: false,
             disablekeepalive: false,
             retry: "0xa7",
-            asyncduration: "23"
+            asyncduration: "23",
         }).should.be.false;
 
         rcVal({
@@ -176,11 +176,11 @@ describe("Schema Validators", () => {
             chunk: false,
             disablekeepalive: false,
             retry: "7091",
-            asyncduration: "23"
+            asyncduration: "23",
         }).should.be.true;
     });
 
-    it("should validate node actions", async () => {
+    it("should validate node actions @ci", async () => {
         const actionVal = actionSchemaValidator();
         actionVal({}).should.be.false;
         actionVal({ action: "" }).should.be.false;

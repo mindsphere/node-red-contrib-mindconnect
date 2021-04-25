@@ -9,7 +9,7 @@ helper.init(require.resolve("node-red"));
 chai.should();
 
 describe("MindConnect Utils", () => {
-    it("should be able to asynchronously wait", async () => {
+    it("should be able to asynchronously wait @ci", async () => {
         sleep.should.not.be.undefined;
         const then = new Date();
         await sleep(500);
@@ -17,7 +17,7 @@ describe("MindConnect Utils", () => {
         (now.getTime() - then.getTime()).should.be.gte(490);
     });
 
-    it("should be able to retry with node log", async () => {
+    it("should be able to retry with node log @ci", async () => {
         let retries = 0;
         const mock = { log: () => {}, status: () => {} };
 
@@ -32,7 +32,7 @@ describe("MindConnect Utils", () => {
         retries.should.be.greaterThan(2);
     });
 
-    it("should be able to copy configuration", async () => {
+    it("should be able to copy configuration @ci", async () => {
         const config: IConfigurationInfo = {
             name: "Hello",
             configtype: "SHARED_SECRET",
@@ -67,7 +67,7 @@ describe("MindConnect Utils", () => {
         target.chunk.should.be.true;
     });
 
-    it("should be able to configure agent", async () => {
+    it("should be able to configure agent @ci", async () => {
         const config: IConfigurationInfo = {
             name: "Hello",
             configtype: "SHARED_SECRET",
@@ -99,7 +99,7 @@ describe("MindConnect Utils", () => {
         mock.should.be.deep.include(config);
     });
 
-    it("should be able to validate correct configuration", async () => {
+    it("should be able to validate correct configuration @ci", async () => {
         const config: IConfigurationInfo = {
             name: "Hello",
             configtype: "RSA_3072",
@@ -148,7 +148,7 @@ describe("MindConnect Utils", () => {
         logCalled.should.be.true;
     });
 
-    it("should be able to throw an error on incorrect certificate ", async () => {
+    it("should be able to throw an error on incorrect certificate @ci", async () => {
         const config: IConfigurationInfo = {
             name: "Hello",
             configtype: "RSA_3072",

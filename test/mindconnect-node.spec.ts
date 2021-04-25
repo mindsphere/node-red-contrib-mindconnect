@@ -9,11 +9,11 @@ helper.init(require.resolve("node-red"));
 chai.should();
 
 describe("MindConnect Node-RED node", () => {
-    beforeEach(done => {
+    beforeEach((done) => {
         helper.startServer(done);
     });
 
-    afterEach(done => {
+    afterEach((done) => {
         helper.unload();
         helper.stopServer(done);
     });
@@ -30,10 +30,10 @@ describe("MindConnect Node-RED node", () => {
         validateevent: true,
         chunk: false,
         disablekeepalive: false,
-        retry: "3"
+        retry: "3",
     };
 
-    it("should instantiate", done => {
+    it("should instantiate @ci", (done) => {
         helper.should.not.be.null;
         helper.should.not.be.undefined;
         mcnode.should.not.be.null;
@@ -41,8 +41,8 @@ describe("MindConnect Node-RED node", () => {
             {
                 id: "n1",
                 name: "mindconnect",
-                ...nodeTemplate
-            }
+                ...nodeTemplate,
+            },
         ];
 
         helper.load(mcnode, flow, () => {
@@ -55,14 +55,17 @@ describe("MindConnect Node-RED node", () => {
         });
     });
 
-    it("should validate data before sending to MindSphere", done => {
-        const flow = [{ id: "n1", ...nodeTemplate, wires: [["n2"]] }, { id: "n2", type: "helper" }];
+    it("should validate data before sending to MindSphere", (done) => {
+        const flow = [
+            { id: "n1", ...nodeTemplate, wires: [["n2"]] },
+            { id: "n2", type: "helper" },
+        ];
 
         helper.load(mcnode, flow, () => {
             const n1 = helper.getNode("n1");
             const n2 = helper.getNode("n2");
 
-            n2.on("input", msg => {
+            n2.on("input", (msg) => {
                 msg.should.have.property("_mindsphereStatus", "Error");
                 done();
             });
@@ -71,8 +74,11 @@ describe("MindConnect Node-RED node", () => {
         });
     });
 
-    it("should send timeseries data to MindSphere", done => {
-        const flow = [{ id: "n1", ...nodeTemplate, wires: [["n2"]] }, { id: "n2", type: "helper" }];
+    it("should send timeseries data to MindSphere", (done) => {
+        const flow = [
+            { id: "n1", ...nodeTemplate, wires: [["n2"]] },
+            { id: "n2", type: "helper" },
+        ];
 
         helper.load(mcnode, flow, async () => {
             const n1 = helper.getNode("n1");
@@ -81,18 +87,18 @@ describe("MindConnect Node-RED node", () => {
             const config = await agent.GetDataSourceConfiguration();
 
             const n2 = helper.getNode("n2");
-            n2.on("input", msg => {
+            n2.on("input", (msg) => {
                 msg.should.have.property("_mindsphereStatus", "OK");
                 done();
             });
 
             const values = [];
-            config.dataSources.forEach(dataSource => {
-                dataSource.dataPoints.forEach(datapoint => {
+            config.dataSources.forEach((dataSource) => {
+                dataSource.dataPoints.forEach((datapoint) => {
                     values.push({
                         dataPointId: datapoint.id.toString(),
                         qualityCode: "0",
-                        value: Math.floor(Math.random() * 101).toString()
+                        value: Math.floor(Math.random() * 101).toString(),
                     });
                 });
             });
@@ -101,8 +107,11 @@ describe("MindConnect Node-RED node", () => {
         });
     });
 
-    it("should send bulk timeseries data to MindSphere", done => {
-        const flow = [{ id: "n1", ...nodeTemplate, wires: [["n2"]] }, { id: "n2", type: "helper" }];
+    it("should send bulk timeseries data to MindSphere", (done) => {
+        const flow = [
+            { id: "n1", ...nodeTemplate, wires: [["n2"]] },
+            { id: "n2", type: "helper" },
+        ];
 
         helper.load(mcnode, flow, async () => {
             const n1 = helper.getNode("n1");
@@ -111,18 +120,18 @@ describe("MindConnect Node-RED node", () => {
             const config = await agent.GetDataSourceConfiguration();
 
             const n2 = helper.getNode("n2");
-            n2.on("input", msg => {
+            n2.on("input", (msg) => {
                 msg.should.have.property("_mindsphereStatus", "OK");
                 done();
             });
 
             const values = [];
-            config.dataSources.forEach(dataSource => {
-                dataSource.dataPoints.forEach(datapoint => {
+            config.dataSources.forEach((dataSource) => {
+                dataSource.dataPoints.forEach((datapoint) => {
                     values.push({
                         dataPointId: datapoint.id.toString(),
                         qualityCode: "0",
-                        value: Math.floor(Math.random() * 101).toString()
+                        value: Math.floor(Math.random() * 101).toString(),
                     });
                 });
             });
@@ -131,14 +140,17 @@ describe("MindConnect Node-RED node", () => {
         });
     });
 
-    it("should send events to mindsphere", done => {
-        const flow = [{ id: "n1", ...nodeTemplate, wires: [["n2"]] }, { id: "n2", type: "helper" }];
+    it("should send events to mindsphere", (done) => {
+        const flow = [
+            { id: "n1", ...nodeTemplate, wires: [["n2"]] },
+            { id: "n2", type: "helper" },
+        ];
 
         helper.load(mcnode, flow, () => {
             const n1 = helper.getNode("n1");
             const n2 = helper.getNode("n2");
 
-            n2.on("input", msg => {
+            n2.on("input", (msg) => {
                 msg.should.have.property("_mindsphereStatus", "OK");
                 done();
             });
@@ -149,20 +161,23 @@ describe("MindConnect Node-RED node", () => {
                     source: "MindConnect Agent",
                     severity: 40, // ? 0-99 : 20:error, 30:warning, 40: information
                     description: "Event sent at " + new Date().toISOString(),
-                    timestamp: new Date().toISOString()
-                }
+                    timestamp: new Date().toISOString(),
+                },
             });
         });
     });
 
-    it("should send files to mindsphere", done => {
-        const flow = [{ id: "n1", ...nodeTemplate, wires: [["n2"]] }, { id: "n2", type: "helper" }];
+    it("should send files to mindsphere", (done) => {
+        const flow = [
+            { id: "n1", ...nodeTemplate, wires: [["n2"]] },
+            { id: "n2", type: "helper" },
+        ];
 
         helper.load(mcnode, flow, () => {
             const n1 = helper.getNode("n1");
             const n2 = helper.getNode("n2");
 
-            n2.on("input", msg => {
+            n2.on("input", (msg) => {
                 msg.should.have.property("_mindsphereStatus", "OK");
                 done();
             });
@@ -170,8 +185,8 @@ describe("MindConnect Node-RED node", () => {
                 payload: {
                     fileName: "README.md",
                     description: `File last uploaded on ${new Date().toISOString()}`,
-                    filePath: `uploads/${new Date().getTime()}/README.md`
-                }
+                    filePath: `uploads/${new Date().getTime()}/README.md`,
+                },
             });
         });
     });
