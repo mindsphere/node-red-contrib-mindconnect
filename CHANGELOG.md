@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.12.0 (Vienna Siberian Tigers) - June 2021
+
+## New Features 3.12.0
+
+- Bumped all dependencies
+
 ## 3.11.0 (Vienna Jaguarundi) - March 2021
 
 ## New Features 3.11.0
