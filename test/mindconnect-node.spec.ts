@@ -2,7 +2,9 @@
 
 import { IMindConnectConfiguration, MindConnectAgent } from "@mindconnect/mindconnect-nodejs";
 import * as chai from "chai";
+import * as fs from "fs";
 import { it } from "mocha";
+import * as path from "path";
 import mcnode = require("../src/mindconnect.js");
 import helper = require("node-red-node-test-helper");
 helper.init(require.resolve("node-red"));
@@ -18,7 +20,10 @@ describe("MindConnect Node-RED node", () => {
         helper.stopServer(done);
     });
 
-    const sharedSecretConfig: IMindConnectConfiguration = require("../agentconfig.json");
+    let sharedSecretConfig: IMindConnectConfiguration = {} as IMindConnectConfiguration;
+    if (fs.existsSync(path.resolve("../agentconfig.json"))) {
+        sharedSecretConfig = JSON.parse(fs.readFileSync(path.resolve("../agentconfig.json")).toString());
+    }
 
     const nodeTemplate = {
         type: "mindconnect",

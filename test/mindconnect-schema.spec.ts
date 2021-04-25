@@ -1,8 +1,8 @@
-// Copyright Siemens AG, 2019
-
 import { IMindConnectConfiguration } from "@mindconnect/mindconnect-nodejs";
 import * as chai from "chai";
+import * as fs from "fs";
 import { describe, it } from "mocha";
+import * as path from "path";
 import {
     actionSchemaValidator,
     bulkUploadValidator,
@@ -11,6 +11,7 @@ import {
     remoteConfigurationValidator,
     timeSeriesValidator,
 } from "../src/mindconnect-schema";
+
 chai.should();
 
 describe("Schema Validators", () => {
@@ -127,7 +128,10 @@ describe("Schema Validators", () => {
         const rcVal = remoteConfigurationValidator();
         rcVal.should.exist;
 
-        const sharedSecretConfig: IMindConnectConfiguration = require("../agentconfig.json");
+        let sharedSecretConfig: IMindConnectConfiguration = {} as IMindConnectConfiguration;
+        if (fs.existsSync(path.resolve("../agentconfig.json"))) {
+            sharedSecretConfig = JSON.parse(fs.readFileSync(path.resolve("../agentconfig.json")).toString());
+        }
 
         rcVal({}).should.be.false;
         rcVal([{}]).should.be.false;
