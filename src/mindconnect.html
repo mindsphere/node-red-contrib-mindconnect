@@ -6,7 +6,7 @@
             &nbsp;&nbsp;<a href="https://opensource.mindsphere.io/docs/node-red-contrib-mindconnect/index.html" target="_new" class="headerLink" title="Documentation">
                 <i class="fa fa-globe"></i> MindConnect Node-RED Agent
             </a>
-        </span> <span style="color:#aaaaaa !important">v3.12.0 (alpha)</span>
+        </span> <span style="color:#aaaaaa !important">v3.12.0</span>
     </div>
 
     <div class="form-row">
@@ -363,15 +363,14 @@ return msg;
         <p>
             <i class="fa fa-info-circle"></i> <b>SDK JavaScript Function:</b><br/>
             The node can be used to execute a complex script which uses MindSphere <a href="https://opensource.mindsphere.io/docs/mindconnect-nodejs/sdk/index.html" target="_new">javascript/typescript SDK</a>
-            The node will create an asyncronous function with one parameter (sdk) and the specified function <body>
+            The node will create an asyncronous function with one parameter (sdk) and the specified function body
             and execute it. You can only call the MindSphere APIs which allow agent authorization.
-            </body>
         </p>
         <pre>
 msg.payload = {
     function: `
-const assetManagement = sdk.GetAssetManagementClient()
-const asset = await assetManagement.GetAsset('{assetId}')
+const assetManagement = sdk.GetAssetManagementClient();
+const asset = await assetManagement.GetAsset('{assetId}');
 return asset;
 `};
            
