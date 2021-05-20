@@ -195,7 +195,7 @@ describe("Schema Validators", () => {
         actionVal({ action: "non-existing-action", timestamp: new Date().toISOString() }).should.be.false;
     });
 
-    it.only("should validate assetInfo @ci", async () => {
+    it("should validate assetInfo @ci", async () => {
         const assetInfo = assetInfoValidator();
         assetInfo({}).should.be.false;
         assetInfo({ assetId: "" }).should.be.false;
@@ -203,7 +203,7 @@ describe("Schema Validators", () => {
         assetInfo({ assetId: "123", includeShared: true, propertyNames: [] }).should.be.true;
     });
 
-    it.only("should validate sdk call @ci", async () => {
+    it("should validate sdk call @ci", async () => {
         const assetInfo = sdkFunctionValidator();
         assetInfo({}).should.be.false;
         assetInfo({ assetId: "" }).should.be.false;
