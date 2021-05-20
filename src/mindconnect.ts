@@ -167,7 +167,9 @@ export = function (RED: any): void {
                             tsValidator,
                             rcValidator,
                             actionValidator,
-                            dataLakeValidator
+                            dataLakeValidator,
+                            assetValidator,
+                            sdkValidator
                         );
 
                         promises.push(queryablePromise(handleInputError(msg, errorObject, timestamp)));

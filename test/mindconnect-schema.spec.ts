@@ -1,8 +1,5 @@
-import { IMindConnectConfiguration } from "@mindconnect/mindconnect-nodejs";
 import * as chai from "chai";
-import * as fs from "fs";
 import { describe, it } from "mocha";
-import * as path from "path";
 import {
     actionSchemaValidator,
     assetInfoValidator,
@@ -126,14 +123,20 @@ describe("Schema Validators", () => {
         buVal([{ xdataPointId: "123", qualityCode: "1", value: "33.5" }]).should.be.false;
     });
 
-    it("should validate remoteConfiguration", async () => {
+    it("should validate remoteConfiguration @ci", async () => {
         const rcVal = remoteConfigurationValidator();
         rcVal.should.exist;
 
-        let sharedSecretConfig: IMindConnectConfiguration = {} as IMindConnectConfiguration;
-        if (fs.existsSync(path.resolve("../agentconfig.json"))) {
-            sharedSecretConfig = JSON.parse(fs.readFileSync(path.resolve("../agentconfig.json")).toString());
-        }
+        let sharedSecretConfig = {
+            content: {
+                baseUrl: "https://southgate.eu1.mindsphere.io",
+                iat: "xxx",
+                clientCredentialProfile: ["SHARED_SECRET"],
+                clientId: "xxx",
+                tenant: "xxx",
+            },
+            expiration: "2021-05-02T17:45:03.000Z",
+        };
 
         rcVal({}).should.be.false;
         rcVal([{}]).should.be.false;
