@@ -210,7 +210,9 @@ export const extractErrorString = (
     tsValidator: { errors?: any[] },
     rcValidator: { errors?: any[] },
     actionValidator: { errors?: any[] },
-    dataLakeValidator: { errors?: any[] }
+    dataLakeValidator: { errors?: any[] },
+    assetInfoValidator: { errors?: any[] },
+    sdkFunctionValidator: { errors?: any[] }
 ) => {
     const eventErrors = eventValidator.errors || [];
     const fileErrors = fileValidator.errors || [];
@@ -219,10 +221,12 @@ export const extractErrorString = (
     const rcValidatorErrors = rcValidator.errors || [];
     const actionErrors = actionValidator.errors || [];
     const dataLakeErrors = dataLakeValidator.errors || [];
+    const assetInfoErrors = assetInfoValidator.errors || [];
+    const sdkFunctionErrors = sdkFunctionValidator.errors || [];
 
     const result = {
         message:
-            "the payload was not recognized as an event, file or datapoints. See node help for proper msg.payload.formats (see msg._errorObject for all errors)",
+            "the payload was not recognized as an event, file, datapoints, assetinfo message or scripts. See node help for proper msg.payload.formats (see msg._errorObject for all errors)",
         actionErrors: [],
         eventErrors: [],
         fileErrors: [],
@@ -230,6 +234,8 @@ export const extractErrorString = (
         bulkErrors: [],
         timeSeriesErrors: [],
         remoteConfigurationErrors: [],
+        assetInfoErrors: [],
+        sdkFunctionErrors: [],
     };
 
     actionErrors.forEach((element) => {
@@ -257,6 +263,14 @@ export const extractErrorString = (
     });
     rcValidatorErrors.forEach((element) => {
         result.remoteConfigurationErrors.push(element.message);
+    });
+
+    assetInfoErrors.forEach((element) => {
+        result.assetInfoErrors.push(element.message);
+    });
+
+    sdkFunctionErrors.forEach((element) => {
+        result.sdkFunctionErrors.push(element.message);
     });
 
     return result;

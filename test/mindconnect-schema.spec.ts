@@ -1,14 +1,13 @@
-import { IMindConnectConfiguration } from "@mindconnect/mindconnect-nodejs";
 import * as chai from "chai";
-import * as fs from "fs";
 import { describe, it } from "mocha";
-import * as path from "path";
 import {
     actionSchemaValidator,
+    assetInfoValidator,
     bulkUploadValidator,
     eventSchemaValidator,
     fileInfoValidator,
     remoteConfigurationValidator,
+    sdkFunctionValidator,
     timeSeriesValidator,
 } from "../src/mindconnect-schema";
 
@@ -124,14 +123,20 @@ describe("Schema Validators", () => {
         buVal([{ xdataPointId: "123", qualityCode: "1", value: "33.5" }]).should.be.false;
     });
 
-    it("should validate remoteConfiguration", async () => {
+    it("should validate remoteConfiguration @ci", async () => {
         const rcVal = remoteConfigurationValidator();
         rcVal.should.exist;
 
-        let sharedSecretConfig: IMindConnectConfiguration = {} as IMindConnectConfiguration;
-        if (fs.existsSync(path.resolve("../agentconfig.json"))) {
-            sharedSecretConfig = JSON.parse(fs.readFileSync(path.resolve("../agentconfig.json")).toString());
-        }
+        let sharedSecretConfig = {
+            content: {
+                baseUrl: "https://southgate.eu1.mindsphere.io",
+                iat: "xxx",
+                clientCredentialProfile: ["SHARED_SECRET"],
+                clientId: "xxx",
+                tenant: "xxx",
+            },
+            expiration: "2021-05-02T17:45:03.000Z",
+        };
 
         rcVal({}).should.be.false;
         rcVal([{}]).should.be.false;
@@ -191,5 +196,20 @@ describe("Schema Validators", () => {
         actionVal({ action: "await", timestamp: new Date().toISOString() }).should.be.true;
         actionVal({ action: "renew", timestamp: new Date().toISOString() }).should.be.true;
         actionVal({ action: "non-existing-action", timestamp: new Date().toISOString() }).should.be.false;
+    });
+
+    it("should validate assetInfo @ci", async () => {
+        const assetInfo = assetInfoValidator();
+        assetInfo({}).should.be.false;
+        assetInfo({ assetId: "" }).should.be.false;
+        assetInfo({ assetId: "123", includeShared: "xx", propertyNames: [] }).should.be.false;
+        assetInfo({ assetId: "123", includeShared: true, propertyNames: [] }).should.be.true;
+    });
+
+    it("should validate sdk call @ci", async () => {
+        const assetInfo = sdkFunctionValidator();
+        assetInfo({}).should.be.false;
+        assetInfo({ assetId: "" }).should.be.false;
+        assetInfo({ function: "123" }).should.be.true;
     });
 });

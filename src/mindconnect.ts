@@ -5,6 +5,8 @@ import * as fs from "fs";
 import * as path from "path";
 import { RegisterHttpHandlers } from "./http-handlers";
 import {
+    applySdkOperation,
+    getAssetInfo,
     renewToken,
     sendBulkTimeSeriesData,
     sendEvent,
@@ -14,12 +16,14 @@ import {
 } from "./mindconnect-ops";
 import {
     actionSchemaValidator,
+    assetInfoValidator,
     bulkUploadValidator,
     dataLakeFileInfoValidator,
     eventSchemaValidator,
     fileInfoValidator,
     IConfigurationInfo,
     remoteConfigurationValidator,
+    sdkFunctionValidator,
     timeSeriesValidator,
 } from "./mindconnect-schema";
 import {
@@ -112,12 +116,14 @@ export = function (RED: any): void {
                         throw new Error("you have to have a payload in your msg.payload to post the data!");
                     }
 
+                    const assetValidator = assetInfoValidator();
                     const eventValidator = eventSchemaValidator();
                     const fileValidator = fileInfoValidator();
                     const bulkValidator = bulkUploadValidator();
                     const tsValidator = timeSeriesValidator();
                     const actionValidator = actionSchemaValidator();
                     const dataLakeValidator = dataLakeFileInfoValidator();
+                    const sdkValidator = sdkFunctionValidator();
 
                     if (msg._includeMindSphereToken) {
                         msg.headers = { ...msg.headers, Authorization: `Bearer ${await agent.GetAgentToken()}` };
@@ -139,6 +145,10 @@ export = function (RED: any): void {
                         } else if (msg.payload.action === "renew") {
                             promises.push(queryablePromise(renewToken({ msg, agent, timestamp, node })));
                         }
+                    } else if (assetValidator(msg.payload)) {
+                        promises.push(queryablePromise(getAssetInfo({ msg, agent, timestamp, node })));
+                    } else if (sdkValidator(msg.payload)) {
+                        promises.push(queryablePromise(applySdkOperation({ msg, agent, timestamp, node })));
                     } else if (eventValidator(msg.payload) || msg._customEvent === true) {
                         promises.push(queryablePromise(sendEvent({ msg, agent, timestamp, node })));
                     } else if (fileValidator(msg.payload)) {
@@ -157,7 +167,9 @@ export = function (RED: any): void {
                             tsValidator,
                             rcValidator,
                             actionValidator,
-                            dataLakeValidator
+                            dataLakeValidator,
+                            assetValidator,
+                            sdkValidator
                         );
 
                         promises.push(queryablePromise(handleInputError(msg, errorObject, timestamp)));

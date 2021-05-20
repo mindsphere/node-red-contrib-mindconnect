@@ -214,6 +214,38 @@ Please note:
 - You can pass either a javascript buffer or path to file in the dataLakeFile property for upload
 - The subTenantId can be optionally added to the messsage
 
+#### Reading Asset Information
+
+You can read the data (e.g. static asset variables, or full asset information) from MindSphere using the following message. This can be used to implement a "digital shadow/digital twin" pattern, where the change in the MindSphere variables is reflected to the real world asset. See [bidirectional communication example flow](https://playground.mindconnect.rocks/#flow/9ff72be.3d502d8) on playground for a full example.
+
+```javascript
+msg.payload = {
+  "assetId": "{assetId}",
+  "includeShared": false,
+  "propertyNames": []
+};
+
+return msg;
+```
+
+You can reduce the number of items in payload by specifying list of properties to include in the message: e.g.
+`propertyNames: ["variables"] or ["location"]`
+
+#### Executing custom functions using MindSphere javascript/typescript SDK
+
+The node can be used to execute a complex script which uses [MindSphere javascript/typescript SDK](https://opensource.mindsphere.io/docs/mindconnect-nodejs/sdk/index.html). The node will create an asyncronous function with one parameter (sdk) and the specified function body and execute it. You can only call the MindSphere APIs which allow agent authorization.
+
+```javascript
+msg.payload = {
+    function: `
+const assetManagement = sdk.GetAssetManagementClient();
+const asset = await assetManagement.GetAsset('{assetId}');
+return asset;
+`};
+           
+return msg;
+```
+
 #### Error handling in the flows
 
 The node can be configured to retry all mindsphere operations (1-10 times, with delay of time \* 300ms before the next try)
