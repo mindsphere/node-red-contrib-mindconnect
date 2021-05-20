@@ -1,7 +1,7 @@
 // * MindConnect Operations - sending of data
 
 import { BaseEvent, MindConnectAgent } from "@mindconnect/mindconnect-nodejs";
-import { IDataLakeFileInfo, IFileInfo } from "./mindconnect-schema";
+import { IAssetInfo, IDataLakeFileInfo, IFileInfo } from "./mindconnect-schema";
 import { handleError, IMindConnectNode, retryWithNodeLog } from "./mindconnect-utils";
 
 export interface OperationParameters {
@@ -178,6 +178,67 @@ export async function sendEvent({ msg, agent, timestamp, node, send }: Operation
         msg._mindsphereStatus = result ? "OK" : "Error";
         node.send(msg);
     } catch (error) {
+        handleError(node, msg, error);
+    }
+    return msg;
+}
+
+export async function getAssetInfo({ msg, agent, timestamp, node, send }: OperationParameters) {
+    try {
+        !node.supressverbosity && node.status({ fill: "grey", shape: "dot", text: `reading asset data` });
+
+        const assetInfo = msg.payload as IAssetInfo;
+        const assetManagement = agent.Sdk().GetAssetManagementClient();
+
+        const result = await retryWithNodeLog(
+            node.retry,
+            () => assetManagement.GetAsset(assetInfo.assetId, { includeShared: assetInfo.includeShared }),
+            "Get AssetInfo",
+            node
+        );
+        node.log(`got asset info for asset with ${assetInfo.assetId} at ${timestamp}`);
+        !node.supressverbosity &&
+            node.status({
+                fill: "green",
+                shape: "dot",
+                text: `got asset info for asset with ${assetInfo.assetId} at ${timestamp}`,
+            });
+        msg._mindsphereStatus = result ? "OK" : "Error";
+
+        msg.payload = result;
+        if (assetInfo.propertyNames.length > 0) {
+            const reducedResult = {};
+
+            assetInfo.propertyNames.forEach((element) => {
+                reducedResult[element] = result[element];
+            });
+            msg.payload = reducedResult;
+        }
+        node.send(msg);
+    } catch (error) {
+        console.log(error);
+        handleError(node, msg, error);
+    }
+    return msg;
+}
+
+export async function applySdkOperation({ msg, agent, timestamp, node, send }: OperationParameters) {
+    try {
+        !node.supressverbosity && node.status({ fill: "grey", shape: "dot", text: `reading asset data` });
+
+        // stop typescript from manging the constructor of async functions.
+        const AsyncFunction = new Function(`return Object.getPrototypeOf(async function(){}).constructor`)();
+        const fn = new AsyncFunction("sdk", msg.payload.function);
+
+        const result = await retryWithNodeLog(node.retry, () => fn.apply({}, [agent.Sdk()]), "CallSdk", node);
+        node.log(`executed sdk operation at ${timestamp}`);
+        !node.supressverbosity &&
+            node.status({ fill: "green", shape: "dot", text: `executed sdk operation at ${timestamp}` });
+        msg._mindsphereStatus = result ? "OK" : "Error";
+        msg.payload = result;
+        node.send(msg);
+    } catch (error) {
+        console.log(error);
         handleError(node, msg, error);
     }
     return msg;

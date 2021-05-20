@@ -111,7 +111,10 @@
                 <a id="mindconnect-infoDialog-copyBulkLink" class="ghostLink diagLink" title="Copy Bulk TimeSeries Template to Clipboard"><i class="fa fa-clipboard"></i> Bulk TimeSeries Template</a>
                 <a id="mindconnect-infoDialog-copyEventLink" class="ghostLink diagLink" title="Copy Event Template to Clipboard"><i class="fa fa-clipboard"></i> Event Template</a>
                 <a id="mindconnect-infoDialog-copyFileLink" class="ghostLink diagLink" title="Copy File Template to Clipboard"><i class="fa fa-clipboard"></i> File Template</a>
+                <br/>
                 <a id="mindconnect-infoDialog-copyDataLakeFileLink" class="ghostLink diagLink" title="Copy Data Lake Template to Clipboard"><i class="fa fa-clipboard"></i> DataLake Template</a>
+                <a id="mindconnect-infoDialog-copyAssetInfoLink" class="ghostLink diagLink" title="Copy Asset Info Template to Clipboard"><i class="fa fa-clipboard"></i> AssetInfo Template</a>
+                <a id="mindconnect-infoDialog-copySdkFunctionLink" class="ghostLink diagLink" title="Copy SDK Function Template to Clipboard"><i class="fa fa-clipboard"></i> SdkFunction Template</a>
                 <br/>
                 <span id="mindconnect-infoDialog-output" style="color:#969696; font-size:12px"></span>
                 <br/><br/>
@@ -340,6 +343,40 @@ return msg;
         <p>
             If you just want to generate a signed upload URL without actually uploading the file you can pass <pre>msg._ignorePayload=true;</pre> to the node.
         </p>
+
+        <p>
+            <i class="fa fa-info-circle"></i> <b>Asset Info:</b><br/>
+            You can read the data (e.g. static asset variables) from MindSphere using this node.
+            You can reduce the number of items in payload by specifying list of properties to include in the message:
+            e.g. propertyNames: ["variables"] or ["location"]
+        </p>
+        <pre>
+msg.payload = {
+  "assetId": "{assetId}",
+  "includeShared": false,
+  "propertyNames": []
+};
+
+return msg;
+        </pre>
+
+        <p>
+            <i class="fa fa-info-circle"></i> <b>SDK JavaScript Function:</b><br/>
+            The node can be used to execute a complex script which uses MindSphere <a href="https://opensource.mindsphere.io/docs/mindconnect-nodejs/sdk/index.html" target="_new">javascript/typescript SDK</a>
+            The node will create an asyncronous function with one parameter (sdk) and the specified function <body>
+            and execute it. You can only call the MindSphere APIs which allow agent authorization.
+            </body>
+        </p>
+        <pre>
+msg.payload = {
+    function: `
+const assetManagement = sdk.GetAssetManagementClient()
+const asset = await assetManagement.GetAsset('{assetId}')
+return asset;
+`};
+           
+return msg;
+        </pre>
 
         <p>
             <i class="fa fa-info-circle"></i> <b>Forcing Onboarding Actions:</b><br/>
@@ -787,7 +824,52 @@ msg._error; // The timestamped error message
             };
 
             function copyLink(dataSourceConfig, option) {
-                if (option === "DATALAKE") {
+               
+                if (option === "SDKFUNCTION") {
+
+                    const sdkFunction = "" +
+                    "// take a look at the flow examples at https://playground.mindconnect.rocks " +
+                    "\n//" +
+                    "\n// execute custom script using mindsphere SDK" +
+                    "\n// the node will create an asyncronous function with one parameter (sdk)" +
+                    "\n// and the function body specified below " +
+                    "\nconst sdkFunction = \{" +
+                    "\n     function: `" +
+                    "\nconst assetManagement = sdk.GetAssetManagementClient()" + 
+                    "\nconst asset = await assetManagement.GetAsset('<assetid>')" +
+                    "\nreturn asset;`" +
+                    "\n\};" +
+                    "\n\nmsg.payload = sdkFunction;" +
+                    "\nreturn msg;";
+
+                    const success = copyToClipboard(sdkFunction);
+                        $("#mindconnect-infoDialog-output").text(
+                            success ? `Copied SDK Function Template to Clipboard. (Paste this template to a function node)` : 
+                            "Couldn't copy the text to clipboard"
+                        );
+
+                } else if (option === "ASSETINFO") {
+
+                    const assetInfoTemplate = "" +
+                    "// take a look at the flow examples at https://playground.mindconnect.rocks " +
+                    "\n//" +
+                    "\n// Read the static asset information from MindSphere" +
+                    "\n// You can reduce the number of items in payload by specifying list of properties" +
+                    "\n// in property Names list e.g. [\"variables\"] or  [\"location\"]" +
+                    "\n// Set includeShared to true to include the assets shared with your agents tenant via cross-tenancy" +
+                    "\n" +
+                    "\nconst assetInfo = " + JSON.stringify({assetId: "<assetid>", includeShared: false, propertyNames:[]}, null, 2) + ";" +
+                    "\n\nmsg.payload = assetInfo;" +
+                    "\nreturn msg;";
+
+                    const success = copyToClipboard(assetInfoTemplate);
+                        $("#mindconnect-infoDialog-output").text(
+                            success ? `Copied Asset Info Template to Clipboard. (Paste this template to a function node)` : 
+                            "Couldn't copy the text to clipboard"
+                        );
+
+                }
+                else if (option === "DATALAKE") {
 
                     const dataLakeTemplate = "" +
                     "// take a look at the flow examples at https://playground.mindconnect.rocks " +
@@ -814,7 +896,7 @@ msg._error; // The timestamped error message
                 }
                 else if (option === "BULK" || option === "TIMESERIES") {
                     const values = [];
-
+                    const result = "";
                     dataSourceConfig.forEach((dataSource) => {
                         dataSource.dataPoints.forEach((dataPoint) => {
                             values.push({
@@ -823,6 +905,7 @@ msg._error; // The timestamped error message
                                 value: `<${dataPoint.type}>`,
                             });
                         });
+                    });
                         const bulk = [{ timestamp: new Date().toISOString(), values: values }];
                         const headertemplate = "// take a look at the flow examples at https://playground.mindconnect.rocks" +
                         "\n//" + 
@@ -853,7 +936,6 @@ msg._error; // The timestamped error message
                             } TimeSeries Template Data to Clipboard. (Paste this template to a function node)` : 
                             "Couldn't copy the text to clipboard"
                         );
-                    });
                 } else {
                     const event = {
                         sourceType: "Agent",
@@ -925,6 +1007,8 @@ return msg;`;
                     $("#mindconnect-infoDialog-copyEventLink").click(() => copyLink(result.configuration.dataSources, "EVENT"));
                     $("#mindconnect-infoDialog-copyFileLink").click(() => copyLink(result.configuration.dataSources, "FILE"));
                     $("#mindconnect-infoDialog-copyDataLakeFileLink").click(() => copyLink(result.configuration.dataSources, "DATALAKE"));
+                    $("#mindconnect-infoDialog-copyAssetInfoLink").click(() => copyLink(result.configuration.dataSources, "ASSETINFO"));
+                    $("#mindconnect-infoDialog-copySdkFunctionLink").click(() => copyLink(result.configuration.dataSources, "SDKFUNCTION"));
 
                     result.configuration.dataSources.forEach((element) => {
                         $("#mindconnect-infoDialog-infoList").append(

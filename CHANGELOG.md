@@ -1,9 +1,12 @@
 # Changelog
 
-## 3.12.0 (Vienna Siberian Tigers) - June 2021
+## 3.12.0 (Vienna Siberian Tigers) - May 2021
 
 ## New Features 3.12.0
 
+- Support for "bidirectional" communication with MindSphere [#129]
+- new message type to read asset information [#129]
+- new message type to execute a custom javascript script using MindSphere javascript/typescript SDK [#129]
 - Bumped all dependencies
 
 ## 3.11.0 (Vienna Jaguarundi) - March 2021

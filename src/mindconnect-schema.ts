@@ -31,6 +31,60 @@ export const actionSchema = {
     },
 };
 
+export const sdkFunctionSchema = {
+    definitions: {},
+    $schema: "http://json-schema.org/draft-07/schema#",
+    $id: "http://opensource.mindsphere.io/mindconnect/sdk",
+    type: "object",
+    title: "The Root Schema",
+    required: ["function"],
+    properties: {
+        function: {
+            $id: "#/properties/function",
+            type: "string",
+            title: "The operation Schema",
+            default: "",
+            examples: ["return agent.Sdk().GetAssetManagementClient().GetAsset('<id>');"],
+        },
+    },
+};
+
+export const assetInfoSchema = {
+    definitions: {},
+    $schema: "http://json-schema.org/draft-07/schema#",
+    $id: "http://opensource.mindsphere.io/mindconnect/assetInfoSchema",
+    type: "object",
+    title: "The Root Schema",
+    required: ["assetId", "includeShared", "propertyNames"],
+    properties: {
+        assetId: {
+            $id: "#/properties/assetId",
+            type: "string",
+            title: "The assetId Schema",
+            default: "",
+            examples: ["assetId"],
+        },
+        includeShared: {
+            $id: "#/properties/includeShared",
+            type: "boolean",
+            title: "The assetId Schema",
+            default: false,
+            examples: [true],
+        },
+
+        propertyNames: {
+            $id: "#/properties/propertyNames",
+            type: "array",
+            items: {
+                type: "string",
+            },
+            title: "The propertyNames Schema",
+            default: "",
+            examples: ["staticVariables"],
+        },
+    },
+};
+
 export const eventSchema = {
     $id: "http://opensource.mindsphere.io/mindconnect/event",
     type: "object",
@@ -275,8 +329,7 @@ export const remoteConfigurationSchema = {
                             type: "array",
                             title: "The Clientcredentialprofile Schema",
                             items: {
-                                $id:
-                                    "#/properties/agentconfig/properties/content/properties/clientCredentialProfile/items",
+                                $id: "#/properties/agentconfig/properties/content/properties/clientCredentialProfile/items",
                                 type: "string",
                                 title: "The Items Schema",
                                 default: "",
@@ -403,6 +456,11 @@ export function actionSchemaValidator(): ValidateFunction {
     return schemaValidator.compile(actionSchema);
 }
 
+export function assetInfoValidator(): ValidateFunction {
+    return schemaValidator.compile(assetInfoSchema);
+}
+
+
 export function remoteConfigurationValidator(): ValidateFunction {
     return schemaValidator.compile(remoteConfigurationSchema);
 }
@@ -423,8 +481,18 @@ export function bulkUploadValidator(): ValidateFunction {
     return schemaValidator.compile(bulkUploadSchema);
 }
 
+export function sdkFunctionValidator(): ValidateFunction {
+    return schemaValidator.compile(sdkFunctionSchema);
+}
+
 export function timeSeriesValidator(): ValidateFunction {
     return schemaValidator.compile(timeSeriesSchema);
+}
+
+export interface IAssetInfo {
+    assetId: string;
+    includeShared: boolean;
+    propertyNames: Array<string>;
 }
 
 export interface IDataLakeFileInfo {

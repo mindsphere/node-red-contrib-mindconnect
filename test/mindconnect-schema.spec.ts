@@ -5,10 +5,12 @@ import { describe, it } from "mocha";
 import * as path from "path";
 import {
     actionSchemaValidator,
+    assetInfoValidator,
     bulkUploadValidator,
     eventSchemaValidator,
     fileInfoValidator,
     remoteConfigurationValidator,
+    sdkFunctionValidator,
     timeSeriesValidator,
 } from "../src/mindconnect-schema";
 
@@ -191,5 +193,20 @@ describe("Schema Validators", () => {
         actionVal({ action: "await", timestamp: new Date().toISOString() }).should.be.true;
         actionVal({ action: "renew", timestamp: new Date().toISOString() }).should.be.true;
         actionVal({ action: "non-existing-action", timestamp: new Date().toISOString() }).should.be.false;
+    });
+
+    it.only("should validate assetInfo @ci", async () => {
+        const assetInfo = assetInfoValidator();
+        assetInfo({}).should.be.false;
+        assetInfo({ assetId: "" }).should.be.false;
+        assetInfo({ assetId: "123", includeShared: "xx", propertyNames: [] }).should.be.false;
+        assetInfo({ assetId: "123", includeShared: true, propertyNames: [] }).should.be.true;
+    });
+
+    it.only("should validate sdk call @ci", async () => {
+        const assetInfo = sdkFunctionValidator();
+        assetInfo({}).should.be.false;
+        assetInfo({ assetId: "" }).should.be.false;
+        assetInfo({ function: "123" }).should.be.true;
     });
 });
