@@ -895,7 +895,6 @@ msg._error; // The timestamped error message
                 }
                 else if (option === "BULK" || option === "TIMESERIES") {
                     const values = [];
-                    const result = "";
                     dataSourceConfig.forEach((dataSource) => {
                         dataSource.dataPoints.forEach((dataPoint) => {
                             values.push({
