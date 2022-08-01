@@ -61,6 +61,6 @@
         "ajv": "^8.11.0",
         "ajv-formats": "^2.1.1",
         "debug": "^4.3.4",
-        "node-fetch": "^2.6.1"
+        "node-fetch": "^3.2.10"
     }
 }
