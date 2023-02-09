@@ -11,8 +11,6 @@ This project has started as a community effort at Siemens AG and is now availabl
 
 [![Build](https://github.com/mindsphere/node-red-contrib-mindconnect/actions/workflows/build.yml/badge.svg)](https://github.com/mindsphere/node-red-contrib-mindconnect/actions/workflows/build.yml) [![The MIT License](https://img.shields.io/badge/license-MIT-009999.svg?style=flat)](./LICENSE.md)
 [![npm](https://img.shields.io/npm/v/@mindconnect/node-red-contrib-mindconnect/latest.svg?style=flat)](https://www.npmjs.com/package/@mindconnect/node-red-contrib-mindconnect) ![downloads](https://img.shields.io/npm/dw/@mindconnect/node-red-contrib-mindconnect.svg?colorB=009999)
-[![Total alerts](https://img.shields.io/lgtm/alerts/g/mindsphere/node-red-contrib-mindconnect.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/mindsphere/node-red-contrib-mindconnect/alerts/)
-[![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/mindsphere/node-red-contrib-mindconnect.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/mindsphere/node-red-contrib-mindconnect/context:javascript)
 [![Documentation](https://img.shields.io/badge/mindsphere-documentation-%23009999.svg)](https://opensource.mindsphere.io/docs/node-red-contrib-mindconnect/index.html)
 [![Forum](https://img.shields.io/badge/mindsphere-community-%23009999.svg)](https://community.plm.automation.siemens.com/t5/Developer-Space/bd-p/MindSphere-platform-forum)
 [![Demo Flows](https://img.shields.io/badge/node--RED-playground-%23009999.svg)](https://playground.mindconnect.rocks)
