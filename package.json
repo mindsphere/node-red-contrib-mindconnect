@@ -57,7 +57,7 @@
         }
     },
     "dependencies": {
-        "@mindconnect/mindconnect-nodejs": "^3.19.0",
+        "@mindconnect/mindconnect-nodejs": "^3.23.0",
         "ajv": "^8.11.0",
         "ajv-formats": "^2.1.1",
         "debug": "^4.3.4",
