@@ -3,10 +3,21 @@
 <script type="text/x-red" data-template-name="mindconnect">
     <div id="_msbar">
         <span  style="line-height:36px">
-            &nbsp;&nbsp;<a href="https://opensource.mindsphere.io/docs/node-red-contrib-mindconnect/index.html" target="_new" class="headerLink" title="Documentation">
-                <i class="fa fa-globe"></i> MindConnect Node-RED Agent
+            &nbsp;&nbsp;<a href="https://developer.siemens.com/industrial-iot-open-source/node-red-contrib-mindconnect/index.html" target="_new" class="headerLink" title="Documentation">
+                <i class="fa fa-globe"></i> Insights Hub Node-RED Agent
             </a>
-        </span> <span style="color:#aaaaaa !important">v3.12.1</span>
+        </span> <span style="color:#B3B3BE !important">v4.0.0</span>
+    </div>
+
+    <div class="mindconnect-migration-warning" role="note">
+        <p><strong>🚀 v4: migrated Insights Hub tenants only</strong></p>
+        <p>Version 4 supports tenants migrated to <code>*.siemens.app</code> application URLs.</p>
+        <p><strong>Legacy tenant using <code>*.mindsphere.io</code> application URLs? Stay on v3. Do not upgrade to v4.</strong></p>
+        <p>
+            This is v4 - verified against a migrated (<code>*.siemens.app</code>) tenant. If your tenant is still on
+            <code>*.mindsphere.io</code>, install the v3 release instead
+            (<code>npm install @mindconnect/node-red-contrib-mindconnect@3</code>).
+        </p>
     </div>
 
     <div class="form-row">
@@ -28,7 +39,7 @@
     </div>
 
     <div class="form-row node-text-editor-row">
-        <label for="" title="The default number of mindsphere requests node will run before displaying the status message."><i class="fa fa-arrow-circle-up"></i>
+        <label for="" title="The default number of Insights Hub requests node will run before displaying the status message."><i class="fa fa-arrow-circle-up"></i>
             Async requests</span></label>
         <input id="node-input-parallel" class="ui-spinner-input" value="1" style="width:50px"/> 
     </div>
@@ -39,6 +50,23 @@
         <input id="node-input-asyncduration" class="ui-spinner-input" value="1" style="width:50px"/> (in seconds) 
     </div>
 
+    <div class="form-row">
+        <label for="node-input-customerTenantId" title="Xcelerator customer tenant id"
+            ><i class="fa fa-id-badge"></i> Customer Tenant Id</label
+        >
+        <input type="text" id="node-input-customerTenantId" placeholder="optional, migrated tenants only" />
+    </div>
+    <div class="form-row" style="margin-top: -8px;">
+        <label>&nbsp;</label>
+        <span style="width:70%; display:inline-block; vertical-align:top; color:#888888; font-size: 12px; word-break: break-word;">
+            Optional. Only needed for <strong>migrated Insights Hub</strong> (*.siemens.app) tenants, to build the
+            "Open Asset in Insights Hub" links below. Not present in the agent's onboarding file - find it in your
+            Insights Hub subscription/tenant settings. It is the <strong>first</strong> number in your tenant's
+            application URL, e.g. in https://<strong>123456789</strong>-assetmanager-100000000.eu1.siemens.app/ it
+            is 123456789.
+        </span>
+    </div>
+
     <div class="form-row node-text-editor-row">
         <p>
             <span id="noLinkSpan">
@@ -47,8 +75,8 @@
             <span id="linkSpan" style="margin-top: 5px">
                 <a id="mindconnect-localConfigLink" class="ghostLink diagLink" title="Automatically configure the agent for selected asset."><i class="fa fa-cogs"></i> Agent Configuration</a>
                 <a id="mindconnect-localInfoLink" class="ghostLink diagLink" title="View current agent configuration and input templates"><i class="fa fa-info-circle"></i> Agent Information</a>
-                <a id="mindconnect-configLink" class="ghostLink diagLink" target="_new" title="Agent Configuration in the MindSphere"><i class="fa fa-wrench"></i> </a>
-                <a id="mindconnect-diagLink" class="ghostLink diagLink" target="_new" title="Agent Diagnostic in MindSphere"><i class="fa fa-stethoscope" aria-hidden="true"></i> </a>
+                <a id="mindconnect-configLink" class="ghostLink diagLink" target="_new" title="Agent Configuration in Insights Hub"><i class="fa fa-wrench"></i> </a>
+                <a id="mindconnect-diagLink" class="ghostLink diagLink" target="_new" title="Agent Diagnostic in Insights Hub"><i class="fa fa-stethoscope" aria-hidden="true"></i> </a>
                 <a id="mindconnect-resetLink" class="ghostLink deleteLink"  title="Delete local agent configuration."><i class="fa fa-trash"></i></a>
             </span>
         </p>
@@ -56,7 +84,7 @@
             Please re-deploy the flow to delete the local configuration!
         </p>
         <textarea style="height: 150px; min-height:150px; width:100%; overflow-y:scroll" class="node-text-editor" id="node-input-agentconfig"
-            placeholder="Copy Authentication JSON from MindSphere (use MindConnectLib [core.mclib] asset type)"></textarea>
+            placeholder="Copy Authentication JSON from Insights Hub (use MindConnectLib [core.mclib] asset type)"></textarea>
     </div>
 
     <template id="mindconnect-confirmDialogTemplate" style="display:none">
@@ -84,7 +112,7 @@
             <br/><br/>
             The data source configuration will automatically create the data source and data mappings for selected asset. If you want to use
             a more complex configuration (e.g. if you want to map the agent to multiple assets and/or aspects) please use the
-            <a id="mindconnect-configDialog-configLink" class="ghostLink diagLink" target="_new" title="Agent Configuration in the MindSphere"><i class="fa fa-wrench"></i> MindSphere Configuration Dialog</a> instead.
+            <a id="mindconnect-configDialog-configLink" class="ghostLink diagLink" target="_new" title="Agent Configuration in Insights Hub"><i class="fa fa-wrench"></i> Insights Hub Configuration Dialog</a> instead.
             <br/><br/>
             <i class="fa fa-info-circle"></i> The automatic data source configuration will delete all previously configured data sources and mappings.
             <br/><br/>
@@ -187,7 +215,7 @@
     <div class="form-tips">
         <i class="fa fa-info-circle"></i> <b>Tip:</b>
         Use Agent Configuration to automatically configure and map the agent to a selected asset or
-        use MindSphere UI to configure the agent configuration and the mappings if you require more complex agent configuration.
+        use Insights Hub UI to configure the agent configuration and the mappings if you require more complex agent configuration.
         <br/></br/>
         <i class="fa fa-info-circle"></i> <b>Tip:</b>
         The agent information dialog has buttons with timeseries-, bulk-, event- and file- templates for function nodes. Use the templates
@@ -213,36 +241,46 @@
         <i class="fa fa-info-circle"></i> <b>Emit Control:</b>
         If switched on, the node will emit on control topic the current information about asynchronous requests. 
         This information can be used to control the behavior of the flow (e.g. to queue the data if the node is under pressure)
-        See <a href="https://playground.mindconnect.rocks" target="_new">https://playground.mindconnect.rocks</a> for examples.
+        See <a href="https://developer.siemens.com/industrial-iot-open-source/node-red-contrib-mindconnect/index.html" target="_new">the documentation</a> for examples.
         <br/><br/>
         <i class="fa fa-info-circle"></i> <b>Hide Request Status Information:</b>
         If switched on, the node will stop showing the status of every single message below the node.
         This setting can greatly reduce node verbosity. It is recommended to turn this on if you are ingesting a lot of data at the same time.
         <br/><br/>
         <i class="fa fa-info-circle"></i> <b>Data Lake Only:</b>
-        If the node is marked as data lake only, it will not try to get the configuration from MindSphere. Use this
-        if you are only sending data to the MindSphere integrated data lake.
+        If the node is marked as data lake only, it will not try to get the configuration from Insights Hub. Use this
+        if you are only sending data to the Insights Hub integrated data lake.
         <br/><br/>
     </div>
 </script>
 
 <script type="text/x-red" data-help-name="mindconnect">
+            <div class="mindconnect-migration-warning" role="note">
+                <p><strong>🚀 v4: migrated Insights Hub tenants only</strong></p>
+                <p>Version 4 supports tenants migrated to <code>*.siemens.app</code> application URLs.</p>
+                <p><strong>Legacy tenant using <code>*.mindsphere.io</code> application URLs? Stay on v3. Do not upgrade to v4.</strong></p>
+                <p>
+                    This is v4 - verified against a migrated (<code>*.siemens.app</code>) tenant. If your tenant is
+                    still on <code>*.mindsphere.io</code>, install the v3 release instead
+                    (<code>npm install @mindconnect/node-red-contrib-mindconnect@3</code>).
+                </p>
+            </div>
             <p>
-                <b>Node connecting the flow to MindSphere.</b>
+                <b>Node connecting the flow to Insights Hub.</b>
                 <br/>
-                This node can send time series data points (single or bulk), events and files to MindSphere.
-                The node can also be used to generate MindSphere authentication tokens if you want to call your own APIs.
+                This node can send time series data points (single or bulk), events and files to Insights Hub.
+                The node can also be used to generate Insights Hub authentication tokens if you want to call your own APIs.
                 Once onboarded you can click on <b>Agent Information</b> button and generate the templates for the most common operations.
                 <br/>
                 <ul>
-                    <li> <a href="https://opensource.mindsphere.io/docs/node-red-contrib-mindconnect/index.html#tab1anchor3" target="_new"><i class="fa fa-file-video-o"></i> How to use this node (video) </a></li>
+                    <li> <a href="https://developer.siemens.com/industrial-iot-open-source/node-red-contrib-mindconnect/index.html#tab1anchor3" target="_new"><i class="fa fa-file-video-o"></i> How to use this node (video) </a></li>
                 </ul>
             </p>
 
             <p>
                 <i class="fa fa-info-circle"></i> <b>Data Points:</b><br/>
-                Use the following message template in the msg.payload (e.g. from a function node) to send data points to MindSphere.
-                <i>(you have to change dataPointIds to fit your MindSphere Data Configuration)</i>
+                Use the following message template in the msg.payload (e.g. from a function node) to send data points to Insights Hub.
+                <i>(you have to change dataPointIds to fit your Insights Hub Data Configuration)</i>
             </p>
             <pre>
 const values = [
@@ -264,8 +302,8 @@ return msg;
         </pre>
         <p>
             <i class="fa fa-info-circle"></i> <b>Data Points (bulk):</b><br/>
-            Use the following message template in the msg.payload (e.g. from a function node) to send data points to MindSphere.
-            <i>(you have to change dataPointIds to fit your MindSphere Data Configuration)</i>
+            Use the following message template in the msg.payload (e.g. from a function node) to send data points to Insights Hub.
+            <i>(you have to change dataPointIds to fit your Insights Hub Data Configuration)</i>
         </p>
         <pre>
 const values = [
@@ -290,7 +328,7 @@ return msg;
         </pre>
         <p>
             <i class="fa fa-info-circle"></i> <b>Events:</b><br/>
-            Send an event to MindSphere by passing the event message in the payload. You can send events to all assets you have access to in your tenant. Pass the
+            Send an event to Insights Hub by passing the event message in the payload. You can send events to all assets you have access to in your tenant. Pass the
             assetid in the entity id property.
         </p>
         <pre>
@@ -307,7 +345,7 @@ msg.payload = {
 return msg;
         </pre>
         <p>
-            If you are using Custom Events instead of MindSphereStandardEvents please include the _customEvent switch in the message.
+            If you are using custom events instead of Insights Hub standard events please include the _customEvent switch in the message.
         </p>
         <pre>
 msg._customEvent=true;
@@ -346,7 +384,7 @@ return msg;
 
         <p>
             <i class="fa fa-info-circle"></i> <b>Asset Info:</b><br/>
-            You can read the data (e.g. static asset variables) from MindSphere using this node.
+            You can read the data (e.g. static asset variables) from Insights Hub using this node.
             You can reduce the number of items in payload by specifying list of properties to include in the message:
             e.g. propertyNames: ["variables"] or ["location"]
         </p>
@@ -362,9 +400,9 @@ return msg;
 
         <p>
             <i class="fa fa-info-circle"></i> <b>SDK JavaScript Function:</b><br/>
-            The node can be used to execute a complex script which uses MindSphere <a href="https://opensource.mindsphere.io/docs/mindconnect-nodejs/sdk/index.html" target="_new">javascript/typescript SDK</a>
+            The node can be used to execute a complex script which uses Insights Hub <a href="https://opensource.mindsphere.io/docs/mindconnect-nodejs/sdk/index.html" target="_new">javascript/typescript SDK</a>
             The node will create an asyncronous function with one parameter (sdk) and the specified function body
-            and execute it. You can only call the MindSphere APIs which allow agent authorization.
+            and execute it. You can only call the Insights Hub APIs which allow agent authorization.
         </p>
         <pre>
 msg.payload = {
@@ -391,13 +429,13 @@ msg._forceGetConfig=true;
         </p>
         <p>
             The node can be used to generate authentication tokens which you can use to call your own custom southbound APIs.
-            The msg.headers will have a Mindsphere Authorization JWT.
+            The msg.headers will have an Insights Hub Authorization JWT.
         </p>
         <pre>
 msg._includeMindSphereToken=true;
         </pre>
         <p>
-            if you just want to get the token without sending any data to MindSphere
+            if you just want to get the token without sending any data to Insights Hub
         </p>
         <pre>
 msg._ignorePayload=true;
@@ -415,6 +453,11 @@ msg._ignorePayload=true;
 msg._mindsphereStatus; // OK on success othervise error
 msg._error; // The timestamped error message
         </pre>
+
+        <p>
+            Message properties such as <code>msg._mindsphereStatus</code> and <code>msg._includeMindSphereToken</code>
+            retain their names for flow compatibility.
+        </p>
 
         <p>
             <i class="fa fa-info-circle"></i> <b>Complex flow handling</b><br/>
@@ -437,24 +480,27 @@ msg._error; // The timestamped error message
         <p>
             More Documentation:
             <ul>
-                <li> <a href="https://opensource.mindsphere.io" target="_new"><i class="fa fa-external-link"></i> MindSphere Open Source Tools and Libraries</a></li>
-                <li> <a href="https://developer.mindsphere.io" target="_new"><i class="fa fa-external-link"></i> MindSphere Developer Documentation</a></li>
-                <li> <a href="https://opensource.mindsphere.io/docs/node-red-contrib-mindconnect/getting-started.html" target="_new"><i class="fa fa-external-link"></i> Getting Started with MindConnect Node-RED node</a></li>
-                <li> <a href="https://playground.mindconnect.rocks" target="_new"><i class="fa fa-external-link"></i> Node-RED flow examples</a></li>
-                <li><a href="https://community.plm.automation.siemens.com/t5/Developer-Space/bd-p/MindSphere-platform-forum" target="_new" title="Community"><i class="fa fa-external-link"></i> MindSphere Developer Forum</a> </li>
+                <li> <a href="https://opensource.mindsphere.io" target="_new"><i class="fa fa-external-link"></i> Insights Hub Open Source Tools and Libraries</a></li>
+                <li> <a href="https://developer.mindsphere.io" target="_new"><i class="fa fa-external-link"></i> Insights Hub Developer Documentation</a></li>
+                <li> <a href="https://developer.siemens.com/industrial-iot-open-source/node-red-contrib-mindconnect/getting-started.html" target="_new"><i class="fa fa-external-link"></i> Getting Started with MindConnect Node-RED node</a></li>
+                <li> <a href="https://developer.siemens.com/industrial-iot-open-source/node-red-contrib-mindconnect/index.html" target="_new"><i class="fa fa-external-link"></i> Node-RED flow examples (documentation)</a></li>
+                <li><a href="https://community.plm.automation.siemens.com/t5/Developer-Space/bd-p/MindSphere-platform-forum" target="_new" title="Community"><i class="fa fa-external-link"></i> Insights Hub Developer Forum</a> </li>
             </ul>
         </p>
 </script>
 
 <script type="text/javascript">
     RED.nodes.registerType("mindconnect", {
-        category: "mindsphere",
-        color: "#41aaaa",
+        category: "Insights Hub",
+        color: "#4c4c68",
         defaults: {
             name: {
                 value: "",
             },
             configtype: {
+                value: "",
+            },
+            customerTenantId: {
                 value: "",
             },
             agentconfig: {
@@ -796,7 +842,10 @@ msg._error; // The timestamped error message
         outputs: 1,
         icon: "white-globe.svg",
         label: function () {
-            return this.name || "MindConnect Node-RED Agent";
+            return this.name || "Insights Hub Node-RED Agent";
+        },
+        labelStyle: function () {
+            return "mindconnect-label-light";
         },
 
         oneditprepare: function () {
@@ -827,9 +876,7 @@ msg._error; // The timestamped error message
                 if (option === "SDKFUNCTION") {
 
                     const sdkFunction = "" +
-                        "// take a look at the flow examples at https://playground.mindconnect.rocks " +
-                        "\n//" +
-                        "\n// execute custom script using mindsphere SDK" +
+                        "// execute custom script using Insights Hub SDK" +
                         "\n// the node will create an asyncronous function with one parameter (sdk)" +
                         "\n// and the function body specified below " +
                         "\nconst sdkFunction = \{" +
@@ -850,9 +897,7 @@ msg._error; // The timestamped error message
                 } else if (option === "ASSETINFO") {
 
                     const assetInfoTemplate = "" +
-                        "// take a look at the flow examples at https://playground.mindconnect.rocks " +
-                        "\n//" +
-                        "\n// Read the static asset information from MindSphere" +
+                        "// Read the static asset information from Insights Hub" +
                         "\n// You can reduce the number of items in payload by specifying list of properties" +
                         "\n// in property Names list e.g. [\"variables\"] or  [\"location\"]" +
                         "\n// Set includeShared to true to include the assets shared with your agents tenant via cross-tenancy" +
@@ -871,9 +916,7 @@ msg._error; // The timestamped error message
                 else if (option === "DATALAKE") {
 
                     const dataLakeTemplate = "" +
-                        "// take a look at the flow examples at https://playground.mindconnect.rocks " +
-                        "\n//" +
-                        "\n// Preconditions : data-lake is purchased and enabled for writing (see mc data-lake --mode write  CLI command)" +
+                        "// Preconditions : data-lake is purchased and enabled for writing (see mc data-lake --mode write  CLI command)" +
                         "\n//" +
                         "\n// Agents can only upload files to a path which is prefixed with their agent id" +
                         "\n// The MindConnect Node will apply this prefix automatically to the dataLakeFileUpload Path" +
@@ -906,9 +949,8 @@ msg._error; // The timestamped error message
                         });
                     });
                     const bulk = [{ timestamp: new Date().toISOString(), values: values }];
-                    const headertemplate = "// take a look at the flow examples at https://playground.mindconnect.rocks" +
-                        "\n//" +
-                        "\n// - MindSphere expects all values to be encoded as strings" +
+                    const headertemplate = "" +
+                        "// - Insights Hub expects all values to be encoded as strings" +
                         "\n// - Integers must not have any decimal places" +
                         "\n// - It is a good practice to use javascript literal notation" +
                         "\n// " +
@@ -946,9 +988,8 @@ msg._error; // The timestamped error message
                     };
                     const eventTemplate = `
 // add entityId property if you want to create an event for a different asset
-// if you are using custom events instead of MindSphere standard events please include the _customEvent switch in der message
+// if you are using custom events instead of Insights Hub standard events please include the _customEvent switch in the message
 // msg._customEvent = true;
-// take a look at the flow examples at https://playground.mindconnect.rocks
 
 const event = ${JSON.stringify(event, null, 2)};
 msg.payload = event;
@@ -963,7 +1004,6 @@ return msg;`;
                     const fileTemplate = `
 // add entityId property if you want to send the file for a different asset
 // you can also use a Buffer instance instead of fileName if your file is created in your Node-RED flow.
-// take a look at the flow examples at https://playground.mindconnect.rocks
 
 const fileInfo = ${JSON.stringify(fileInfo, null, 2)};
 msg.payload = fileInfo;
@@ -1057,14 +1097,21 @@ return msg;`;
                     }
 
                     sortedMappings.forEach((mapping) => {
-                        const url = `<a class="ghostLink diagLink" href="${urlTemplate}${mapping.entityId}/details" target="_new" title="Open Asset in MindSphere Asset Manager"><i class="fa fa-external-link"></i> `;
+                        // urlTemplate is "" for migrated Insights Hub tenants (see caller) since we
+                        // cannot build a valid Asset Manager link without a customerTenantId - render
+                        // a plain, muted, non-clickable span (no button/link styling, no external-link
+                        // icon) instead of a broken/relative link in that case.
+                        const url = urlTemplate
+                            ? `<a class="ghostLink diagLink" href="${urlTemplate}${mapping.entityId}/details" target="_new" title="Open Asset in Insights Hub Asset Manager"><i class="fa fa-external-link"></i> `
+                            : `<span style="color:#888888; cursor: default;" title="Not available for migrated Insights Hub tenants">`;
+                        const urlClose = urlTemplate ? "</a>" : "</span>";
                         mappingList.append(
                             `<li>${(mapping && mapping.validity && mapping.validity.status && (mapping.validity.status === "VALID"))
                                 ? "<i class='fa fa-check-circle' style='color:#65C728' title='VALID'></i>"
                                 : "<i class='fa fa-exclamation-triangle' style='color:#F62447' title='NOT VALID'></i>"
                             } <span style="color:#354C80">${mapping.dataPointId
                             }</span> <i class="fa fa-arrows-h"></i> ${url} ${mapping.assetName
-                            } </a> <i class="fa fa-long-arrow-right"></i> ${mapping.propertySetName
+                            } ${urlClose} <i class="fa fa-long-arrow-right"></i> ${mapping.propertySetName
                             } <i class="fa fa-long-arrow-right"></i> ${mapping.propertyName}</li>`
                         );
                     });
@@ -1205,21 +1252,67 @@ return msg;`;
             $("#noLinkSpan").hide();
             try {
                 const agentConfig = JSON.parse(this.agentconfig);
-                const target =
-                    agentConfig.content.baseUrl.replace("southgate", `${agentConfig.content.tenant}-assetmanager`) +
-                    `/entity/${agentConfig.content.clientId}/plugin/uipluginassetmanagermclib`;
-                const diag = agentConfig.content.baseUrl.replace(
-                    "southgate",
-                    `${agentConfig.content.tenant}-agentdiagnostic`
-                );
+                // Migrated (Xcelerator) tenants report their gateway under content.fds.baseUrl
+                // (e.g. https://api.eu1.siemens.app). Their app-launch URLs use the scheme
+                // https://<customerTenantId>-<appName>-<coreTenantId>.<region>.siemens.app/...,
+                // which requires a customerTenantId that is NOT present in the agent onboarding
+                // file - only the SDK's user-login flow (browser/credential auth) knows it. So,
+                // unlike the legacy baseUrl.replace("southgate", ...) trick below (which still
+                // works for un-migrated *.mindsphere.io tenants), we cannot safely build these
+                // links here. Rather than guess and produce a broken link, hide them.
+                const isMigratedTenant = !!(agentConfig.content.fds && agentConfig.content.fds.baseUrl);
 
-                const fleetManagerUrlTemplate = `${agentConfig.content.baseUrl.replace(
-                    "southgate",
-                    `${agentConfig.content.tenant}-assetmanager`
-                )}/entity/`;
+                let target = "";
+                let diag = "";
+                let fleetManagerUrlTemplate = "";
 
-                $("#mindconnect-configLink").attr("href", target);
-                $("#mindconnect-diagLink").attr("href", diag);
+                if (!isMigratedTenant) {
+                    target =
+                        agentConfig.content.baseUrl.replace(
+                            "southgate",
+                            `${agentConfig.content.tenant}-assetmanager`
+                        ) + `/entity/${agentConfig.content.clientId}/plugin/uipluginassetmanagermclib`;
+                    diag = agentConfig.content.baseUrl.replace(
+                        "southgate",
+                        `${agentConfig.content.tenant}-agentdiagnostic`
+                    );
+                    fleetManagerUrlTemplate = `${agentConfig.content.baseUrl.replace(
+                        "southgate",
+                        `${agentConfig.content.tenant}-assetmanager`
+                    )}/entity/`;
+                } else if (this.customerTenantId) {
+                    // Confirmed working (manually verified): on migrated tenants,
+                    // https://<customerTenantId>-assetmanager-<coreTenantId>.<region>.siemens.app/entity/<id>/details
+                    // resolves to the actual asset details page. The Agent Configuration
+                    // ".../plugin/uipluginassetmanagermclib" route and the agentdiagnostic app do
+                    // NOT work the same way (confirmed not to go further than a generic app
+                    // shell), so `target`/`diag` are intentionally left "" even when a
+                    // customerTenantId is configured - only the per-asset details link is rebuilt.
+                    const coreTenantId = agentConfig.content.fds.mntTenant;
+                    const regionMatch = agentConfig.content.fds.baseUrl.match(/^https?:\/\/api\.([^./]+)\.siemens\.app/i);
+                    if (coreTenantId && regionMatch) {
+                        fleetManagerUrlTemplate = `https://${this.customerTenantId}-assetmanager-${coreTenantId}.${regionMatch[1]}.siemens.app/entity/`;
+                    }
+                }
+
+                $("#mindconnect-configLink")
+                    .attr("href", target)
+                    .toggle(!isMigratedTenant)
+                    .attr(
+                        "title",
+                        isMigratedTenant
+                            ? "Not available for migrated Insights Hub tenants - open Asset Manager directly"
+                            : "Agent Configuration in Insights Hub"
+                    );
+                $("#mindconnect-diagLink")
+                    .attr("href", diag)
+                    .toggle(!isMigratedTenant)
+                    .attr(
+                        "title",
+                        isMigratedTenant
+                            ? "Not available for migrated Insights Hub tenants - open Insights Hub directly"
+                            : "Agent Diagnostic in Insights Hub"
+                    );
                 $("#mindconnect-resetLink").click(() => {
 
                     const contents = $("#mindconnect-deleteDialogTemplate").html();

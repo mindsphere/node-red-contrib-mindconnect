@@ -1,33 +1,47 @@
 # node-red-contrib-mindconnect
 
-## Node-RED Agent for the MindConnect API
+> [!WARNING]
+> **v4: migrated Insights Hub tenants only.**
+> Version 4 supports tenants migrated to the `*.siemens.app` application URL scheme.
+> **If your tenant still uses `*.mindsphere.io` application URLs, stay on v3. Do not upgrade to v4.**
+> This is v4 - verified against a migrated (`*.siemens.app`) tenant. If your tenant is still on
+> `*.mindsphere.io`, install the v3 release instead (`npm install @mindconnect/node-red-contrib-mindconnect@3`).
+
+## Node-RED Agent for the Insights Hub MindConnect API
 
 <!-- markdownlint-disable MD033 -->
 <img src="images/mindconnect-node-red-logo.svg" alt="@mindconnect/node-red-contrib-mindconnect" width="300px"/>
 <!-- markdownlint-enableMD033 -->
 
-This node enables the Node-RED users to upload timeseries, files and events to MindSphere.
+This node enables the Node-RED users to upload timeseries, files and events to Insights Hub.
 This project has started as a community effort at Siemens AG and is now available for general use.
 
 [![Build](https://github.com/mindsphere/node-red-contrib-mindconnect/actions/workflows/build.yml/badge.svg)](https://github.com/mindsphere/node-red-contrib-mindconnect/actions/workflows/build.yml) [![The MIT License](https://img.shields.io/badge/license-MIT-009999.svg?style=flat)](./LICENSE.md)
 [![npm](https://img.shields.io/npm/v/@mindconnect/node-red-contrib-mindconnect/latest.svg?style=flat)](https://www.npmjs.com/package/@mindconnect/node-red-contrib-mindconnect) ![downloads](https://img.shields.io/npm/dw/@mindconnect/node-red-contrib-mindconnect.svg?colorB=009999)
-[![Documentation](https://img.shields.io/badge/mindsphere-documentation-%23009999.svg)](https://opensource.mindsphere.io/docs/node-red-contrib-mindconnect/index.html)
-[![Forum](https://img.shields.io/badge/mindsphere-community-%23009999.svg)](https://community.plm.automation.siemens.com/t5/Developer-Space/bd-p/MindSphere-platform-forum)
-[![Demo Flows](https://img.shields.io/badge/node--RED-playground-%23009999.svg)](https://playground.mindconnect.rocks)
+[![Documentation](https://img.shields.io/badge/Insights%20Hub-documentation-%23009999.svg)](https://developer.siemens.com/industrial-iot-open-source/node-red-contrib-mindconnect/index.html)
+[![Forum](https://img.shields.io/badge/Insights%20Hub-community-%23009999.svg)](https://community.plm.automation.siemens.com/t5/Developer-Space/bd-p/MindSphere-platform-forum)
 
 The node is written in typescript/javascript without any native dependencies so it should work beside x86 also on other platforms (e.g. on raspberry pi, IoT2000 etc, you just have to have Node-RED installed).
 
 ## Installing the node
 
+For legacy tenants using `*.mindsphere.io` application URLs, explicitly select v3:
+
 ```bash
 # change to your ~./node-red/ folder
 cd ~/.node-red/
-npm install @mindconnect/node-red-contrib-mindconnect
+npm install @mindconnect/node-red-contrib-mindconnect@3
 ```
+
+The v4 release is for migrated tenants using application URLs such as
+`<customerTenantId>-<appName>-<coreTenantId>.<region>.siemens.app`.
+Confirm your tenant's migration status before selecting a major version; do not rewrite onboarding URLs manually.
 
 ## Node-RED - Manage Palette Installation
 
 You can install the node also via the Manage palette feature in the Node-RED administration UI.
+**Legacy tenants must keep v3 installed and must not accept a v4 upgrade.**
+If the palette does not offer a version choice, use the explicit v3 installation command above.
 
 ![palette](images/install_palette.png)
 
@@ -39,14 +53,14 @@ You can install the node also via the Manage palette feature in the Node-RED adm
 
 ## How to use the Node-RED node
 
-Since version 3.9.0 it is possible to completely configure the agent from Node-RED. You will only need the initial Boarding configuration from the MindSphere UI.
+Since version 3.9.0 it is possible to completely configure the agent from Node-RED. You will only need the initial Boarding configuration from the Insights Hub UI.
 
-### Step 0: Create (at least) one asset and one agent in MindSphere
+### Step 0: Create (at least) one asset and one agent in Insights Hub
 
 - Create an asset in Asset Manager for your data
 - Create an agent of the type MindConnectLib [core.mclib] and store the agent.
 
-### Step 1: Get the initial agent configuration from Mindsphere Asset Manager
+### Step 1: Get the initial agent configuration from Insights Hub Asset Manager
 
 You can choose between:
 
@@ -72,17 +86,17 @@ Copy the agent onboarding information and optionally the RSA_3072 private key to
 ### Step 3: Press the agent configuration button and select the target asset
 
 The most common agent configuration setup is to have a 1:1 mapping between the Node-RED agent which is delivering the data and your target
-MindSphere Asset. If this type of configuration is sufficient for your use case you just have to click on the asset to which you want to map the data in the asset list. (you can use the filter asset listbox to quickly find your asset)
+Insights Hub Asset. If this type of configuration is sufficient for your use case you just have to click on the asset to which you want to map the data in the asset list. (you can use the filter asset listbox to quickly find your asset)
 
 ![implementation](images/automatic-configuration.png)
 
-The node will automatically configure all necessary data sources and mapping for you. If you need a more complex setup, just click on the **MindSphere Configuration Dialog** button which will lead you to the configuration dialog in the MindSphere, where you can create more complex configurations and mappings.
+The node will automatically configure all necessary data sources and mapping for you. If you need a more complex setup, just click on the **Insights Hub Configuration Dialog** button which will lead you to the configuration dialog in Insights Hub, where you can create more complex configurations and mappings.
 
 ![implementation](images/mindsphere-configuration.png)
 
 ### Step 4: Create and deploy the flow and send data
 
-You can use the node to send timeseries, bulk timeseries, events and files to MindSphere. The templates for the input messages are listed
+You can use the node to send timeseries, bulk timeseries, events and files to Insights Hub. The templates for the input messages are listed
 below, but you can also just use the **Agent Information** button which will let you copy the corresponding template to clipboard.
 
 ![implementation](images/infodialog-templates.png)
@@ -133,7 +147,7 @@ msg.payload = values;
 return msg;
 ```
 
-**Note:** All MindSphere timestamps must be in the **ISO format** (use `toISOString()` function).
+**Note:** All Insights Hub timestamps must be in the **ISO format** (use `toISOString()` function).
 
 #### Send events
 
@@ -154,7 +168,7 @@ msg.payload = {
 return msg;
 ```
 
-If you are using the custom events instead of MindSphere Standard Events please include the following switch in the message.
+If you are using the custom events instead of Insights Hub standard events please include the following switch in the message.
 
 ```javascript
 msg._customEvent=true;
@@ -179,12 +193,10 @@ If the experimental chunking feature is on, the files which are larger than 8MB 
 
 #### Data Lake File Upload
 
-Precondition for data lake upload is that [MindSphere Integrated Data Lake](https://www.dex.siemens.com/mindsphere/applications/integrated-data-lake) is purchased and write-enabled.
+Precondition for data lake upload is that [Insights Hub Integrated Data Lake](https://www.dex.siemens.com/mindsphere/applications/integrated-data-lake) is purchased and write-enabled.
 The node requires json objects as input in following format (e.g. from a function node).
 
 ```javascript
-// take a look at the flow examples at https://playground.mindconnect.rocks 
-//
 // Preconditions : data-lake is purchased and enabled for writing (see mc data-lake --mode write  CLI command)
 //
 // Agents can only upload files to a path which is prefixed with their agent id
@@ -214,7 +226,7 @@ Please note:
 
 #### Reading Asset Information
 
-You can read the data (e.g. static asset variables, or full asset information) from MindSphere using the following message. This can be used to implement a "digital shadow/digital twin" pattern, where the change in the MindSphere variables is reflected to the real world asset. See [bidirectional communication example flow](https://playground.mindconnect.rocks/#flow/9ff72be.3d502d8) on playground for a full example.
+You can read the data (e.g. static asset variables, or full asset information) from Insights Hub using the following message. This can be used to implement a "digital shadow/digital twin" pattern, where the change in the Insights Hub variables is reflected to the real world asset. See the [documentation](https://developer.siemens.com/industrial-iot-open-source/node-red-contrib-mindconnect/index.html) for a full example.
 
 ```javascript
 msg.payload = {
@@ -229,9 +241,9 @@ return msg;
 You can reduce the number of items in payload by specifying list of properties to include in the message: e.g.
 `propertyNames: ["variables"] or ["location"]`
 
-#### Executing custom functions using MindSphere javascript/typescript SDK
+#### Executing custom functions using Insights Hub javascript/typescript SDK
 
-The node can be used to execute a complex script which uses [MindSphere javascript/typescript SDK](https://opensource.mindsphere.io/docs/mindconnect-nodejs/sdk/index.html). The node will create an asyncronous function with one parameter (sdk) and the specified function body and execute it. You can only call the MindSphere APIs which allow agent authorization.
+The node can be used to execute a complex script which uses [Insights Hub javascript/typescript SDK](https://opensource.mindsphere.io/docs/mindconnect-nodejs/sdk/index.html). The node will create an asyncronous function with one parameter (sdk) and the specified function body and execute it. You can only call the Insights Hub APIs which allow agent authorization.
 
 ```javascript
 msg.payload = {
@@ -246,7 +258,7 @@ return msg;
 
 #### Error handling in the flows
 
-The node can be configured to retry all mindsphere operations (1-10 times, with delay of time \* 300ms before the next try)
+The node can be configured to retry all Insights Hub operations (1-10 times, with delay of time \* 300ms before the next try)
 If you need more complex flows, the node also returns the
 
 ```javascript
@@ -256,18 +268,21 @@ msg._error; // The timestamped error message
 
 properties which can be used to create more complex flows. (e.g. in the flow below, the unrecoverable errors are written in error.log file and the failed data is stored in backupdata.log file)
 
+Existing message properties such as `msg._mindsphereStatus` and `msg._includeMindSphereToken`
+retain their names for flow compatibility. Documentation URLs and historical screenshots may also retain the former branding.
+
 ![errorhandling](images/errorhandling.png)
 
 ## JWT Token Generation for SouthBound APIs
 
 The node can be used to generate authentication tokens which you can use to call your own custom southbound APIs.
-The msg.headers will have a Mindsphere Authorization JWT.
+The msg.headers will have an Insights Hub Authorization JWT.
 
 ```javascript
 msg._includeMindSphereToken=true;
 ```
 
-if you just want to get the token without sending any data to MindSphere
+if you just want to get the token without sending any data to Insights Hub
 
 ```javascript
 msg._ignorePayload=true;
@@ -298,31 +313,13 @@ The `payload` on the `control` topic with the status information looks like this
 ```
 
 This information can be used to manage for example a queue node before the mindconnect node to regulate the flow of
-the messages. See example `#HighDataVolume` on [https://playground.mindconnect.rocks](https://playground.mindconnect.rocks)
+the messages. See the [documentation](https://developer.siemens.com/industrial-iot-open-source/node-red-contrib-mindconnect/index.html) for examples.
 
 ## Demo flows
 
-[![Demo Flows](https://img.shields.io/badge/node--RED-playground-%23009999.svg)](https://playground.mindconnect.rocks)
+[![Documentation](https://img.shields.io/badge/Insights%20Hub-documentation-%23009999.svg)](https://developer.siemens.com/industrial-iot-open-source/node-red-contrib-mindconnect/index.html)
 
-[MindConnect Node-RED playground](https://playground.mindconnect.rocks) provides following demo flows importing following data points to MindSphere
-
-- CPU-Usage
-- Batched MQTT Data
-- OPC-UA Data
-- Real Weather Data to MindSphere
-- Simulated Water Pump Data
-- Custom SouthBound API Calls
-
-The simulated water pump data can be inspected at
-
-<https://dreamforce.mindconnect.rocks>
-
-This application can be used without mindsphere credentials.
-
-- username: guest@mindsphere.io
-- password: Siemens123!
-
-This data is also used as an example for the KPI-Calculation and Trend prediction with help of MindSphere APIs. <https://github.com/mindsphere/analytics-examples>
+See the [documentation](https://developer.siemens.com/industrial-iot-open-source/node-red-contrib-mindconnect/index.html) for demo flow examples.
 
 ## Securing API Endpoints
 
@@ -355,13 +352,6 @@ Press on the "delete local configuration" :wastebucket: button on the node, conf
 ![delete local settings](images/deletelocal.png)
 
 If you are having problems, it is a good idea to restart the Node-RED runtime completely.
-
-### Diagnostic in MindSphere
-
-If the data is not arriving in your configured asset you should take a look if the data is beeing dropped in MindSphere because of a misconfiguration.
-The agent diagnostic button will lead you directly to the agent diagnostic application in the MindSphere.
-
-![diagnostic](images/diag.png)
 
 ## Generating the documentation
 
