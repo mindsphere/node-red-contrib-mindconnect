@@ -20,7 +20,6 @@ This project has started as a community effort at Siemens AG and is now availabl
 [![npm](https://img.shields.io/npm/v/@mindconnect/node-red-contrib-mindconnect/latest.svg?style=flat)](https://www.npmjs.com/package/@mindconnect/node-red-contrib-mindconnect) ![downloads](https://img.shields.io/npm/dw/@mindconnect/node-red-contrib-mindconnect.svg?colorB=009999)
 [![Documentation](https://img.shields.io/badge/Insights%20Hub-documentation-%23009999.svg)](https://developer.siemens.com/industrial-iot-open-source/node-red-contrib-mindconnect/index.html)
 [![Forum](https://img.shields.io/badge/Insights%20Hub-community-%23009999.svg)](https://community.plm.automation.siemens.com/t5/Developer-Space/bd-p/MindSphere-platform-forum)
-[![Demo Flows](https://img.shields.io/badge/node--RED-playground-%23009999.svg)](https://playground.mindconnect.rocks)
 
 The node is written in typescript/javascript without any native dependencies so it should work beside x86 also on other platforms (e.g. on raspberry pi, IoT2000 etc, you just have to have Node-RED installed).
 
@@ -198,8 +197,6 @@ Precondition for data lake upload is that [Insights Hub Integrated Data Lake](ht
 The node requires json objects as input in following format (e.g. from a function node).
 
 ```javascript
-// take a look at the flow examples at https://playground.mindconnect.rocks 
-//
 // Preconditions : data-lake is purchased and enabled for writing (see mc data-lake --mode write  CLI command)
 //
 // Agents can only upload files to a path which is prefixed with their agent id
@@ -229,7 +226,7 @@ Please note:
 
 #### Reading Asset Information
 
-You can read the data (e.g. static asset variables, or full asset information) from Insights Hub using the following message. This can be used to implement a "digital shadow/digital twin" pattern, where the change in the Insights Hub variables is reflected to the real world asset. See [bidirectional communication example flow](https://playground.mindconnect.rocks/#flow/9ff72be.3d502d8) on playground for a full example.
+You can read the data (e.g. static asset variables, or full asset information) from Insights Hub using the following message. This can be used to implement a "digital shadow/digital twin" pattern, where the change in the Insights Hub variables is reflected to the real world asset. See the [documentation](https://developer.siemens.com/industrial-iot-open-source/node-red-contrib-mindconnect/index.html) for a full example.
 
 ```javascript
 msg.payload = {
@@ -316,31 +313,15 @@ The `payload` on the `control` topic with the status information looks like this
 ```
 
 This information can be used to manage for example a queue node before the mindconnect node to regulate the flow of
-the messages. See example `#HighDataVolume` on [https://playground.mindconnect.rocks](https://playground.mindconnect.rocks)
+the messages. See the [documentation](https://developer.siemens.com/industrial-iot-open-source/node-red-contrib-mindconnect/index.html) for examples.
 
 ## Demo flows
 
-[![Demo Flows](https://img.shields.io/badge/node--RED-playground-%23009999.svg)](https://playground.mindconnect.rocks)
+[![Documentation](https://img.shields.io/badge/Insights%20Hub-documentation-%23009999.svg)](https://developer.siemens.com/industrial-iot-open-source/node-red-contrib-mindconnect/index.html)
 
-[MindConnect Node-RED playground](https://playground.mindconnect.rocks) provides following demo flows importing following data points to Insights Hub
+See the [documentation](https://developer.siemens.com/industrial-iot-open-source/node-red-contrib-mindconnect/index.html) for demo flow examples.
 
-- CPU-Usage
-- Batched MQTT Data
-- OPC-UA Data
-- Real Weather Data to Insights Hub
-- Simulated Water Pump Data
-- Custom SouthBound API Calls
-
-The simulated water pump data can be inspected at
-
-<https://dreamforce.mindconnect.rocks>
-
-This application can be used without Insights Hub credentials.
-
-- username: guest@mindsphere.io
-- password: Siemens123!
-
-This data is also used as an example for the KPI-Calculation and Trend prediction with help of Insights Hub APIs. <https://github.com/mindsphere/analytics-examples>
+Example flows are also used for KPI-Calculation and Trend prediction with help of Insights Hub APIs. <https://github.com/mindsphere/analytics-examples>
 
 ## Securing API Endpoints
 

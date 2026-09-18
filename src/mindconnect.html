@@ -62,8 +62,8 @@
             Optional. Only needed for <strong>migrated Insights Hub</strong> (*.siemens.app) tenants, to build the
             "Open Asset in Insights Hub" links below. Not present in the agent's onboarding file - find it in your
             Insights Hub subscription/tenant settings. It is the <strong>first</strong> number in your tenant's
-            application URL, e.g. in https://<strong>1263225466</strong>-assetmanager-1000001700.eu1.siemens.app/ it
-            is 1263225466.
+            application URL, e.g. in https://<strong>123456789</strong>-assetmanager-100000000.eu1.siemens.app/ it
+            is 123456789.
         </span>
     </div>
 
@@ -241,7 +241,7 @@
         <i class="fa fa-info-circle"></i> <b>Emit Control:</b>
         If switched on, the node will emit on control topic the current information about asynchronous requests. 
         This information can be used to control the behavior of the flow (e.g. to queue the data if the node is under pressure)
-        See <a href="https://playground.mindconnect.rocks" target="_new">https://playground.mindconnect.rocks</a> for examples.
+        See <a href="https://developer.siemens.com/industrial-iot-open-source/node-red-contrib-mindconnect/index.html" target="_new">the documentation</a> for examples.
         <br/><br/>
         <i class="fa fa-info-circle"></i> <b>Hide Request Status Information:</b>
         If switched on, the node will stop showing the status of every single message below the node.
@@ -483,7 +483,7 @@ msg._error; // The timestamped error message
                 <li> <a href="https://opensource.mindsphere.io" target="_new"><i class="fa fa-external-link"></i> Insights Hub Open Source Tools and Libraries</a></li>
                 <li> <a href="https://developer.mindsphere.io" target="_new"><i class="fa fa-external-link"></i> Insights Hub Developer Documentation</a></li>
                 <li> <a href="https://developer.siemens.com/industrial-iot-open-source/node-red-contrib-mindconnect/getting-started.html" target="_new"><i class="fa fa-external-link"></i> Getting Started with MindConnect Node-RED node</a></li>
-                <li> <a href="https://playground.mindconnect.rocks" target="_new"><i class="fa fa-external-link"></i> Node-RED flow examples</a></li>
+                <li> <a href="https://developer.siemens.com/industrial-iot-open-source/node-red-contrib-mindconnect/index.html" target="_new"><i class="fa fa-external-link"></i> Node-RED flow examples (documentation)</a></li>
                 <li><a href="https://community.plm.automation.siemens.com/t5/Developer-Space/bd-p/MindSphere-platform-forum" target="_new" title="Community"><i class="fa fa-external-link"></i> Insights Hub Developer Forum</a> </li>
             </ul>
         </p>
@@ -876,9 +876,7 @@ msg._error; // The timestamped error message
                 if (option === "SDKFUNCTION") {
 
                     const sdkFunction = "" +
-                        "// take a look at the flow examples at https://playground.mindconnect.rocks " +
-                        "\n//" +
-                        "\n// execute custom script using Insights Hub SDK" +
+                        "// execute custom script using Insights Hub SDK" +
                         "\n// the node will create an asyncronous function with one parameter (sdk)" +
                         "\n// and the function body specified below " +
                         "\nconst sdkFunction = \{" +
@@ -899,9 +897,7 @@ msg._error; // The timestamped error message
                 } else if (option === "ASSETINFO") {
 
                     const assetInfoTemplate = "" +
-                        "// take a look at the flow examples at https://playground.mindconnect.rocks " +
-                        "\n//" +
-                        "\n// Read the static asset information from Insights Hub" +
+                        "// Read the static asset information from Insights Hub" +
                         "\n// You can reduce the number of items in payload by specifying list of properties" +
                         "\n// in property Names list e.g. [\"variables\"] or  [\"location\"]" +
                         "\n// Set includeShared to true to include the assets shared with your agents tenant via cross-tenancy" +
@@ -920,9 +916,7 @@ msg._error; // The timestamped error message
                 else if (option === "DATALAKE") {
 
                     const dataLakeTemplate = "" +
-                        "// take a look at the flow examples at https://playground.mindconnect.rocks " +
-                        "\n//" +
-                        "\n// Preconditions : data-lake is purchased and enabled for writing (see mc data-lake --mode write  CLI command)" +
+                        "// Preconditions : data-lake is purchased and enabled for writing (see mc data-lake --mode write  CLI command)" +
                         "\n//" +
                         "\n// Agents can only upload files to a path which is prefixed with their agent id" +
                         "\n// The MindConnect Node will apply this prefix automatically to the dataLakeFileUpload Path" +
@@ -955,9 +949,8 @@ msg._error; // The timestamped error message
                         });
                     });
                     const bulk = [{ timestamp: new Date().toISOString(), values: values }];
-                    const headertemplate = "// take a look at the flow examples at https://playground.mindconnect.rocks" +
-                        "\n//" +
-                        "\n// - Insights Hub expects all values to be encoded as strings" +
+                    const headertemplate = "" +
+                        "// - Insights Hub expects all values to be encoded as strings" +
                         "\n// - Integers must not have any decimal places" +
                         "\n// - It is a good practice to use javascript literal notation" +
                         "\n// " +
@@ -997,7 +990,6 @@ msg._error; // The timestamped error message
 // add entityId property if you want to create an event for a different asset
 // if you are using custom events instead of Insights Hub standard events please include the _customEvent switch in the message
 // msg._customEvent = true;
-// take a look at the flow examples at https://playground.mindconnect.rocks
 
 const event = ${JSON.stringify(event, null, 2)};
 msg.payload = event;
@@ -1012,7 +1004,6 @@ return msg;`;
                     const fileTemplate = `
 // add entityId property if you want to send the file for a different asset
 // you can also use a Buffer instance instead of fileName if your file is created in your Node-RED flow.
-// take a look at the flow examples at https://playground.mindconnect.rocks
 
 const fileInfo = ${JSON.stringify(fileInfo, null, 2)};
 msg.payload = fileInfo;
