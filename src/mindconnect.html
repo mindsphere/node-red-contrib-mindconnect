@@ -9,6 +9,13 @@
         </span> <span style="color:#aaaaaa !important">v3.12.1</span>
     </div>
 
+    <div class="mindconnect-migration-warning" role="note">
+        <p><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> <strong>Upcoming v4: migrated Insights Hub tenants only</strong></p>
+        <p>Version 4 will support only tenants migrated to <code>*.siemens.app</code> application URLs.</p>
+        <p><strong>Legacy tenant using <code>*.mindsphere.io</code> application URLs? Stay on v3. Do not upgrade to v4.</strong></p>
+        <p>This version is still v3; the v4 migration is not yet implemented.</p>
+    </div>
+
     <div class="form-row">
         <label for="node-input-name" title="Agent Name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
@@ -28,7 +35,7 @@
     </div>
 
     <div class="form-row node-text-editor-row">
-        <label for="" title="The default number of mindsphere requests node will run before displaying the status message."><i class="fa fa-arrow-circle-up"></i>
+        <label for="" title="The default number of Insights Hub requests node will run before displaying the status message."><i class="fa fa-arrow-circle-up"></i>
             Async requests</span></label>
         <input id="node-input-parallel" class="ui-spinner-input" value="1" style="width:50px"/> 
     </div>
@@ -47,8 +54,8 @@
             <span id="linkSpan" style="margin-top: 5px">
                 <a id="mindconnect-localConfigLink" class="ghostLink diagLink" title="Automatically configure the agent for selected asset."><i class="fa fa-cogs"></i> Agent Configuration</a>
                 <a id="mindconnect-localInfoLink" class="ghostLink diagLink" title="View current agent configuration and input templates"><i class="fa fa-info-circle"></i> Agent Information</a>
-                <a id="mindconnect-configLink" class="ghostLink diagLink" target="_new" title="Agent Configuration in the MindSphere"><i class="fa fa-wrench"></i> </a>
-                <a id="mindconnect-diagLink" class="ghostLink diagLink" target="_new" title="Agent Diagnostic in MindSphere"><i class="fa fa-stethoscope" aria-hidden="true"></i> </a>
+                <a id="mindconnect-configLink" class="ghostLink diagLink" target="_new" title="Agent Configuration in Insights Hub"><i class="fa fa-wrench"></i> </a>
+                <a id="mindconnect-diagLink" class="ghostLink diagLink" target="_new" title="Agent Diagnostic in Insights Hub"><i class="fa fa-stethoscope" aria-hidden="true"></i> </a>
                 <a id="mindconnect-resetLink" class="ghostLink deleteLink"  title="Delete local agent configuration."><i class="fa fa-trash"></i></a>
             </span>
         </p>
@@ -56,7 +63,7 @@
             Please re-deploy the flow to delete the local configuration!
         </p>
         <textarea style="height: 150px; min-height:150px; width:100%; overflow-y:scroll" class="node-text-editor" id="node-input-agentconfig"
-            placeholder="Copy Authentication JSON from MindSphere (use MindConnectLib [core.mclib] asset type)"></textarea>
+            placeholder="Copy Authentication JSON from Insights Hub (use MindConnectLib [core.mclib] asset type)"></textarea>
     </div>
 
     <template id="mindconnect-confirmDialogTemplate" style="display:none">
@@ -84,7 +91,7 @@
             <br/><br/>
             The data source configuration will automatically create the data source and data mappings for selected asset. If you want to use
             a more complex configuration (e.g. if you want to map the agent to multiple assets and/or aspects) please use the
-            <a id="mindconnect-configDialog-configLink" class="ghostLink diagLink" target="_new" title="Agent Configuration in the MindSphere"><i class="fa fa-wrench"></i> MindSphere Configuration Dialog</a> instead.
+            <a id="mindconnect-configDialog-configLink" class="ghostLink diagLink" target="_new" title="Agent Configuration in Insights Hub"><i class="fa fa-wrench"></i> Insights Hub Configuration Dialog</a> instead.
             <br/><br/>
             <i class="fa fa-info-circle"></i> The automatic data source configuration will delete all previously configured data sources and mappings.
             <br/><br/>
@@ -187,7 +194,7 @@
     <div class="form-tips">
         <i class="fa fa-info-circle"></i> <b>Tip:</b>
         Use Agent Configuration to automatically configure and map the agent to a selected asset or
-        use MindSphere UI to configure the agent configuration and the mappings if you require more complex agent configuration.
+        use Insights Hub UI to configure the agent configuration and the mappings if you require more complex agent configuration.
         <br/></br/>
         <i class="fa fa-info-circle"></i> <b>Tip:</b>
         The agent information dialog has buttons with timeseries-, bulk-, event- and file- templates for function nodes. Use the templates
@@ -220,18 +227,24 @@
         This setting can greatly reduce node verbosity. It is recommended to turn this on if you are ingesting a lot of data at the same time.
         <br/><br/>
         <i class="fa fa-info-circle"></i> <b>Data Lake Only:</b>
-        If the node is marked as data lake only, it will not try to get the configuration from MindSphere. Use this
-        if you are only sending data to the MindSphere integrated data lake.
+        If the node is marked as data lake only, it will not try to get the configuration from Insights Hub. Use this
+        if you are only sending data to the Insights Hub integrated data lake.
         <br/><br/>
     </div>
 </script>
 
 <script type="text/x-red" data-help-name="mindconnect">
+            <div class="mindconnect-migration-warning" role="note">
+                <p><strong>Upcoming v4: migrated Insights Hub tenants only</strong></p>
+                <p>Version 4 will support only tenants migrated to <code>*.siemens.app</code> application URLs.</p>
+                <p><strong>Legacy tenant using <code>*.mindsphere.io</code> application URLs? Stay on v3. Do not upgrade to v4.</strong></p>
+                <p>This version is still v3; the v4 migration is not yet implemented.</p>
+            </div>
             <p>
-                <b>Node connecting the flow to MindSphere.</b>
+                <b>Node connecting the flow to Insights Hub.</b>
                 <br/>
-                This node can send time series data points (single or bulk), events and files to MindSphere.
-                The node can also be used to generate MindSphere authentication tokens if you want to call your own APIs.
+                This node can send time series data points (single or bulk), events and files to Insights Hub.
+                The node can also be used to generate Insights Hub authentication tokens if you want to call your own APIs.
                 Once onboarded you can click on <b>Agent Information</b> button and generate the templates for the most common operations.
                 <br/>
                 <ul>
@@ -241,8 +254,8 @@
 
             <p>
                 <i class="fa fa-info-circle"></i> <b>Data Points:</b><br/>
-                Use the following message template in the msg.payload (e.g. from a function node) to send data points to MindSphere.
-                <i>(you have to change dataPointIds to fit your MindSphere Data Configuration)</i>
+                Use the following message template in the msg.payload (e.g. from a function node) to send data points to Insights Hub.
+                <i>(you have to change dataPointIds to fit your Insights Hub Data Configuration)</i>
             </p>
             <pre>
 const values = [
@@ -264,8 +277,8 @@ return msg;
         </pre>
         <p>
             <i class="fa fa-info-circle"></i> <b>Data Points (bulk):</b><br/>
-            Use the following message template in the msg.payload (e.g. from a function node) to send data points to MindSphere.
-            <i>(you have to change dataPointIds to fit your MindSphere Data Configuration)</i>
+            Use the following message template in the msg.payload (e.g. from a function node) to send data points to Insights Hub.
+            <i>(you have to change dataPointIds to fit your Insights Hub Data Configuration)</i>
         </p>
         <pre>
 const values = [
@@ -290,7 +303,7 @@ return msg;
         </pre>
         <p>
             <i class="fa fa-info-circle"></i> <b>Events:</b><br/>
-            Send an event to MindSphere by passing the event message in the payload. You can send events to all assets you have access to in your tenant. Pass the
+            Send an event to Insights Hub by passing the event message in the payload. You can send events to all assets you have access to in your tenant. Pass the
             assetid in the entity id property.
         </p>
         <pre>
@@ -307,7 +320,7 @@ msg.payload = {
 return msg;
         </pre>
         <p>
-            If you are using Custom Events instead of MindSphereStandardEvents please include the _customEvent switch in the message.
+            If you are using custom events instead of Insights Hub standard events please include the _customEvent switch in the message.
         </p>
         <pre>
 msg._customEvent=true;
@@ -346,7 +359,7 @@ return msg;
 
         <p>
             <i class="fa fa-info-circle"></i> <b>Asset Info:</b><br/>
-            You can read the data (e.g. static asset variables) from MindSphere using this node.
+            You can read the data (e.g. static asset variables) from Insights Hub using this node.
             You can reduce the number of items in payload by specifying list of properties to include in the message:
             e.g. propertyNames: ["variables"] or ["location"]
         </p>
@@ -362,9 +375,9 @@ return msg;
 
         <p>
             <i class="fa fa-info-circle"></i> <b>SDK JavaScript Function:</b><br/>
-            The node can be used to execute a complex script which uses MindSphere <a href="https://opensource.mindsphere.io/docs/mindconnect-nodejs/sdk/index.html" target="_new">javascript/typescript SDK</a>
+            The node can be used to execute a complex script which uses Insights Hub <a href="https://opensource.mindsphere.io/docs/mindconnect-nodejs/sdk/index.html" target="_new">javascript/typescript SDK</a>
             The node will create an asyncronous function with one parameter (sdk) and the specified function body
-            and execute it. You can only call the MindSphere APIs which allow agent authorization.
+            and execute it. You can only call the Insights Hub APIs which allow agent authorization.
         </p>
         <pre>
 msg.payload = {
@@ -391,13 +404,13 @@ msg._forceGetConfig=true;
         </p>
         <p>
             The node can be used to generate authentication tokens which you can use to call your own custom southbound APIs.
-            The msg.headers will have a Mindsphere Authorization JWT.
+            The msg.headers will have an Insights Hub Authorization JWT.
         </p>
         <pre>
 msg._includeMindSphereToken=true;
         </pre>
         <p>
-            if you just want to get the token without sending any data to MindSphere
+            if you just want to get the token without sending any data to Insights Hub
         </p>
         <pre>
 msg._ignorePayload=true;
@@ -415,6 +428,11 @@ msg._ignorePayload=true;
 msg._mindsphereStatus; // OK on success othervise error
 msg._error; // The timestamped error message
         </pre>
+
+        <p>
+            Message properties such as <code>msg._mindsphereStatus</code> and <code>msg._includeMindSphereToken</code>
+            retain their names for flow compatibility.
+        </p>
 
         <p>
             <i class="fa fa-info-circle"></i> <b>Complex flow handling</b><br/>
@@ -437,18 +455,18 @@ msg._error; // The timestamped error message
         <p>
             More Documentation:
             <ul>
-                <li> <a href="https://opensource.mindsphere.io" target="_new"><i class="fa fa-external-link"></i> MindSphere Open Source Tools and Libraries</a></li>
-                <li> <a href="https://developer.mindsphere.io" target="_new"><i class="fa fa-external-link"></i> MindSphere Developer Documentation</a></li>
+                <li> <a href="https://opensource.mindsphere.io" target="_new"><i class="fa fa-external-link"></i> Insights Hub Open Source Tools and Libraries</a></li>
+                <li> <a href="https://developer.mindsphere.io" target="_new"><i class="fa fa-external-link"></i> Insights Hub Developer Documentation</a></li>
                 <li> <a href="https://opensource.mindsphere.io/docs/node-red-contrib-mindconnect/getting-started.html" target="_new"><i class="fa fa-external-link"></i> Getting Started with MindConnect Node-RED node</a></li>
                 <li> <a href="https://playground.mindconnect.rocks" target="_new"><i class="fa fa-external-link"></i> Node-RED flow examples</a></li>
-                <li><a href="https://community.plm.automation.siemens.com/t5/Developer-Space/bd-p/MindSphere-platform-forum" target="_new" title="Community"><i class="fa fa-external-link"></i> MindSphere Developer Forum</a> </li>
+                <li><a href="https://community.plm.automation.siemens.com/t5/Developer-Space/bd-p/MindSphere-platform-forum" target="_new" title="Community"><i class="fa fa-external-link"></i> Insights Hub Developer Forum</a> </li>
             </ul>
         </p>
 </script>
 
 <script type="text/javascript">
     RED.nodes.registerType("mindconnect", {
-        category: "mindsphere",
+        category: "Insights Hub",
         color: "#41aaaa",
         defaults: {
             name: {
@@ -829,7 +847,7 @@ msg._error; // The timestamped error message
                     const sdkFunction = "" +
                         "// take a look at the flow examples at https://playground.mindconnect.rocks " +
                         "\n//" +
-                        "\n// execute custom script using mindsphere SDK" +
+                        "\n// execute custom script using Insights Hub SDK" +
                         "\n// the node will create an asyncronous function with one parameter (sdk)" +
                         "\n// and the function body specified below " +
                         "\nconst sdkFunction = \{" +
@@ -852,7 +870,7 @@ msg._error; // The timestamped error message
                     const assetInfoTemplate = "" +
                         "// take a look at the flow examples at https://playground.mindconnect.rocks " +
                         "\n//" +
-                        "\n// Read the static asset information from MindSphere" +
+                        "\n// Read the static asset information from Insights Hub" +
                         "\n// You can reduce the number of items in payload by specifying list of properties" +
                         "\n// in property Names list e.g. [\"variables\"] or  [\"location\"]" +
                         "\n// Set includeShared to true to include the assets shared with your agents tenant via cross-tenancy" +
@@ -908,7 +926,7 @@ msg._error; // The timestamped error message
                     const bulk = [{ timestamp: new Date().toISOString(), values: values }];
                     const headertemplate = "// take a look at the flow examples at https://playground.mindconnect.rocks" +
                         "\n//" +
-                        "\n// - MindSphere expects all values to be encoded as strings" +
+                        "\n// - Insights Hub expects all values to be encoded as strings" +
                         "\n// - Integers must not have any decimal places" +
                         "\n// - It is a good practice to use javascript literal notation" +
                         "\n// " +
@@ -946,7 +964,7 @@ msg._error; // The timestamped error message
                     };
                     const eventTemplate = `
 // add entityId property if you want to create an event for a different asset
-// if you are using custom events instead of MindSphere standard events please include the _customEvent switch in der message
+// if you are using custom events instead of Insights Hub standard events please include the _customEvent switch in the message
 // msg._customEvent = true;
 // take a look at the flow examples at https://playground.mindconnect.rocks
 
@@ -1057,7 +1075,7 @@ return msg;`;
                     }
 
                     sortedMappings.forEach((mapping) => {
-                        const url = `<a class="ghostLink diagLink" href="${urlTemplate}${mapping.entityId}/details" target="_new" title="Open Asset in MindSphere Asset Manager"><i class="fa fa-external-link"></i> `;
+                        const url = `<a class="ghostLink diagLink" href="${urlTemplate}${mapping.entityId}/details" target="_new" title="Open Asset in Insights Hub Asset Manager"><i class="fa fa-external-link"></i> `;
                         mappingList.append(
                             `<li>${(mapping && mapping.validity && mapping.validity.status && (mapping.validity.status === "VALID"))
                                 ? "<i class='fa fa-check-circle' style='color:#65C728' title='VALID'></i>"

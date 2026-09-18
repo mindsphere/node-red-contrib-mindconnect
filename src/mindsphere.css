@@ -1,5 +1,28 @@
 /* Copyright Siemens AG, 2017 */
 
+.mindconnect-migration-warning {
+    border: 2px solid #8a5700;
+    border-left-width: 6px;
+    border-radius: 4px;
+    background: #fff4ce;
+    color: #452e00;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+}
+
+.mindconnect-migration-warning p {
+    margin: 0 0 8px;
+}
+
+.mindconnect-migration-warning p:last-child {
+    margin-bottom: 0;
+}
+
+.mindconnect-migration-warning code {
+    background: transparent;
+    color: inherit;
+}
+
 #_msbar:before {
     content: " ";
     display: block;

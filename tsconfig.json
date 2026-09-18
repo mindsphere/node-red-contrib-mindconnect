@@ -17,6 +17,7 @@
         "allowJs": false,
         "declaration": true,
         "sourceMap": true,
-        "strict": false
+        "strict": false,
+        "types": ["node", "chai", "mocha", "ajv"]
     }
 }

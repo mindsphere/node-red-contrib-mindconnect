@@ -13,10 +13,12 @@ jobs:
 
     steps:
     - name: Setup Node.js environment
-      uses: actions/setup-node@v2.1.5
+      uses: actions/setup-node@v4
+      with:
+        node-version: "lts/*"
 
     - name: Checkout Branch
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - uses: sn0wcat/ms-teams-deploy-card@master
       if: always()
@@ -63,7 +65,7 @@ jobs:
         npm pack
 
     - name: Upload a Build Artifact
-      uses: actions/upload-artifact@v2.2.3
+      uses: actions/upload-artifact@v4
       with:
           path: |
             *.tgz

@@ -1,7 +1,7 @@
 {
     "name": "@mindconnect/node-red-contrib-mindconnect",
     "version": "3.12.1",
-    "description": "node red mindconnect node using mindconnect-nodejs library.",
+    "description": "Node-RED MindConnect node for Siemens Insights Hub using the mindconnect-nodejs library.",
     "main": "index.js",
     "scripts": {
         "prepare": "tsc",
@@ -24,12 +24,15 @@
         "url": "https://github.com/mindsphere/node-red-contrib-mindconnect.git"
     },
     "keywords": [
-        "MindSphere",
+        "Insights Hub",
         "MindConnect",
         "node-red"
     ],
     "author": "@sn0wcat",
     "license": "MIT",
+    "engines": {
+        "node": ">=22.9"
+    },
     "devDependencies": {
         "@compodoc/compodoc": "^1.1.19",
         "@types/ajv": "^1.0.0",
@@ -43,8 +46,8 @@
         "license-checker": "^25.0.1",
         "mocha": "^8.4.0",
         "mocha-jenkins-reporter": "^0.4.7",
-        "node-red": "^2.2.2",
-        "node-red-node-test-helper": "^0.2.7",
+        "node-red": "^5.0.7",
+        "node-red-node-test-helper": "^0.3.6",
         "nodemon": "^2.0.16",
         "nyc": "^15.1.0",
         "tslint": "^6.1.3",
