@@ -321,8 +321,6 @@ the messages. See the [documentation](https://developer.siemens.com/industrial-i
 
 See the [documentation](https://developer.siemens.com/industrial-iot-open-source/node-red-contrib-mindconnect/index.html) for demo flow examples.
 
-Example flows are also used for KPI-Calculation and Trend prediction with help of Insights Hub APIs. <https://github.com/mindsphere/analytics-examples>
-
 ## Securing API Endpoints
 
 The corresponding API calls for reading the data source configuration and mappings in Agent Configuration and Agent Information dialog require that the user has:
@@ -354,13 +352,6 @@ Press on the "delete local configuration" :wastebucket: button on the node, conf
 ![delete local settings](images/deletelocal.png)
 
 If you are having problems, it is a good idea to restart the Node-RED runtime completely.
-
-### Diagnostic in Insights Hub
-
-If the data is not arriving in your configured asset you should take a look if the data is beeing dropped in Insights Hub because of a misconfiguration.
-The agent diagnostic button will lead you directly to the agent diagnostic application in Insights Hub.
-
-![diagnostic](images/diag.png)
 
 ## Generating the documentation
 
