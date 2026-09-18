@@ -1,6 +1,6 @@
 // Copyright Siemens AG, 2019
 import { MindConnectAgent } from "@mindconnect/mindconnect-nodejs";
-import * as debug from "debug";
+import debug = require("debug");
 import fetch from "node-fetch";
 import { IConfigurationInfo } from "./mindconnect-schema";
 const log = debug("node-red-contrib-mindconnect");

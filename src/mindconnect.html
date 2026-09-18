@@ -3,17 +3,21 @@
 <script type="text/x-red" data-template-name="mindconnect">
     <div id="_msbar">
         <span  style="line-height:36px">
-            &nbsp;&nbsp;<a href="https://opensource.mindsphere.io/docs/node-red-contrib-mindconnect/index.html" target="_new" class="headerLink" title="Documentation">
-                <i class="fa fa-globe"></i> MindConnect Node-RED Agent
+            &nbsp;&nbsp;<a href="https://developer.siemens.com/industrial-iot-open-source/node-red-contrib-mindconnect/index.html" target="_new" class="headerLink" title="Documentation">
+                <i class="fa fa-globe"></i> Insights Hub Node-RED Agent
             </a>
-        </span> <span style="color:#aaaaaa !important">v3.12.1</span>
+        </span> <span style="color:#B3B3BE !important">v4.0.0</span>
     </div>
 
     <div class="mindconnect-migration-warning" role="note">
-        <p><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> <strong>Upcoming v4: migrated Insights Hub tenants only</strong></p>
-        <p>Version 4 will support only tenants migrated to <code>*.siemens.app</code> application URLs.</p>
+        <p><strong>🚀 v4: migrated Insights Hub tenants only</strong></p>
+        <p>Version 4 supports tenants migrated to <code>*.siemens.app</code> application URLs.</p>
         <p><strong>Legacy tenant using <code>*.mindsphere.io</code> application URLs? Stay on v3. Do not upgrade to v4.</strong></p>
-        <p>This version is still v3; the v4 migration is not yet implemented.</p>
+        <p>
+            This is v4 - verified against a migrated (<code>*.siemens.app</code>) tenant. If your tenant is still on
+            <code>*.mindsphere.io</code>, install the v3 release instead
+            (<code>npm install @mindconnect/node-red-contrib-mindconnect@3</code>).
+        </p>
     </div>
 
     <div class="form-row">
@@ -44,6 +48,23 @@
         <label for="" title="The maximum time the node will wait before displaying the status message."><i class="fa fa-arrow-circle-down"></i>
             Async duration </span></label>
         <input id="node-input-asyncduration" class="ui-spinner-input" value="1" style="width:50px"/> (in seconds) 
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-customerTenantId" title="Xcelerator customer tenant id"
+            ><i class="fa fa-id-badge"></i> Customer Tenant Id</label
+        >
+        <input type="text" id="node-input-customerTenantId" placeholder="optional, migrated tenants only" />
+    </div>
+    <div class="form-row" style="margin-top: -8px;">
+        <label>&nbsp;</label>
+        <span style="width:70%; display:inline-block; vertical-align:top; color:#888888; font-size: 12px; word-break: break-word;">
+            Optional. Only needed for <strong>migrated Insights Hub</strong> (*.siemens.app) tenants, to build the
+            "Open Asset in Insights Hub" links below. Not present in the agent's onboarding file - find it in your
+            Insights Hub subscription/tenant settings. It is the <strong>first</strong> number in your tenant's
+            application URL, e.g. in https://<strong>1263225466</strong>-assetmanager-1000001700.eu1.siemens.app/ it
+            is 1263225466.
+        </span>
     </div>
 
     <div class="form-row node-text-editor-row">
@@ -235,10 +256,14 @@
 
 <script type="text/x-red" data-help-name="mindconnect">
             <div class="mindconnect-migration-warning" role="note">
-                <p><strong>Upcoming v4: migrated Insights Hub tenants only</strong></p>
-                <p>Version 4 will support only tenants migrated to <code>*.siemens.app</code> application URLs.</p>
+                <p><strong>🚀 v4: migrated Insights Hub tenants only</strong></p>
+                <p>Version 4 supports tenants migrated to <code>*.siemens.app</code> application URLs.</p>
                 <p><strong>Legacy tenant using <code>*.mindsphere.io</code> application URLs? Stay on v3. Do not upgrade to v4.</strong></p>
-                <p>This version is still v3; the v4 migration is not yet implemented.</p>
+                <p>
+                    This is v4 - verified against a migrated (<code>*.siemens.app</code>) tenant. If your tenant is
+                    still on <code>*.mindsphere.io</code>, install the v3 release instead
+                    (<code>npm install @mindconnect/node-red-contrib-mindconnect@3</code>).
+                </p>
             </div>
             <p>
                 <b>Node connecting the flow to Insights Hub.</b>
@@ -248,7 +273,7 @@
                 Once onboarded you can click on <b>Agent Information</b> button and generate the templates for the most common operations.
                 <br/>
                 <ul>
-                    <li> <a href="https://opensource.mindsphere.io/docs/node-red-contrib-mindconnect/index.html#tab1anchor3" target="_new"><i class="fa fa-file-video-o"></i> How to use this node (video) </a></li>
+                    <li> <a href="https://developer.siemens.com/industrial-iot-open-source/node-red-contrib-mindconnect/index.html#tab1anchor3" target="_new"><i class="fa fa-file-video-o"></i> How to use this node (video) </a></li>
                 </ul>
             </p>
 
@@ -457,7 +482,7 @@ msg._error; // The timestamped error message
             <ul>
                 <li> <a href="https://opensource.mindsphere.io" target="_new"><i class="fa fa-external-link"></i> Insights Hub Open Source Tools and Libraries</a></li>
                 <li> <a href="https://developer.mindsphere.io" target="_new"><i class="fa fa-external-link"></i> Insights Hub Developer Documentation</a></li>
-                <li> <a href="https://opensource.mindsphere.io/docs/node-red-contrib-mindconnect/getting-started.html" target="_new"><i class="fa fa-external-link"></i> Getting Started with MindConnect Node-RED node</a></li>
+                <li> <a href="https://developer.siemens.com/industrial-iot-open-source/node-red-contrib-mindconnect/getting-started.html" target="_new"><i class="fa fa-external-link"></i> Getting Started with MindConnect Node-RED node</a></li>
                 <li> <a href="https://playground.mindconnect.rocks" target="_new"><i class="fa fa-external-link"></i> Node-RED flow examples</a></li>
                 <li><a href="https://community.plm.automation.siemens.com/t5/Developer-Space/bd-p/MindSphere-platform-forum" target="_new" title="Community"><i class="fa fa-external-link"></i> Insights Hub Developer Forum</a> </li>
             </ul>
@@ -467,12 +492,15 @@ msg._error; // The timestamped error message
 <script type="text/javascript">
     RED.nodes.registerType("mindconnect", {
         category: "Insights Hub",
-        color: "#41aaaa",
+        color: "#4c4c68",
         defaults: {
             name: {
                 value: "",
             },
             configtype: {
+                value: "",
+            },
+            customerTenantId: {
                 value: "",
             },
             agentconfig: {
@@ -814,7 +842,10 @@ msg._error; // The timestamped error message
         outputs: 1,
         icon: "white-globe.svg",
         label: function () {
-            return this.name || "MindConnect Node-RED Agent";
+            return this.name || "Insights Hub Node-RED Agent";
+        },
+        labelStyle: function () {
+            return "mindconnect-label-light";
         },
 
         oneditprepare: function () {
@@ -1075,14 +1106,21 @@ return msg;`;
                     }
 
                     sortedMappings.forEach((mapping) => {
-                        const url = `<a class="ghostLink diagLink" href="${urlTemplate}${mapping.entityId}/details" target="_new" title="Open Asset in Insights Hub Asset Manager"><i class="fa fa-external-link"></i> `;
+                        // urlTemplate is "" for migrated Insights Hub tenants (see caller) since we
+                        // cannot build a valid Asset Manager link without a customerTenantId - render
+                        // a plain, muted, non-clickable span (no button/link styling, no external-link
+                        // icon) instead of a broken/relative link in that case.
+                        const url = urlTemplate
+                            ? `<a class="ghostLink diagLink" href="${urlTemplate}${mapping.entityId}/details" target="_new" title="Open Asset in Insights Hub Asset Manager"><i class="fa fa-external-link"></i> `
+                            : `<span style="color:#888888; cursor: default;" title="Not available for migrated Insights Hub tenants">`;
+                        const urlClose = urlTemplate ? "</a>" : "</span>";
                         mappingList.append(
                             `<li>${(mapping && mapping.validity && mapping.validity.status && (mapping.validity.status === "VALID"))
                                 ? "<i class='fa fa-check-circle' style='color:#65C728' title='VALID'></i>"
                                 : "<i class='fa fa-exclamation-triangle' style='color:#F62447' title='NOT VALID'></i>"
                             } <span style="color:#354C80">${mapping.dataPointId
                             }</span> <i class="fa fa-arrows-h"></i> ${url} ${mapping.assetName
-                            } </a> <i class="fa fa-long-arrow-right"></i> ${mapping.propertySetName
+                            } ${urlClose} <i class="fa fa-long-arrow-right"></i> ${mapping.propertySetName
                             } <i class="fa fa-long-arrow-right"></i> ${mapping.propertyName}</li>`
                         );
                     });
@@ -1223,21 +1261,67 @@ return msg;`;
             $("#noLinkSpan").hide();
             try {
                 const agentConfig = JSON.parse(this.agentconfig);
-                const target =
-                    agentConfig.content.baseUrl.replace("southgate", `${agentConfig.content.tenant}-assetmanager`) +
-                    `/entity/${agentConfig.content.clientId}/plugin/uipluginassetmanagermclib`;
-                const diag = agentConfig.content.baseUrl.replace(
-                    "southgate",
-                    `${agentConfig.content.tenant}-agentdiagnostic`
-                );
+                // Migrated (Xcelerator) tenants report their gateway under content.fds.baseUrl
+                // (e.g. https://api.eu1.siemens.app). Their app-launch URLs use the scheme
+                // https://<customerTenantId>-<appName>-<coreTenantId>.<region>.siemens.app/...,
+                // which requires a customerTenantId that is NOT present in the agent onboarding
+                // file - only the SDK's user-login flow (browser/credential auth) knows it. So,
+                // unlike the legacy baseUrl.replace("southgate", ...) trick below (which still
+                // works for un-migrated *.mindsphere.io tenants), we cannot safely build these
+                // links here. Rather than guess and produce a broken link, hide them.
+                const isMigratedTenant = !!(agentConfig.content.fds && agentConfig.content.fds.baseUrl);
 
-                const fleetManagerUrlTemplate = `${agentConfig.content.baseUrl.replace(
-                    "southgate",
-                    `${agentConfig.content.tenant}-assetmanager`
-                )}/entity/`;
+                let target = "";
+                let diag = "";
+                let fleetManagerUrlTemplate = "";
 
-                $("#mindconnect-configLink").attr("href", target);
-                $("#mindconnect-diagLink").attr("href", diag);
+                if (!isMigratedTenant) {
+                    target =
+                        agentConfig.content.baseUrl.replace(
+                            "southgate",
+                            `${agentConfig.content.tenant}-assetmanager`
+                        ) + `/entity/${agentConfig.content.clientId}/plugin/uipluginassetmanagermclib`;
+                    diag = agentConfig.content.baseUrl.replace(
+                        "southgate",
+                        `${agentConfig.content.tenant}-agentdiagnostic`
+                    );
+                    fleetManagerUrlTemplate = `${agentConfig.content.baseUrl.replace(
+                        "southgate",
+                        `${agentConfig.content.tenant}-assetmanager`
+                    )}/entity/`;
+                } else if (this.customerTenantId) {
+                    // Confirmed working (manually verified): on migrated tenants,
+                    // https://<customerTenantId>-assetmanager-<coreTenantId>.<region>.siemens.app/entity/<id>/details
+                    // resolves to the actual asset details page. The Agent Configuration
+                    // ".../plugin/uipluginassetmanagermclib" route and the agentdiagnostic app do
+                    // NOT work the same way (confirmed not to go further than a generic app
+                    // shell), so `target`/`diag` are intentionally left "" even when a
+                    // customerTenantId is configured - only the per-asset details link is rebuilt.
+                    const coreTenantId = agentConfig.content.fds.mntTenant;
+                    const regionMatch = agentConfig.content.fds.baseUrl.match(/^https?:\/\/api\.([^./]+)\.siemens\.app/i);
+                    if (coreTenantId && regionMatch) {
+                        fleetManagerUrlTemplate = `https://${this.customerTenantId}-assetmanager-${coreTenantId}.${regionMatch[1]}.siemens.app/entity/`;
+                    }
+                }
+
+                $("#mindconnect-configLink")
+                    .attr("href", target)
+                    .toggle(!isMigratedTenant)
+                    .attr(
+                        "title",
+                        isMigratedTenant
+                            ? "Not available for migrated Insights Hub tenants - open Asset Manager directly"
+                            : "Agent Configuration in Insights Hub"
+                    );
+                $("#mindconnect-diagLink")
+                    .attr("href", diag)
+                    .toggle(!isMigratedTenant)
+                    .attr(
+                        "title",
+                        isMigratedTenant
+                            ? "Not available for migrated Insights Hub tenants - open Insights Hub directly"
+                            : "Agent Diagnostic in Insights Hub"
+                    );
                 $("#mindconnect-resetLink").click(() => {
 
                     const contents = $("#mindconnect-deleteDialogTemplate").html();

@@ -1,10 +1,11 @@
 # node-red-contrib-mindconnect
 
 > [!WARNING]
-> **Upcoming v4: migrated Insights Hub tenants only.**
-> Version 4 will support only tenants migrated to the `*.siemens.app` application URL scheme.
+> **v4: migrated Insights Hub tenants only.**
+> Version 4 supports tenants migrated to the `*.siemens.app` application URL scheme.
 > **If your tenant still uses `*.mindsphere.io` application URLs, stay on v3. Do not upgrade to v4.**
-> This branch still uses v3; the v4 SDK and application-link migration is not yet implemented.
+> This is v4 - verified against a migrated (`*.siemens.app`) tenant. If your tenant is still on
+> `*.mindsphere.io`, install the v3 release instead (`npm install @mindconnect/node-red-contrib-mindconnect@3`).
 
 ## Node-RED Agent for the Insights Hub MindConnect API
 
@@ -17,7 +18,7 @@ This project has started as a community effort at Siemens AG and is now availabl
 
 [![Build](https://github.com/mindsphere/node-red-contrib-mindconnect/actions/workflows/build.yml/badge.svg)](https://github.com/mindsphere/node-red-contrib-mindconnect/actions/workflows/build.yml) [![The MIT License](https://img.shields.io/badge/license-MIT-009999.svg?style=flat)](./LICENSE.md)
 [![npm](https://img.shields.io/npm/v/@mindconnect/node-red-contrib-mindconnect/latest.svg?style=flat)](https://www.npmjs.com/package/@mindconnect/node-red-contrib-mindconnect) ![downloads](https://img.shields.io/npm/dw/@mindconnect/node-red-contrib-mindconnect.svg?colorB=009999)
-[![Documentation](https://img.shields.io/badge/Insights%20Hub-documentation-%23009999.svg)](https://opensource.mindsphere.io/docs/node-red-contrib-mindconnect/index.html)
+[![Documentation](https://img.shields.io/badge/Insights%20Hub-documentation-%23009999.svg)](https://developer.siemens.com/industrial-iot-open-source/node-red-contrib-mindconnect/index.html)
 [![Forum](https://img.shields.io/badge/Insights%20Hub-community-%23009999.svg)](https://community.plm.automation.siemens.com/t5/Developer-Space/bd-p/MindSphere-platform-forum)
 [![Demo Flows](https://img.shields.io/badge/node--RED-playground-%23009999.svg)](https://playground.mindconnect.rocks)
 
@@ -33,7 +34,7 @@ cd ~/.node-red/
 npm install @mindconnect/node-red-contrib-mindconnect@3
 ```
 
-The upcoming v4 release is for migrated tenants using application URLs such as
+The v4 release is for migrated tenants using application URLs such as
 `<customerTenantId>-<appName>-<coreTenantId>.<region>.siemens.app`.
 Confirm your tenant's migration status before selecting a major version; do not rewrite onboarding URLs manually.
 

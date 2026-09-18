@@ -1,26 +1,43 @@
 /* Copyright Siemens AG, 2017 */
 
+/* Node-RED core's .form-tips caps at max-width:450px, making tip boxes look narrow/half-wide
+   inside this node's wider config/help panels. Let them use the full available row width. */
+.red-ui-editor .form-tips,
+.red-ui-editor-dialog .form-tips {
+    max-width: none !important;
+}
+
 .mindconnect-migration-warning {
-    border: 2px solid #8a5700;
-    border-left-width: 6px;
-    border-radius: 4px;
-    background: #fff4ce;
-    color: #452e00;
-    padding: 12px 16px;
-    margin-bottom: 20px;
+    border: none;
+    border-left: 3px solid #9aa0ac;
+    border-radius: 0;
+    background: #f2f2f4;
+    color: #6b6b76;
+    padding: 8px 10px;
+    margin-bottom: 14px;
+    font-size: 12px;
 }
 
 .mindconnect-migration-warning p {
-    margin: 0 0 8px;
+    margin: 0 0 4px;
 }
 
 .mindconnect-migration-warning p:last-child {
     margin-bottom: 0;
 }
 
+.mindconnect-migration-warning strong {
+    color: #454550;
+    font-weight: 600;
+}
+
 .mindconnect-migration-warning code {
     background: transparent;
     color: inherit;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    padding: 0;
 }
 
 #_msbar:before {
@@ -31,17 +48,9 @@
     left: 0;
     right: 0;
     height: 4px;
-    background-image: -owg-linear-gradient(to right, #50bebe 0%, #099 33%, #0099b0 66%, #0099cb 100%);
-    background-image: -webkit-gradient(
-        linear,
-        left top,
-        right top,
-        from(#50bebe),
-        color-stop(33%, #099),
-        color-stop(66%, #0099b0),
-        to(#0099cb)
-    );
-    background-image: linear-gradient(to right, #50bebe 0%, #099 33%, #0099b0 66%, #0099cb 100%);
+    background-image: -owg-linear-gradient(to right, #00ffb9 0%, #00cccc 100%);
+    background-image: -webkit-gradient(linear, left top, right top, from(#00ffb9), to(#00cccc));
+    background-image: linear-gradient(to right, #00ffb9 0%, #00cccc 100%);
     margin: 0, 0, 0, 0;
 }
 
@@ -51,7 +60,7 @@
     height: 40px;
     font-size: 16px;
     color: white;
-    background: black;
+    background: #4c4c68;
     text-align: left;
     margin-bottom: 20px;
     vertical-align: middle;
@@ -90,7 +99,7 @@
     text-decoration: none !important;
 }
 .headerLink:hover {
-    color: #00bfa5 !important;
+    color: #ffffff !important;
     text-decoration: none !important;
 }
 
@@ -106,4 +115,18 @@
     text-decoration: none !important;
     /* font-size: 150% !important; */
     cursor: pointer !important;
+}
+
+/* Node label text on the flow canvas: white for readability against the dark
+   Siemens-blue (#4c4c68) node background. Applied via the officially supported
+   labelStyle node-definition property (see nodered.org/docs/creating-nodes/appearance). */
+.mindconnect-label-light {
+    fill: #ffffff !important;
+}
+
+/* Palette sidebar entry: label text color is theme-driven, not node-color-driven,
+   so it stays dark by default even though the palette swatch background uses our
+   node color (#4c4c68). Force white for contrast, scoped to this node type only. */
+.red-ui-palette-node[data-palette-type="mindconnect"] .red-ui-palette-label {
+    color: #ffffff !important;
 }
