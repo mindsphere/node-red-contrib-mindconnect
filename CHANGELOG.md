@@ -1,6 +1,8 @@
 # Changelog
 
-## 4.0.0 - September 2026
+Major release codenames follow a "city + dog breed" theme starting with v4 (previously "Vienna + wildcat breed" for the v3.x series). The theme changes with each new major version; minor/patch releases within a major keep the same codename.
+
+## 4.0.0 (Budapest Vizslas) - September 2026
 
 ## New Features 4.0.0
 
