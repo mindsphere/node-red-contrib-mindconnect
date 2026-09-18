@@ -5,7 +5,7 @@
 ## New Features 4.0.0
 
 - Support for the Xcelerator gateway URL scheme migration (`*.mindsphere.io` -> `*.siemens.app`)
-- Bumped `@mindconnect/mindconnect-nodejs` SDK dependency to 4.0.0-0
+- Bumped `@mindconnect/mindconnect-nodejs` SDK dependency to 4.0.0
 - New optional **Customer Tenant ID** setting - restores the "Open Asset in Insights Hub" mapping links for migrated tenants
 - Rebranded editor UI to Insights Hub (header, node color, documentation links)
 
