@@ -1,5 +1,20 @@
 # Changelog
 
+## 4.0.0 - September 2026
+
+## New Features 4.0.0
+
+- Support for the Xcelerator gateway URL scheme migration (`*.mindsphere.io` -> `*.siemens.app`)
+- Bumped `@mindconnect/mindconnect-nodejs` SDK dependency to 4.0.0-0
+- New optional **Customer Tenant ID** setting - restores the "Open Asset in Insights Hub" mapping links for migrated tenants
+- Rebranded editor UI to Insights Hub (header, node color, documentation links)
+
+## Breaking Changes 4.0.0
+
+- **Important** - Version 4 only supports tenants migrated to the `*.siemens.app` application URL scheme. If your tenant still uses `*.mindsphere.io` application URLs, stay on v3 (`npm install @mindconnect/node-red-contrib-mindconnect@3`).
+- Agent Configuration and Agent Diagnostic quick links are no longer shown for migrated tenants - those application routes do not work on the new URL scheme even with the correct identifiers.
+- Removed references to the decommissioned `playground.mindconnect.rocks` and `dreamforce.mindconnect.rocks` demo sites; see the [documentation](https://developer.siemens.com/industrial-iot-open-source/node-red-contrib-mindconnect/index.html) instead.
+
 ## 3.12.1 (Vienna Siberian Tigers) - May 2022
 
 ## New Features 3.12.1
