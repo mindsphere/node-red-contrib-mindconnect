@@ -16,7 +16,7 @@
 This node enables the Node-RED users to upload timeseries, files and events to Insights Hub.
 This project has started as a community effort at Siemens AG and is now available for general use.
 
-[![Build](https://github.com/mindsphere/node-red-contrib-mindconnect/actions/workflows/build.yml/badge.svg)](https://github.com/mindsphere/node-red-contrib-mindconnect/actions/workflows/build.yml) [![The MIT License](https://img.shields.io/badge/license-MIT-009999.svg?style=flat)](./LICENSE.md)
+[![The MIT License](https://img.shields.io/badge/license-MIT-009999.svg?style=flat)](./LICENSE.md)
 [![npm](https://img.shields.io/npm/v/@mindconnect/node-red-contrib-mindconnect/latest.svg?style=flat)](https://www.npmjs.com/package/@mindconnect/node-red-contrib-mindconnect) ![downloads](https://img.shields.io/npm/dw/@mindconnect/node-red-contrib-mindconnect.svg?colorB=009999)
 [![Documentation](https://img.shields.io/badge/Insights%20Hub-documentation-%23009999.svg)](https://developer.siemens.com/industrial-iot-open-source/node-red-contrib-mindconnect/index.html)
 [![Forum](https://img.shields.io/badge/Insights%20Hub-community-%23009999.svg)](https://community.plm.automation.siemens.com/t5/Developer-Space/bd-p/MindSphere-platform-forum)
